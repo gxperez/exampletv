@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.samsung.com/">
+  <cpname/>
+  <cplogo/>
+  <cpauthjs/>
+  <ThumbIcon>icon/Icon_85.png</ThumbIcon>
+  <BigThumbIcon>icon/GestionVista_Logo.png</BigThumbIcon>
+  <ListIcon>icon/GestionVista_Logo_85x70.png</ListIcon>
+  <BigListIcon>icon/GestionVista_Logo_85x70.png</BigListIcon>
+  <category>Information</category>
+  <autoUpdate>n</autoUpdate>
+  <ver>0.100</ver>
+  <mgrver/>
+  <fullwidget>y</fullwidget>
+  <type>user</type>
+  <srcctl>y</srcctl>
+  <ticker>n</ticker>
+  <childlock>n</childlock>
+  <videomute>n</videomute>
+  <dcont>y</dcont>
+  <widgetname>GestionVista</widgetname>
+  <description>CND, Integracion con BisForSales Version para Smart TV.</description>
+  <width>1280</width>
+  <height>720</height>
+  <author>
+    <name>CND</name>
+    <email/>
+    <link>gxperez</link>
+    <organization/>
+  </author>
+</widget>
