@@ -113,6 +113,30 @@ Master = {
 		            }
 		            );
 		    
+		    // Instancia del Web Socket.
+		    
+		    alert("Estableciendo conexion con el webSocket");
+			Server = new FancyWebSocket('ws://10.234.130.55:9300'); 
+			//Let the user know we're connected
+			Server.bind('open', function() {
+				log( "Connected." );
+			});
+
+			//OH NOES! Disconnection occurred.
+			Server.bind('close', function( data ) {
+				log( "Disconnected." );
+			});
+
+			//Log any messages sent from server
+			Server.bind('message', function( payload ) {
+				log( payload );
+			});
+
+			alert("Se va a conectar");
+			
+			Server.connect();
+			
+			alert("LLego Aqui"); 
 		    
 		}		
 };
@@ -134,7 +158,9 @@ function MasterTV() {
 };
 
 MasterTV.prototype.setPagesConfig = function(){	
-	// Las tablas de diferencias entre los elementos		
+	// Las tablas de diferencias entre los elementos. 
+	
+	
 	
 	
 };
@@ -162,7 +188,10 @@ MasterTV.prototype.handleKeyDown = function (keyCode) {
 			alert("Tecla Enter: Obtener Mac del TV:");
 			 var networkPlugin = document.getElementById('pluginNetwork');
 			 var mac = networkPlugin.GetMAC(0) || networkPlugin.GetMAC(1);
-			alert(mac);
+						
+			alert("Envio de la Mack Adress al Servidor"); 
+				log( 'You: ' + mac );
+				send( mac );
 			
 			if(typeof(Storage) !== "undefined") {
 			    // Code for localStorage/sessionStorage.
@@ -183,8 +212,45 @@ MasterTV.prototype.handleKeyDown = function (keyCode) {
 	}
 };
  
+/* EL websocket en el TV
+ * **/
+var Server;
+
+var content = $("<div id='log'></div>"); 
+
+function log( text ) {
+	//Add text to log
+	 content.html((content.html()?"\n":'')+text);	 
+	 
+	 $.blockUI({ 
+	        message: content.html(), 
+	        fadeIn: 700, 
+	        fadeOut: 700, 
+	        timeout: 2000, 
+	        showOverlay: false, 
+	        centerY: false, 
+	        css: { 
+	            width: '760px',  
+	            top:  110 + 'px',   
+	            left: 240 + 'px',                             
+	            border: 'none', 
+	            padding: '15px', 
+	            backgroundColor: '#000', 
+	            '-webkit-border-radius': '10px', 
+	            '-moz-border-radius': '10px', 
+	            opacity: 1, 
+	            color: '#fff' 
+	        } 
+	    });	
+}
+
+function send( text ) {
+	Server.send( 'message', text );
+}
+
 
 $( document ).ready(function() {	
 	Master.initt();		
 	alert("=================================");
+	
   });
