@@ -1,3 +1,5 @@
+@CHARSET "ISO-8859-1";
+
 
 .login-page {
   width: 360px;
@@ -161,7 +163,7 @@ body {
 background: -webkit-linear-gradient(right, #525FB8, #6FC2B6);
 background: -moz-linear-gradient(right, #76b852, #8DC26F);
 background: -o-linear-gradient(right, #76b852, #8DC26F);
-background: linear-gradient(to left, #131F78, #1E7669);
+background: linear-gradient(to left, #0D1236, #07231E);
 font-family: "Roboto", sans-serif;
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
