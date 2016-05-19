@@ -24,7 +24,18 @@
 		}
 
 		function send( text ) {
-			Server.send( 'message', text );
+		var ob  =  {
+			clienteSessionID: 0,
+			macAdrees: 0,
+			Tipo: "PAGES",
+			hash: "",
+			fecha: "",
+			accion: "TWEETS",
+			codigo: 0,
+			mensaje: text			
+		};
+		
+			Server.send( 'message', JSON.stringify(ob)  );
 		}
 
 		$(document).ready(function() {
@@ -35,7 +46,6 @@
 				if ( e.keyCode == 13 && this.value ) {
 					log( 'You: ' + this.value );
 					send( this.value );
-
 					$(this).val('');
 				}
 			});
@@ -51,8 +61,12 @@
 			});
 
 			//Log any messages sent from server
-			Server.bind('message', function( payload ) {
-				log( payload );
+			Server.bind('message', function( payload ) {			
+			
+			console.log(payload); 
+			log( payload );
+			var eje = JSON.parse(payload); 
+				
 			});
 
 			Server.connect();

@@ -78,13 +78,49 @@ Master = {
 		     }		
 			instancia.conectar(true);			
 		},		
-		recetor: function(data){
+		receptor: function(data){
+			
+			var macTV = networkPlugin.GetMAC(0) || networkPlugin.GetMAC(1);
+			/// La solicitud es para esta TV
+			if(macTV == data.macAdrees ){
+				// ["ACTUALIZAR-APP", "ACTIVAR", "TWEETS", "CAST", "PROGRAMA" "CONTROL" ]
+				switch (data.accion) {
+					case "ACTUALIZAR-APP":
+						// SOLICITUD DE ACTUALIZACION DE APP DESDE EL SERVIDOR.						
+						break;
+					case "ACTIVAR":
+						
+						break;
+					case "TWEETS":
+						// REcepcion de Mesajes Instantaneos desde Un serviddor.					
+						if(typeof data.mensaje !== 'undefined'){
+							log(data.mensaje); 
+						}
+						
+						break;						
+					case "CAST":  // Boletin.
+						
+						
+						break;
+					case "PROGRAMA":  // LA INFORMACION COMPLETA PARA EL PROGRAMA DEL DIA Y SU HORARIO.
+						
+						break;						
+					case "CONTROL":  // CONTROL REMOTO DESDE EL SERVER.
+						
+												
+						break;						
+					default:						
+						break;
+				}
+			}
+			
+			alert("Recibio el Mensaje"); 
 		}		
 };
 
 Master.setOptionEsquema = function (esquema){
 	 var id = "#";
-	 var option = {css: "base.css", url: "template/base.html"};
+	 var option = {css: "base.css", url: "template/base.html"};	 
 	 
 	switch(esquema){ 			
 		case 1:  //
@@ -328,13 +364,15 @@ MasterTV.prototype.handleKeyDown = function (keyCode) {
 			            '<img src="template/img/indice.jpg" style="max-width: 1280px; max-height: 700px;">',
 			            '<img src="template/img/karthic.c.d.jpg" style="max-width: 1280px; max-height: 700px;">']; 
 			
+			
 			var full = Master.setOptionEsquema(1);			
         	Master.renderPage(full, function(){
         		
-        		alert("Antes de********* "); 
             	alert(arry[it]);
-            	$("#sc-full").html(arry[it]);        	
+            	$("#sc-full").html(arry[it]);
+            	
             	it++;
+            	
             	if(it > 2){
             		it =0; 
             	}
@@ -381,11 +419,12 @@ var ConexionTV = function(listIp){
 	this.Server = {};
 	this.current_TV = {
 			clienteSessionID: 0, 
-			macAdreesTV: "", 
+			macAdrees: "", 
 			Tipo: 'TV', 	
 			hash: "",
 			fecha: "",
-			accion: "REP"
+			accion: "ACTIVAR",
+			data: {}
 		};
 	this.ListIp = listIp; 
 	this.cIndex = 0;	
@@ -415,15 +454,20 @@ ConexionTV.prototype.conectar = function(cNext){
 	log( "Connected." );	
 	var networkPlugin = document.getElementById('pluginNetwork');
 	var mac = networkPlugin.GetMAC(0) || networkPlugin.GetMAC(1);
+	
 	current_TV = {
 			clienteSessionID: 0,
-			macAdreesTV: mac,
-			Tipo: 'TV',
+			macAdrees: mac,			
+			Tipo: "TV",
 			hash: "",
 			fecha: fechaJson,
-			accion: "ACTIVA"
+			accion: "ACTIVAR",
+			codigo: 0,
+			mensaje: "",
+			data: {}
 		};
-	ServerTEMP.send("message", current_TV);
+	
+		ServerTEMP.send("message", JSON.stringify(current_TV) );
 	});
 	
 	//OH NOES! Disconnection occurred.
@@ -436,9 +480,11 @@ ConexionTV.prototype.conectar = function(cNext){
 				
 	});
 	//Log any messages sent from server
-	this.Server.bind('message', function( payload ) {		
-		Master.recetor(payload);
-		log( "Mensaje Recibido" );
+	this.Server.bind('message', function( payload ) {
+		var infor = JSON.parse(payload); 
+		Master.receptor(infor);
+		
+		log( payload );
 	});	
 	this.Server.connect();
 	this.cIndex = cIndex;
