@@ -133,7 +133,7 @@ class PHPWebSocket
 					if ($clientID != 0) {
 						// client socket changed
 						$buffer = '';
-						$bytes = @socket_recv($socket, $buffer, 4096, 0);
+						$bytes = @socket_recv($socket, $buffer, 710952, 0);
 
 						if ($bytes === false) {
 							// error on recv, remove client socket (will check to send close frame)
@@ -667,7 +667,8 @@ class PHPWebSocket
 		$messageLength = strlen($message);
 
 		// set max payload length per frame
-		$bufferSize = 4096;
+		// $bufferSize = 4096;
+		$bufferSize = 710952;
 
 		// work out amount of frames to send, based on $bufferSize
 		$frameCount = ceil($messageLength / $bufferSize);

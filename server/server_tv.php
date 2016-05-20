@@ -40,7 +40,12 @@ function wsOnOpen($clientID)
 	//Send a join notice to everyone but the person who joined
 	foreach ( $Server->wsClients as $id => $client )
 		if ( $id != $clientID )
-			$Server->wsSend($id, "Visitor $clientID ($ip) has joined the room. con el String" . json_encode($client) );
+		$messal =  array(
+						'mensaje' => '"Visitor $clientID ($ip) has joined the room. con el String"',
+						'moto' => 'verde');
+						
+			// $Server->wsSend($id, "Visitor $clientID ($ip) has joined the room. con el String" . json_encode($client) );
+				$Server->wsSend($id,  json_encode($messal) );
 }
 
 // when a client closes or lost connection
@@ -51,8 +56,14 @@ function wsOnClose($clientID, $status) {
 	$Server->log( "$ip ($clientID) has disconnected." );
 
 	//Send a user left notice to everyone in the room
-	foreach ( $Server->wsClients as $id => $client )
-		$Server->wsSend($id, "Visitor $clientID ($ip) has left the room.");
+	foreach ( $Server->wsClients as $id => $client ) {
+	$mess =  array(
+						'mensaje' => "Visitor $clientID ($ip) has left the room.",
+						'moto' => 'verde');
+	//	$Server->wsSend($id, "Visitor $clientID ($ip) has left the room.");
+	$Server->wsSend($id,  json_encode($mess)  );
+	
+		}
 }
 
 

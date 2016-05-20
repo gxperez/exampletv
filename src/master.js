@@ -7,7 +7,10 @@ var fileSystemObj = new FileSystem();
 var fileObj = {};  
 var instancia = null;
 var gobalThemeChart = {};
-var configFiles = ["serverUrl.data", "version.data", "allsource.data", "log.data" ];   //{ 0 = serverURL, 1 = version, 2 = all source } 
+var configFiles = ["serverUrl.data", "version.data", "allsource.data", "log.data" ];   //{ 0 = serverURL, 1 = version, 2 = all source }
+var macTV; 
+
+var rr = 0; 
 
 /*** ECHART REQUIRED LIB  ***/
 require.config({
@@ -22,10 +25,11 @@ require(['echarts/theme/shine'], function (tarTheme) {
 
 /***** FIN ECHARTS LIB ******/
 Master = {	
+		ec: {},
 		cuPage: "",
 		cuTheme: "",
 		$cuPage: {},
-		KeyDown: function(){
+		KeyDown: function(){			
 		var keyCode = event.keyCode;		
 			    if(instancia == null || instancia === undefined ){			    	
 			    	instancia = new MasterTV();			    	
@@ -35,12 +39,27 @@ Master = {
 			    }
 		},
 		
+		showWelcomePages: function(indx ){
+			
+			if(typeof indx === 'undefined'){
+				indx = 0; 
+			}
+			
+			if(indx > 0){
+				indx = -1;
+			}
+			
+			var op = Master.setOptionEsquema(indx);		            	
+        	Master.renderPage(op);			
+		}, 
+		
 		initt: function(){
 			 widgetAPI.sendReadyEvent();			
 		     document.getElementById("anchor_main").focus();
 		     if(instancia == null || instancia === undefined ){			    	
 		    	 instancia = new MasterTV();		    	  
 		     }
+		     
 		    require(
 		            [
 		                'echarts',
@@ -48,26 +67,17 @@ Master = {
 		                'echarts/chart/line',
 		                'echarts/chart/pie'
 		            ],
-		            function (ec) {
-		                // Initialize after dom ready
-		            	/*             
-		                    var myChart = ec.init(document.getElementById("applicationWrapper"));           
-		                    myChart.setTheme(gobalTheme);
-		                    myChart.setOption(option);	                    
-		            	 */
+		            function (ec) {		            	
+		                // ECHARTS INSTANCIA
+		            	Master.ec = ec;
 		            	
-		            	// Prueba Renderizando el Html		            	
-		            	var op = Master.setOptionEsquema(3); 
-		            	/* {css:"inicio_02.css",
-		            			url: "template/inicio.html",
-		            			divID: undefined,
-		            			isAdd: null
-		            			};		            			
-		            	*/
+		            	Master.showWelcomePages();		            	
+		            	setTimeout(function(){
+		            				            		
+		            	}, 4000); 
 		            	
 		            	
 		            	
-		            	Master.renderPage(op);
 		            	
 		            }
 		            );		    
@@ -77,11 +87,73 @@ Master = {
 		    	 instancia = new MasterTV();		    	  
 		     }		
 			instancia.conectar(true);			
-		},		
+		},
+		
+		actualizarProgramacion: function(prog){		
+			alert("Actualizar"); 
+			var alt = {}; 
+			alt[prog.fecha] = prog;			
+			localStorage.setItem("programaTV", alt);
+		},
+		
+		slideNow: function(){
+			
+			alert("LLego Aqui");
+			
+			var programa = localStorage.getItem("programaTV");			
+			// programa.Bloques[0].data[0].slides.esquemaTipo
+			opt = Master.setOptionEsquema(programa.Bloques[0].data[0].slides.esquemaTipo);
+			
+			setTimeout(function(){
+				
+				Master.renderPage(opt, function(){
+					var listt = localStorage.getItem("programaTV");					
+					list = listt.Bloques[0].data[0].slides.seccion[0].contenido;
+					
+	            	$("#sc-full").html(lista[rr]);            	
+	            	rr++;            	
+	            	if(rr >= lista.length){
+	            		rr = 0; 
+	            	}
+	        	});
+        	}, 4000); 
+			
+			
+			
+			// forEach(function(item, index, array){			// Cuando te llegue hasta el Alma});			
+		},	
+		
+		ConvertRemoteServerControl: function(btn){			
+			var code = 0;			
+			switch (btn) {
+			case "LEFT":
+				code = sf.key.LEFT;				 
+				break;
+			case "ENTER":			
+				code =  sf.key.ENTER;			
+			case "RIGTH":			
+				code = sf.key.RIGHT;
+				break;
+			case "UP":
+				code = sf.key.UP;
+			break;
+			case "DOWN":
+				code = sf.key.DOWN;
+				break;		
+			case "MENU":								
+				code = 262;				
+			case "EXIT":
+				code = sf.key.EXIT;				
+			default:
+				break;
+			}
+			return code;
+		},
+		
+		
 		receptor: function(data){
 			
-			var macTV = networkPlugin.GetMAC(0) || networkPlugin.GetMAC(1);
-			/// La solicitud es para esta TV
+			alert("Aqui Llego. Receptor"); 
 			if(macTV == data.macAdrees ){
 				// ["ACTUALIZAR-APP", "ACTIVAR", "TWEETS", "CAST", "PROGRAMA" "CONTROL" ]
 				switch (data.accion) {
@@ -99,10 +171,13 @@ Master = {
 						
 						break;						
 					case "CAST":  // Boletin.
-						
-						
 						break;
-					case "PROGRAMA":  // LA INFORMACION COMPLETA PARA EL PROGRAMA DEL DIA Y SU HORARIO.
+					case "PROGRAMA":  // LA INFORMACION COMPLETA PARA EL PROGRAMA DEL DIA Y SU HORARIO.						
+						log(data.mensaje);
+						Master.actualizarProgramacion(data.data);
+											
+						alert("Va Ha actualizar"); 
+						Master.slideNow(); 
 						
 						break;						
 					case "CONTROL":  // CONTROL REMOTO DESDE EL SERVER.
@@ -122,7 +197,18 @@ Master.setOptionEsquema = function (esquema){
 	 var id = "#";
 	 var option = {css: "base.css", url: "template/base.html"};	 
 	 
-	switch(esquema){ 			
+	switch(esquema){	
+	case -1:		
+		option.url = "template/inicio.html"; 
+		option.divId = undefined;
+		option.css = "inicio_01.css";
+		break;		
+	
+	case 0:		
+		option.url = "template/inicio.html"; 
+		option.divId = undefined;
+		option.css = "inicio_02.css";
+		break;		
 		case 1:  //
 			id = "#aplication-Full";
 			option.divId = id; 
@@ -135,10 +221,8 @@ Master.setOptionEsquema = function (esquema){
 
 		case 3:
 			id = "#aplication-03";
-			option.divId = id;
-		 			
+			option.divId = id;		 			
 		break;
-
 	case 4:
 	// <div class='cs-div_V1x2'> </div>
 		id = "#aplication-04";
@@ -367,22 +451,18 @@ MasterTV.prototype.handleKeyDown = function (keyCode) {
 			
 			var full = Master.setOptionEsquema(1);			
         	Master.renderPage(full, function(){
-        		
-            	alert(arry[it]);
-            	$("#sc-full").html(arry[it]);
-            	
-            	it++;
-            	
+            	$("#sc-full").html(arry[it]);            	
+            	it++;            	
             	if(it > 2){
             		it =0; 
             	}
-            	
-        	});
-        	
-        		 
-			
+        	}); 			
 			break;
-		case sf.key.RIGHT:
+		case sf.key.RIGHT:			
+			var Dy= new Date();
+			log(Dy.toLocaleDateString());
+			 
+			
 			break;
 		case sf.key.UP:
 			--index;
@@ -454,6 +534,7 @@ ConexionTV.prototype.conectar = function(cNext){
 	log( "Connected." );	
 	var networkPlugin = document.getElementById('pluginNetwork');
 	var mac = networkPlugin.GetMAC(0) || networkPlugin.GetMAC(1);
+	macTV = mac;  
 	
 	current_TV = {
 			clienteSessionID: 0,
@@ -481,6 +562,7 @@ ConexionTV.prototype.conectar = function(cNext){
 	});
 	//Log any messages sent from server
 	this.Server.bind('message', function( payload ) {
+		alert("BIND message"); 
 		var infor = JSON.parse(payload); 
 		Master.receptor(infor);
 		

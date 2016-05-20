@@ -13,6 +13,46 @@
 	<script src="fancywebsocket.js"></script>
 	<script>
 	
+	var programa = {
+	fecha: '2016-04-20',
+	dia: "VI",
+	literal: 'v',
+	programa: 'Demo Abril 2016',	
+	Bloques: 
+			[{
+			id: 0,
+			horaIni: '07:00:01',	
+			horaFin: '08:00:00',	
+			data: [   // Contenidos
+			{  duracion: 0,
+				nombre: "Muestra de Cambio",
+				descripcion:"Prueba",
+				slides: {
+					esquemaTipo: 1,
+					duracion: "",
+					seccion: [
+						{ 
+						posicion: 1,
+						encabezado: "Ecabezado",
+						contenidoTipo: 1,
+						contenido: [ 
+								{
+								representacionTipo: 3,
+								data: ""
+								}				
+						]				
+						}				
+					]
+				}
+			}
+			]			
+			}	
+			]
+	};
+	
+	
+		var arregloContent = [];
+	
 		var Server;
 		
 		function log( text ) {
@@ -22,16 +62,62 @@
 			//Autoscroll
 			$log[0].scrollTop = $log[0].scrollHeight - $log[0].clientHeight;
 		}
+		
+		function LeerPowerPoint( url ){
+		// HTML del PowerPoint
+		
+		if (typeof url === 'undefined'){
+			url = $("#url").val(); 
+		}
+		
+		arregloContent = [];
+		
+			$.get( url, function(ht){
+				//  El resultado del html.
+				var tmp = $(ht);				
+				tmp.find(".powerpoint-slice").each(function(index){  				
+						console.log(index); 
+						arregloContent.push( $(this).html() ); 	
+				}); 
+				
+				programa.Bloques[0].data[0].slides.seccion[0].contenido = { representacionTipo: 3, data: arregloContent }; 
+				alert("Listo"); 
+	
+			});
+					
+		}
+		
+		function enviarPPT (){
+		
+		var objeto =  {
+			clienteSessionID: 0,
+			macAdrees: 0,
+			Tipo: "SEVER",
+			hash: "",
+			fecha: "",
+			accion: "PROGRAMA",
+			data: programa,
+			mensaje: "Progrmacion"			
+		};
+		
+		var str = JSON.stringify(objeto) ; 
+		
+		console.log(str.length ); 
+		Server.send( 'message',  str);
+		
+		}
+		
+		
 
 		function send( text ) {
 		var ob  =  {
 			clienteSessionID: 0,
 			macAdrees: 0,
-			Tipo: "PAGES",
+			Tipo: "SEVER",
 			hash: "",
 			fecha: "",
 			accion: "TWEETS",
-			codigo: 0,
+			data: 0,
 			mensaje: text			
 		};
 		
@@ -65,7 +151,7 @@
 			
 			console.log(payload); 
 			log( payload );
-			var eje = JSON.parse(payload); 
+		//	var eje = JSON.parse(payload); 
 				
 			});
 
@@ -89,6 +175,11 @@
 		<option value="8" >1/3H  </option>
 		<option value="9" >1/1H  </option>
 		</select>
+		
+		<input type='text' id='url' name='url'  value="http://localhost:7777/websocket/Chat/powerpoint.html"/>
+		
+		<button onclick="LeerPowerPoint()"> Cargar PPT</button>
+		<button onclick= "enviarPPT()" > Enviar PPT</button>
 		
 <div style=" width: 100%; height: 451px; background-color: #7B7B7D;" > </div>
 	</div>
