@@ -7,29 +7,19 @@ var fileSystemObj = new FileSystem();
 var fileObj = {};  
 var instancia = null;
 var gobalThemeChart = {};
-var configFiles = ["serverUrl.data", "version.data", "allsource.data", "log.data" ];   //{ 0 = serverURL, 1 = version, 2 = all source }
-var macTV; 
-
-var rr = 0; 
+var configFiles = ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ];   //{ 0 = serverURL, 1 = version, 2 = all source }
+var macTV;
+var rr = 0;
 
 /*** ECHART REQUIRED LIB  ***/
-require.config({
-    paths: {
-        echarts: 'src/eChart'
-    }
-});
-
-require(['echarts/theme/shine'], function (tarTheme) {
-	gobalThemeChart = tarTheme;
-});
-
 /***** FIN ECHARTS LIB ******/
+
 Master = {	
 		ec: {},
 		cuPage: "",
 		cuTheme: "",
 		$cuPage: {},
-		KeyDown: function(){			
+		KeyDown: function(){				
 		var keyCode = event.keyCode;		
 			    if(instancia == null || instancia === undefined ){			    	
 			    	instancia = new MasterTV();			    	
@@ -39,18 +29,56 @@ Master = {
 			    }
 		},
 		
-		showWelcomePages: function(indx ){
+		confirmDateTime: function(informat){
+			// Preguntar via ws la hora al Servidor.
+			// TODO: EL margen de holgura de Diferencia de hora entre el servidor y el cliente es de 2 minutos.
+			// Formaro en Date JS.
 			
+			var arrF = informat.split(",");
+			alert("Divicion de la Fecha para istancia Servidor");
+			
+			
+			var ServerFechaHm = new Date(parseInt(arrF[0]), (parseInt(arrF[1])-1), parseInt(arrF[2]), parseInt(arrF[3]), parseInt(arrF[4]), parseInt(arrF[5]) );
+			var LocalFechaHm = new Date(); 
+			
+			// diferencia en Segundos. 			
+			var diff = (ServerFechaHm-LocalFechaHm)/1000; 
+			
+			if( parseInt(diff) > 120 || parseInt(diff) < -120 ){
+				
+				alert("============================="); 
+				alert("Tiene Horarios diferentes:  " + LocalFechaHm.toDateString() );
+				
+				// Aviso de congiruacion de  de Hora del Televisor. 
+				
+			} else {				
+				alert("EL horario Cliente-servidor esta Sincronizado OK");
+				
+			}
+		},
+		
+		AbrirTutoCambiarFehcaYHora: function() {
+			// Lista esta correcto.			
+			
+		}, 
+		
+		showWelcomePages: function(indx ){			
 			if(typeof indx === 'undefined'){
 				indx = 0; 
 			}
-			
 			if(indx > 0){
 				indx = -1;
 			}
-			
 			var op = Master.setOptionEsquema(indx);		            	
-        	Master.renderPage(op);			
+        	Master.renderPage(op);        	
+		}, 
+		
+		descargarImagenes: function(){
+			// Descarga todas las imagenes a Utilizar este dia
+		},
+		
+		descargarHtml: function(){
+			
 		}, 
 		
 		initt: function(){
@@ -58,7 +86,7 @@ Master = {
 		     document.getElementById("anchor_main").focus();
 		     if(instancia == null || instancia === undefined ){			    	
 		    	 instancia = new MasterTV();		    	  
-		     }
+		     }		     
 		     
 		    require(
 		            [
@@ -72,16 +100,12 @@ Master = {
 		            	Master.ec = ec;
 		            	
 		            	Master.showWelcomePages();		            	
-		            	setTimeout(function(){
-		            				            		
-		            	}, 4000); 
-		            	
-		            	
-		            	
-		            	
+		            	setTimeout(function(){		            				            		
+		            	}, 4000);
 		            }
 		            );		    
 		},
+		
 		reconectar : function(){			
 			if(instancia == null || instancia === undefined ){			    	
 		    	 instancia = new MasterTV();		    	  
@@ -89,23 +113,16 @@ Master = {
 			instancia.conectar(true);			
 		},
 		
-		actualizarProgramacion: function(prog){		
-			alert("Actualizar"); 
-			var alt = {}; 
-			alt[prog.fecha] = prog;			
-			localStorage.setItem("programaTV", alt);
+		actualizarProgramacion: function(prog){			
+			instancia.ObtenerPrograma();			
 		},
 		
 		slideNow: function(){
 			
-			alert("LLego Aqui");
-			
 			var programa = localStorage.getItem("programaTV");			
 			// programa.Bloques[0].data[0].slides.esquemaTipo
-			opt = Master.setOptionEsquema(programa.Bloques[0].data[0].slides.esquemaTipo);
-			
-			setTimeout(function(){
-				
+			opt = Master.setOptionEsquema(programa.Bloques[0].data[0].slides.esquemaTipo);			
+			setTimeout(function(){				
 				Master.renderPage(opt, function(){
 					var listt = localStorage.getItem("programaTV");					
 					list = listt.Bloques[0].data[0].slides.seccion[0].contenido;
@@ -116,12 +133,10 @@ Master = {
 	            		rr = 0; 
 	            	}
 	        	});
-        	}, 4000); 
+        	}, 4000);
+			// forEach(function(item, index, array){			// Cuando te llegue hasta el Alma});
 			
-			
-			
-			// forEach(function(item, index, array){			// Cuando te llegue hasta el Alma});			
-		},	
+			},	
 		
 		ConvertRemoteServerControl: function(btn){			
 			var code = 0;			
@@ -151,26 +166,36 @@ Master = {
 		},
 		
 		
-		receptor: function(data){
+		
+		
+		receptor: function(data){			
+			alert("Aqui Llego. Receptor");
 			
-			alert("Aqui Llego. Receptor"); 
 			if(macTV == data.macAdrees ){
 				// ["ACTUALIZAR-APP", "ACTIVAR", "TWEETS", "CAST", "PROGRAMA" "CONTROL" ]
+				var difusion= "BroadCast";
+				
 				switch (data.accion) {
 					case "ACTUALIZAR-APP":
 						// SOLICITUD DE ACTUALIZACION DE APP DESDE EL SERVIDOR.						
 						break;
 					case "ACTIVAR":
+						// Devolver la Hora en que se debe configurar.
+						alert("Entro a Activar");
+						
+						if(data.fecha != null || typeof data.fecha !== 'undefined' )
+							Master.confirmDateTime(data.fecha.toString()); 						
 						
 						break;
 					case "TWEETS":
 						// REcepcion de Mesajes Instantaneos desde Un serviddor.					
 						if(typeof data.mensaje !== 'undefined'){
 							log(data.mensaje); 
-						}
+						}						
+						break;
 						
-						break;						
-					case "CAST":  // Boletin.
+					case "BROADCAST":  // Boletin. Difusion de Informacion.
+						
 						break;
 					case "PROGRAMA":  // LA INFORMACION COMPLETA PARA EL PROGRAMA DEL DIA Y SU HORARIO.						
 						log(data.mensaje);
@@ -181,17 +206,27 @@ Master = {
 						
 						break;						
 					case "CONTROL":  // CONTROL REMOTO DESDE EL SERVER.
-						
 												
 						break;						
 					default:						
 						break;
 				}
-			}
-			
-			alert("Recibio el Mensaje"); 
+			} else {
+				alert("Se conecto");							
+				// ACTIVAR LA OPCION DEBE SIEMPRE SER REVISADA.
+				if(data.accion == "ACTIVAR"){
+					
+					alert(JSON.stringify(data));					
+					Master.confirmDateTime(data.fecha);					
+
+					
+				}
+				
+			}			
 		}		
 };
+
+
 
 Master.setOptionEsquema = function (esquema){
 	 var id = "#";
@@ -262,9 +297,7 @@ Master.setOptionEsquema = function (esquema){
 			option.divId = undefined;
 		break;
 	}
-	
-	return option; 
-	
+	return option;
 }; 
 
 
@@ -274,6 +307,10 @@ Master.renderPage = function(option, callfunctionBack){
 	Master.setPage(option, callfunctionBack); 
 	// 
 };
+
+Master.actualizarPrograma = function(){
+	//	Busca la Configuraciones de la programacion del Dia de Hoy 
+}; 
 
 Master.setPage = function(option, callfunctionBack){
 	var isAdd = option.isAdd;	
@@ -324,7 +361,7 @@ Master.setTheme = function(file){
 
 MasterTV = function() {	
 	this.page_config = {};	
-	this.app_info = {server: "", version: ""};	
+	this.app_info = {server: "", version: "", serverRequest: ""};	
 	this.ManagerPages = {}; 
 	var index;
 	var content_txt = [];
@@ -344,6 +381,7 @@ MasterTV.prototype.setFileConfig = function(){
 	
 	// Yes Exists File. OF COMPUTER.	
 	var firstData = ['10.234.133.76:9300'];
+	var firstServer = 'localhost:7777/GestionVista/'; 
 	var app_info = {}; 
 	var page_config = {}; 	
 	
@@ -370,8 +408,10 @@ MasterTV.prototype.setFileConfig = function(){
 				textA = "{ initt: function(option){  } }";				
 				page_config.source = textA;  
 				break;				
-			case 3:
-				textA = "/** Log.data **/";
+			case 3:				
+				textA = firstServer.toString();				
+				app_info.serverRequest = firstData;				
+				
 				break;				
 			default:
 			   textA = ""; 			
@@ -393,11 +433,11 @@ MasterTV.prototype.setFileConfig = function(){
 			    allStr += " "+ strLine; 
 			}
 						
-			switch (index) {
-				case 0:  //		array de IPs			
+			switch (index) { // { 0 = serverURL, 1 = version, 2 = all source }
+				case 0:
 					app_info.server = allStr.split(",");
 					break;				
-				case 1:  // { 0 = serverURL, 1 = version, 2 = all source }					
+				case 1:  					
 
 					eval("versionArr = " + allStr);					
 					app_info.version = versionArr.version;
@@ -405,13 +445,16 @@ MasterTV.prototype.setFileConfig = function(){
 					break;
 					
 				case 2:  // Codigo de Programamacion
-					eval("page_config.source = " + allStr );					
-					
+					eval("page_config.source = " + allStr );
 					alert("La version del Codigo es: ");
 					alert(allStr);
-					break;					
-				default:					
-					console.log("Nungun Archivo en Particular" ); 
+					break;
+					
+				case 3:					
+					app_info.serverRequest = allStr.trim();					
+					break;
+					
+				default:
 				break; 
 			}
 		}
@@ -442,8 +485,7 @@ MasterTV.prototype.handleKeyDown = function (keyCode) {
 	alert("SceneMainPage.handleKeyDown(" + keyCode + ")");
 	// TODO : write an key event handler when this scene get focused	
 	switch (keyCode) {
-		case sf.key.LEFT:
-			
+		case sf.key.LEFT:			
 			var arry = ['<img src="template/img/samsungsetup.jpg" style="max-width: 1280px; max-height: 700px;">', 
 			            '<img src="template/img/indice.jpg" style="max-width: 1280px; max-height: 700px;">',
 			            '<img src="template/img/karthic.c.d.jpg" style="max-width: 1280px; max-height: 700px;">']; 
@@ -484,14 +526,27 @@ MasterTV.prototype.handleKeyDown = function (keyCode) {
 			break;
 		case sf.key.ENTER:
 			break;
-		default:
 			
-			alert(localStorage.getItem("name"));
-		
+		default:			
+			alert(localStorage.getItem("name"));		
 			break;
 	}
 };
 
+MasterTV.prototype.ObtenerPrograma= function(){
+	alert("Actualizar"); 
+	var alt = {};
+	var url = this.app_info.serverRequest + "/obtenerPrograma/";	
+	var formPost = {macAddress: macTV, tipo:"TV" };
+	
+	$.post(url, formPost, function(res){
+		// Carga en el LocalStorages de la Programación.		
+		if(res.estatus)			 
+			alt[res.fecha] = res;			
+			localStorage.setItem("programaTV", alt);
+	} , "json");	
+	
+}; 
 
 var ConexionTV = function(listIp){	
 	alert("Instancia de la Conxion del Servidor");
@@ -562,15 +617,17 @@ ConexionTV.prototype.conectar = function(cNext){
 	});
 	//Log any messages sent from server
 	this.Server.bind('message', function( payload ) {
-		alert("BIND message"); 
-		var infor = JSON.parse(payload); 
-		Master.receptor(infor);
+		if(payload.trim() != ""){
+			var infor = JSON.parse(payload); 
+			Master.receptor(infor);
+			log( payload );
+		}
 		
-		log( payload );
 	});	
 	this.Server.connect();
 	this.cIndex = cIndex;
-}; 
+};
+
 
 var content = $("<div id='log'></div>");
 function log( text ) {
@@ -597,6 +654,8 @@ function log( text ) {
 	        }
 	    });	
 }
+
+
 
 $( document ).ready(function() {
 	Master.initt();
