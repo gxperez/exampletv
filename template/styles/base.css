@@ -4,7 +4,7 @@ body {
   padding: 0;
   background: #000;
 }
- 
+
 .nav ul {
 	list-style: none;  
 	background: #183D6F; 
@@ -169,3 +169,8 @@ z-index: -2;
 	min-height: 1px;		
 	overflow: auto;
  }
+  
+#sc-full {
+width: 100%;
+
+}

@@ -1,25 +1,29 @@
 /**  here is the class extension for master.js*/
 alert('master.js loaded');
+
 var widgetAPI = new Common.API.Widget();
 var tvKey = new Common.API.TVKeyValue();
 var pluginAPI = new Common.API.Plugin();
 var fileSystemObj = new FileSystem();
 var fileObj = {};  
 var instancia = null;
-var gobalThemeChart = {};
+
 var configFiles = ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ];   //{ 0 = serverURL, 1 = version, 2 = all source }
 var macTV;
 var rr = 0;
 
-/*** ECHART REQUIRED LIB  ***/
-/***** FIN ECHARTS LIB ******/
-
 Master = {	
 		ec: {},
+		sIndex: {seccionActiva: 1,  sccns: {} }, 
 		cuPage: "",
 		cuTheme: "",
 		$cuPage: {},
-		KeyDown: function(){				
+		lastUpdate: new Date(),
+		cTime: new Date(),
+		relojId: 0, 
+	
+		KeyDown: function(){	
+			
 		var keyCode = event.keyCode;		
 			    if(instancia == null || instancia === undefined ){			    	
 			    	instancia = new MasterTV();			    	
@@ -27,6 +31,199 @@ Master = {
 			    }else{			    	
 			    	instancia.handleKeyDown(keyCode);			        
 			    }
+		},
+		
+		CorrerRelojLocal: function(){
+			Master.cTime.setSeconds(Master.cTime.getSeconds() + 1);			
+			Master.relojId = setTimeout("Master.CorrerRelojLocal()", 1000);			
+			alert(Master.cTime);
+			
+		},
+		
+		getCantidadSlidePorEsquema: function(esquemaTipo){			
+			switch(esquemaTipo){
+			case 1: 
+				return 1; 
+				break;
+			case 2: 
+				return 4; 
+				break;
+			case 3: 
+				return 6; 
+			break;
+			case 4: 
+				return 3;
+				break;
+			case 5: 
+				return 4;
+				break;
+			case 6: 
+				return 2;
+				break;
+			case 7:
+				return 3;  
+				break;
+			case 8: 
+				return 4; 
+				break;
+			case 9: 
+				return 2; 
+				break;
+			default:
+				return 1;
+				break;
+			}
+		}, 
+		
+		Next: function(){
+			// Saber la seccion Active
+			// Saber el index Active
+			alert("Esta Tecleando el Next=> Enter");
+			
+			
+			if(Master.sIndex.sccns[Master.sIndex.seccionActiva].modulo == "jquery"){				
+				$("#sld-" + Master.sIndex.sccns[Master.sIndex.seccionActiva].c).hide();
+				
+				Master.sIndex.sccns[Master.sIndex.seccionActiva].c++;
+				if( (Master.sIndex.sccns[Master.sIndex.seccionActiva].c+ 1) > Master.sIndex.sccns[Master.sIndex.seccionActiva].max ){					
+					Master.sIndex.sccns[Master.sIndex.seccionActiva].c = 0; 	
+				}
+				
+				$("#sld-" + Master.sIndex.sccns[Master.sIndex.seccionActiva].c).show();
+				
+				alert("Llego Hasta Aqui"); 
+				
+				return true;
+			}
+		}, 
+		renderPage: function(option){
+			var DivId = "#sc-full"; 
+			if("EventRemote" in option){
+				instancia.ManagerPages.EventRemote = option.EventRemote; 
+			}
+			
+			if(option.showInfoBar){
+				// Muestra Barra de Ayuda. con los Iconos.				
+			}
+			
+			
+			for(var it in option.slide.seccion){
+				alert("Entro en el Bucle #1"); 
+				if(option.slide.seccion.hasOwnProperty(it)){
+					alert("Entro en el Bucle #1.hasOwnProperty");
+					switch (option.slide.esquemaTipo) {
+					case 1:
+						
+						if(option.slide.seccion[it].posicion == 1){
+							
+							alert("Entro en el Bucle #1.hasOwnProperty case 1");
+							
+							var moduloAct = "jquery"; 
+							option.slide.seccion[it];							
+							var innerHtml = $("<div style='background-color: " + option.slide.seccion[it].bgColor  + "; width: 100%;  height: 100%;'> </div>");														
+							for(var iy in option.slide.seccion[it].contenido){								
+								if (option.slide.seccion[it].contenido.hasOwnProperty(iy)){
+								//	option.slide.seccion[it].contenido[iy].representacionTipo;									
+									alert("Entro en el Bucle #1.hasOwnProperty case: 1=> Contenido Representante 1");
+									
+									// PAra IMAGEBES = html
+									innerHtml.append("<div id='sld-"+ iy+ "' > " + option.slide.seccion[it].contenido[iy].data + " </div>");
+									moduloAct = option.slide.seccion[it].modulo;  
+									if (option.slide.seccion[it].modulo == "jquery"){
+										innerHtml.find("#sld-"+ iy ).hide(); 
+									} else {
+										// Otros Modulos y configuraciones para esta seccion.
+									}
+								}
+							}							
+							
+							// Hablamos Ahora.
+							if(moduloAct == "jquery"){
+								innerHtml.find("#sld-0").show();
+							}
+							
+							Master.sIndex.sccns[option.slide.seccion[it].posicion] = {c: 0, max: option.slide.seccion[it].contenido.length, modulo: "jquery" };
+							
+							alert(innerHtml.html());
+							alert("----------------"); 
+							alert( $("html").html() ); 
+							$(DivId).html(innerHtml.html());
+							
+							
+							
+							
+						}
+						
+						
+						
+						break;
+					default:
+						
+						$(DivId).html(""); 					
+						
+						break;
+					}  				
+				}
+			}
+				
+			option.slide.seccion.length;
+			
+			
+			
+						
+			 
+		}, 
+		
+		IrTutorialHora: function(fc){				
+			Master.lastUpdate = fc;
+			
+			setTimeout(function(){
+				
+				var op = Master.setOptionEsquema(1);
+				Master.renderStruct(op, function(){
+					
+					var view = {
+		    	        	showInfoBar: false, 
+		    	        	EventRemote: {
+		    	        				"ENTER" : function(){
+		    	        					// instancia
+		    	        					Master.Next();
+		    	        				}
+		    	        	},	    				
+		    				slide: {
+		    	        		esquemaTipo: 1,
+		    	        		"autochange": false,	    	        		
+		    	        		duracion: 0,
+		    	        		seccion: [
+		    	    						{ 
+		    	    						posicion: 1,
+		    	    						encabezado: "Ecabezado",
+		    	    						contenidoTipo: 1,
+		    	    						bgColor: "#000",
+		    	    						modulo: "jquery",
+		    	    						contenido: [ {
+		    											representacionTipo: 3,
+		    											data: "<img src='template/img/ConfiHora01.png' style='max-height: 715px;  align-items: center;'>"	    	    						
+		    	    								}, 
+		    	    								{
+		    											representacionTipo: 3,
+		    											data: "<img src='template/img/ConfiHora02.png' style='max-height: 715px;  align-items: center;'>"	    	    						
+		    	    								}
+		    	    								]				
+		    	    						}				
+		    	    					]
+		    	    				}	        			
+		    	        	};
+		        	alert("LLego Aqui sin Error. SIP");
+		        	Master.renderPage(view);
+				});
+	        	
+				
+			}, 3000);
+			
+				
+        // 	var div = '<div style="background-color: #000; width: 100%; height: 100%; color: white;"><img>  </div>';
+	        	
 		},
 		
 		confirmDateTime: function(informat){
@@ -42,14 +239,22 @@ Master = {
 			var LocalFechaHm = new Date(); 
 			
 			// diferencia en Segundos. 			
-			var diff = (ServerFechaHm-LocalFechaHm)/1000; 
+			var diff = (ServerFechaHm-LocalFechaHm)/1000;
+			
+			Master.cTime = ServerFechaHm;						 
 			
 			if( parseInt(diff) > 120 || parseInt(diff) < -120 ){
+				
+			//	Master.CorrerRelojLocal();
+				
 				
 				alert("============================="); 
 				alert("Tiene Horarios diferentes:  " + LocalFechaHm.toDateString() );
 				
-				// Aviso de congiruacion de  de Hora del Televisor. 
+				Master.IrTutorialHora(ServerFechaHm); 
+				
+				 
+
 				
 			} else {				
 				alert("EL horario Cliente-servidor esta Sincronizado OK");
@@ -70,7 +275,7 @@ Master = {
 				indx = -1;
 			}
 			var op = Master.setOptionEsquema(indx);		            	
-        	Master.renderPage(op);        	
+        	Master.renderStruct(op);        	
 		}, 
 		
 		descargarImagenes: function(){
@@ -86,24 +291,11 @@ Master = {
 		     document.getElementById("anchor_main").focus();
 		     if(instancia == null || instancia === undefined ){			    	
 		    	 instancia = new MasterTV();		    	  
-		     }		     
+		     }
 		     
-		    require(
-		            [
-		                'echarts',
-		                'echarts/chart/bar', // require the specific chart type
-		                'echarts/chart/line',
-		                'echarts/chart/pie'
-		            ],
-		            function (ec) {		            	
-		                // ECHARTS INSTANCIA
-		            	Master.ec = ec;
-		            	
-		            	Master.showWelcomePages();		            	
-		            	setTimeout(function(){		            				            		
-		            	}, 4000);
-		            }
-		            );		    
+		     Master.showWelcomePages();
+		     
+		     
 		},
 		
 		reconectar : function(){			
@@ -121,11 +313,11 @@ Master = {
 			
 			var programa = localStorage.getItem("programaTV");			
 			// programa.Bloques[0].data[0].slides.esquemaTipo
-			opt = Master.setOptionEsquema(programa.Bloques[0].data[0].slides.esquemaTipo);			
+			opt = Master.setOptionEsquema(programa.Bloques[0].data[0].slide.esquemaTipo);			
 			setTimeout(function(){				
-				Master.renderPage(opt, function(){
+				Master.renderStruct(opt, function(){
 					var listt = localStorage.getItem("programaTV");					
-					list = listt.Bloques[0].data[0].slides.seccion[0].contenido;
+					list = listt.Bloques[0].data[0].slide.seccion[0].contenido;
 					
 	            	$("#sc-full").html(lista[rr]);            	
 	            	rr++;            	
@@ -168,12 +360,12 @@ Master = {
 		
 		
 		
-		receptor: function(data){			
+		receptorWs: function(data){			
 			alert("Aqui Llego. Receptor");
+			
 			
 			if(macTV == data.macAdrees ){
 				// ["ACTUALIZAR-APP", "ACTIVAR", "TWEETS", "CAST", "PROGRAMA" "CONTROL" ]
-				var difusion= "BroadCast";
 				
 				switch (data.accion) {
 					case "ACTUALIZAR-APP":
@@ -215,13 +407,9 @@ Master = {
 				alert("Se conecto");							
 				// ACTIVAR LA OPCION DEBE SIEMPRE SER REVISADA.
 				if(data.accion == "ACTIVAR"){
-					
 					alert(JSON.stringify(data));					
 					Master.confirmDateTime(data.fecha);					
-
-					
 				}
-				
 			}			
 		}		
 };
@@ -301,7 +489,7 @@ Master.setOptionEsquema = function (esquema){
 }; 
 
 
-Master.renderPage = function(option, callfunctionBack){
+Master.renderStruct = function(option, callfunctionBack){
 	//  { c s s : "", u r l: "", divId: ""}	
 	Master.setTheme(option.css);
 	Master.setPage(option, callfunctionBack); 
@@ -329,14 +517,9 @@ Master.setPage = function(option, callfunctionBack){
 			html = Master.$cuPage.find(option.divId).html();
 		}
 		
-		if(typeof isAdd === 'undefined' ||isAdd === null){
-			alert("#html DIV");
-			alert(html);
-			alert("FINAL SIP"); 
+		if(typeof isAdd === 'undefined' ||isAdd === null){			 
 			$("#applicationWrapper").html(html);
-			
 			callfunctionBack();
-			
 			return true; 
 		}	
 		if(isAdd == true){
@@ -362,7 +545,13 @@ Master.setTheme = function(file){
 MasterTV = function() {	
 	this.page_config = {};	
 	this.app_info = {server: "", version: "", serverRequest: ""};	
-	this.ManagerPages = {}; 
+	this.ManagerPages = {
+			showInfoBar: false,
+			EventRemote: {ENTER: function(){ alert("Enter"); }, GREEN: function(){ alert("Verde"); } },
+			infoBarLeyend: [],
+			content: {}
+	};  
+	
 	var index;
 	var content_txt = [];
 	var content_img = [];
@@ -371,9 +560,8 @@ MasterTV = function() {
 	
 	if(this.setFileConfig()){
 		this.conn = new ConexionTV(this.app_info.server);
-	}	
-	
-	widgetAPI.sendReadyEvent();	
+	}
+	widgetAPI.sendReadyEvent();
 	
 };
 
@@ -475,61 +663,22 @@ MasterTV.prototype.UpdateConfig = function(){
 MasterTV.prototype.setPagesConfig = function () {
 };
 
-MasterTV.prototype.renderPage = function (tipoID) {
-};
 
 var indeces = 1;
 var it = 0; 
 
 MasterTV.prototype.handleKeyDown = function (keyCode) {
 	alert("SceneMainPage.handleKeyDown(" + keyCode + ")");
-	// TODO : write an key event handler when this scene get focused	
-	switch (keyCode) {
-		case sf.key.LEFT:			
-			var arry = ['<img src="template/img/samsungsetup.jpg" style="max-width: 1280px; max-height: 700px;">', 
-			            '<img src="template/img/indice.jpg" style="max-width: 1280px; max-height: 700px;">',
-			            '<img src="template/img/karthic.c.d.jpg" style="max-width: 1280px; max-height: 700px;">']; 
-			
-			
-			var full = Master.setOptionEsquema(1);			
-        	Master.renderPage(full, function(){
-            	$("#sc-full").html(arry[it]);            	
-            	it++;            	
-            	if(it > 2){
-            		it =0; 
-            	}
-        	}); 			
-			break;
-		case sf.key.RIGHT:			
-			var Dy= new Date();
-			log(Dy.toLocaleDateString());
-			 
-			
-			break;
-		case sf.key.UP:
-			--index;
-			if(index<0)index = index + 4;
-			break;
-		case sf.key.DOWN:			
-			if (indeces >= 10){
-				indeces = 0; 				
-			}			
-			
-			var op = Master.setOptionEsquema(indeces);
-        	Master.renderPage(op);
-        	
-        	indeces++; 
-			index++;
-			
-			if(index>3)index = index - 4;			
-			
-			break;
-		case sf.key.ENTER:
-			break;
-			
-		default:			
-			alert(localStorage.getItem("name"));		
-			break;
+	// TODO : write an key event handler when this scene get focused
+	
+	for(var ki in this.ManagerPages.EventRemote){
+		if (this.ManagerPages.EventRemote.hasOwnProperty(ki)){
+			if(ki in sf.key){				
+				if(sf.key[ki] == keyCode){					
+					this.ManagerPages.EventRemote[ki](); 
+				}
+			}
+		}
 	}
 };
 
@@ -619,7 +768,7 @@ ConexionTV.prototype.conectar = function(cNext){
 	this.Server.bind('message', function( payload ) {
 		if(payload.trim() != ""){
 			var infor = JSON.parse(payload); 
-			Master.receptor(infor);
+			Master.receptorWs(infor);
 			log( payload );
 		}
 		
