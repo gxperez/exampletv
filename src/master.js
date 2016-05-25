@@ -120,7 +120,7 @@ Master = {
 							
 							var moduloAct = "jquery"; 
 							option.slide.seccion[it];							
-							var innerHtml = $("<div style='background-color: " + option.slide.seccion[it].bgColor  + "; width: 100%;  height: 100%;'> </div>");														
+							var innerHtml = $("<div style='background-color: " + option.slide.seccion[it].bgColor  + "; width: 1280px;  height: 100%; margin: auto; '> </div>");														
 							for(var iy in option.slide.seccion[it].contenido){								
 								if (option.slide.seccion[it].contenido.hasOwnProperty(iy)){
 								//	option.slide.seccion[it].contenido[iy].representacionTipo;									
@@ -143,10 +143,7 @@ Master = {
 							}
 							
 							Master.sIndex.sccns[option.slide.seccion[it].posicion] = {c: 0, max: option.slide.seccion[it].contenido.length, modulo: "jquery" };
-							
-							alert(innerHtml.html());
-							alert("----------------"); 
-							alert( $("html").html() ); 
+							 
 							$(DivId).html(innerHtml.html());
 							
 							
@@ -188,6 +185,9 @@ Master = {
 		    	        				"ENTER" : function(){
 		    	        					// instancia
 		    	        					Master.Next();
+		    	        				},
+		    	        				"DOWN": function(){		    	        					
+		    	        					alert($("body").html());		    	        					
 		    	        				}
 		    	        	},	    				
 		    				slide: {
@@ -418,7 +418,7 @@ Master = {
 
 Master.setOptionEsquema = function (esquema){
 	 var id = "#";
-	 var option = {css: "base.css", url: "template/base.html"};	 
+	 var option = {css: "bas.css", url: "template/base.html"};	 
 	 
 	switch(esquema){	
 	case -1:		
@@ -635,7 +635,7 @@ MasterTV.prototype.setFileConfig = function(){
 				case 2:  // Codigo de Programamacion
 					eval("page_config.source = " + allStr );
 					alert("La version del Codigo es: ");
-					alert(allStr);
+					alert(allStr);					
 					break;
 					
 				case 3:					

@@ -1,0 +1,120 @@
+<div  ng-controller="SimpleFormController" ng-init="initt()" >
+
+  <style type="text/css">  
+
+#header-crudTools {
+height: inherit;
+min-height: inherit;
+position: fixed;
+z-index: 50;
+background: #FFF;
+top: 61px;
+border: #817F7F 2px;
+}
+
+.styleCrud{
+  padding-top: 15px;
+ } 
+
+  </style>
+
+
+<div class="styleCrud">
+<div id="ListMantenimiento">
+	<!-- SIMPLE TO DO LIST -->
+    <!-- SORTABLE TO DO LIST -->
+      
+              <div class="row mt mb">
+                  <div class="col-md-12">
+                      <section class="task-panel tasks-widget">
+                    <div class="panel-heading">
+
+                      <div class=" add-task-row">                                  
+                                  <a class="btn btn-success btn-sm pull-right" ng-click="CLUBCrud.Editar(0)">Agregar Nuevo</a>
+                      </div>
+
+                          <div class="pull-left"> 
+                            <input type="text" ng-model="buscarLista" class="round-form">                            
+                            <button type="button" class="btn btn-round btn-default" ng-click="Buscar()"><i class="fa fa-search"></i>  </button>
+                           </div>
+                          <br>
+                          
+                    </div>
+                          <div class="panel-body">
+                              <div class="task-content">
+                                  <ul id="sortable" class="task-list">
+                                      <li ng-repeat="item in listaMantenimiento|filter:buscarLista:strict" class="list-primary">
+                                          <i class=" fa fa-ellipsis-v"></i>
+                                          <div class="task-checkbox">
+                                              <input type="checkbox" class="list-child" value=""  />
+                                          </div>
+                                          <div class="task-title">
+                                              <span class="task-title-sp">{{item.descripcion}}</span>
+                                              <div class="pull-right hidden-phone">                                                  
+                                            <button class="btn btn-primary btn-xs fa fa-pencil" ng-click="Llenar(item); CLUBCrud.Editar(1);"></button>
+                                                  <button class="btn btn-danger btn-xs fa fa-trash-o" ng-click="Eliminar(item, $index)"></button>
+                                              </div>
+                                          </div>
+                                      </li>
+
+                                  </ul>
+                              </div>
+                              <div class=" add-task-row">                                  
+                                  <a class="btn btn-default btn-sm pull-right" ng-click="ListAll()">Ver Todo</a>
+                              </div>
+                          </div>
+                      </section>
+                  </div><!--/col-md-12 -->
+              </div><!-- /row -->
+
+
+</div>		
+			
+			<div id="formulario">        
+			
+          	<!-- BASIC FORM ELELEMNTS -->
+          	<div class="row mt">
+              <div id="header-crudTools" class="crudTools col-md-12">     
+                  <div>
+                    <div class="btn-group">                      
+                      <button type="button" class="btn btn-default" ng-click="Guardar()"><span class="fa fa-floppy-o"> </span> Guardar</button>
+                      <button type="button" class="btn btn-default" ng-click="CLUBCrud.reset();"> <span class="fa fa-arrow-left" > </span> Cancelar</button>
+                      <button type="button" class="btn btn-default" ng-click="CLUBCrud.reset()"> <span class="fa fa-times"> </span> Salir</button>
+                  </div>
+                  </div>
+              </div>              
+
+
+          		<div class="col-lg-12">
+                  <div class="form-panel">
+                  	  <h4 class="mb"><i class="fa fa-angle-right"></i> Form Elements</h4>
+                      <form class="form-horizontal style-form" method="get">
+                          <div class="form-group">
+                              <label class="col-sm-2 col-sm-2 control-label">Descripcion</label>
+                              <div class="col-sm-10">
+                                  <input type="text" ng-model="currentObj.descripcion" class="form-control">
+                              </div>
+                          </div>
+                      </form>
+                  </div>
+          		</div><!-- col-lg-12-->      	
+          	</div><!-- /row -->         	
+          	
+			</div>
+    </div>
+
+      <script>
+      jQuery(document).ready(function() {
+          TaskList.initTaskWidget();
+      });
+
+      $(function() {
+          $( "#sortable" ).sortable();
+          $( "#sortable" ).disableSelection();
+      });
+
+    </script>
+
+
+
+</div>
