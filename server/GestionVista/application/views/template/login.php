@@ -25,6 +25,13 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <script type="text/javascript">
+    var base_url = "<?php echo base_url(); ?>";
+    var base_img = "<?php echo base_url(). "webApp/img/"; ?>";
+
+        
+    </script>
+
     <style type="text/css">
 .form-login h2.form-login-heading {
 margin: 0;
@@ -88,7 +95,7 @@ box-shadow: rgba(51, 51, 51, 0.45) 3px 1px 2px 3px;
 	  	
 		      <form class="form-login"  action="#" method="post">
 		        <h2 class="form-login-heading"> 
-				<img src="http://localhost:7777/GestionVista/webApp/img/GestionVista_LocoCompleto.png" style="
+				<img src="<?php echo base_url(). "webApp/"; ?>img/GestionVista_LocoCompleto.png" style="
     height: 79px;
     margin-top: -24px;
 ">
@@ -100,9 +107,10 @@ Bienvenido</h2>
 		            <label class="checkbox">
 		               
 		            </label>
-		            <button class="btn btn-theme btn-block" href="index.html" type="submit"><i class="fa fa-lock"></i> Entrar</button>
+		            <button id="submitLog" class="btn btn-theme btn-block" type="button"><i class="fa fa-lock"></i> Entrar</button>
 		            <hr>            	            
 		            <?php echo $mensaje;  ?>
+                    <div id="msgServices"></div>
 		
 		        </div>
 		
@@ -157,7 +165,7 @@ var it = 0;
 
         	if(it == 1){
 
-        		$.backstretch("<?php echo base_url(). "webApp/"; ?>assets/img/lFondo02.jpg", {speed: 800});        	
+        		$.backstretch("<?php echo base_url(). "webApp/"; ?>assets/img/Fondo02.jpg", {speed: 800});        	
         	}
 
         	if(it == 2){
@@ -176,6 +184,92 @@ $(function() {
 	
         setTimeout(function(){ cambioBG(); }, 9000);
     });
+
+
+function EsperaLogin(){    
+     $("#msgServices").html('<div style="color: black; font-weight: bold;  text-align: center;"> <img src="'+ base_img + 'ajax-loader-small.gif"> Espere un momento.</div>'); 
+
+     // Read-only input
+     $(".form-control").each(
+        function(index){
+            $(this).attr("readonly", true);            
+        }
+        ); 
+}
+
+function EsperaLoginClose(){    
+     $("#msgServices").html(''); 
+
+     // Read-only input
+     $(".form-control").each(
+        function(index){
+            $(this).removeAttr("readonly", true);            
+        }
+        ); 
+}
+
+// Jquery Auth Server.
+$(function() {
+
+    $(".form-control").focus(
+        function(){
+            $("#msgServices").html(''); 
+
+        }
+        );
+
+    $("#submitLog").click(
+       function(){ 
+      
+      EsperaLogin(); 
+
+        var form = {
+        keyToken:"<?php echo $services["key_token"]; ?>",
+        userName: $(document.getElementsByName("login[usuario]")).val(),
+        userPw:$(document.getElementsByName("login[clave]")).val(),
+        dispositivo:"PC",
+        plataforma:"web",
+        version:1
+    }; 
+
+        $.post("<?php echo $services["url"]; ?>", form, function(res){            
+
+            if(res.IsOk){
+                // Si es OK envio de Informacion al Login Local
+                form.Data = res.Data;
+                form.IsOk = true;
+                $.post(base_url + "index.php/portal/login/", {login: form} , function(rs){
+
+                    EsperaLoginClose(); 
+
+                    if(rs.data == true){
+                        document.location.reload(true);
+                    } else {
+                        $("#msgServices").html('<div style="color: red; font-weight: bold;  text-align: center;">  Nombre de usuario o clave incorrecta. </div>'); 
+
+                    }
+
+                }, "json");
+
+            } else {
+
+                EsperaLoginClose(); 
+                
+                $("#msgServices").html('<div style="color: red; font-weight: bold;  text-align: center;">  Nombre de usuario o clave incorrecta. </div>'); 
+
+                
+
+
+            } 
+
+                },"json" ); 
+
+            }
+        ); 
+
+}); 
+
+
 
     </script>
 

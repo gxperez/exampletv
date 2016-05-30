@@ -26,7 +26,7 @@ class Portal_model extends CI_Model {
 
         public function getPages(){
 
-        	$pages = new Page("Data Club RD", "Gestion de clubes de la Republica Dominicana");
+        	$pages = new Page("Gestion a la Vista", "Gestion de Contenidos para monitores de ventas");
 
         	return $pages;
         }
@@ -47,7 +47,7 @@ class Portal_model extends CI_Model {
 			 	 ),
 
 			 array('id' => 1 ,
-			 	'label' => Text::_("Reporte") ,
+			 	'label' => Text::_("Programación") ,
 			 	'link' => "#",
 			 	'Tipo' => "L",			 	
 			 	'target'=> "blank",

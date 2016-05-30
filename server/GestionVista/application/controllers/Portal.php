@@ -20,6 +20,11 @@ class Portal extends MY_Controller {
 	 */
 	public function index()
 	{
+		if (!$this->session->userdata('sUsuario')){
+			redirect('/portal/login', 'refresh');			
+			return false; 
+		} 
+
 		$idRol = 0; 
 		 $this->load->model('Portal_model');
 
@@ -32,9 +37,11 @@ class Portal extends MY_Controller {
 
 	}
 
-	public function login() {		
+	public function login() {
+		$myServices = $this->config->item("web_services_key"); 
+			
 
-		$data = array('registro' => "Registro", "mensaje"=> "" );
+		$data = array('registro' => "Registro", "mensaje"=> "", "services" => $myServices["auth"]);
 
 		if (!$this->session->userdata('sUsuario')){
 
@@ -44,33 +51,33 @@ class Portal extends MY_Controller {
 				$credenciales = $_POST["login"]; 
 				$this->load->model("usuario_model", "modeloUsuario");
 
-				$nombreUsuario = trim($credenciales["usuario"]);
-				$clave = trim($credenciales["clave"]);
-				$resultadoUsuario = $this->modeloUsuario->validarUsaurio($nombreUsuario, $clave); 
+				$nombreUsuario = trim($credenciales["userName"]);
+				$clave = trim($credenciales["userPw"]);
+				$keyS = trim($credenciales["Data"]);
+				$dispositivo = trim($credenciales["dispositivo"]);
 
 
-			if($resultadoUsuario["resultado"]){					
+				$resultadoUsuario = $this->modeloUsuario->validarUsaurio($nombreUsuario, $clave, $keyS, $dispositivo ); 
 
 				
 
+
+			if($resultadoUsuario["resultado"]){
 				
-				
-					$this->session->set_userdata('sUsuario', array("IDusuario" => $resultadoUsuario["registro"]->UsuarioID,
-					"nombre_usuario" => $resultadoUsuario["registro"]->NombreUsuario,
-					"clave" => $resultadoUsuario["registro"]->Clave,
-					"nombre" => $resultadoUsuario["registro"]->Nombre,
-					"apellido" => $resultadoUsuario["registro"]->Apellido,
-					'correo' => $resultadoUsuario["registro"]->Correo
+					$this->session->set_userdata('sUsuario', array("IDusuario" => $resultadoUsuario["registro"]->usuario_log_sesionID,
+					"nombre_usuario" => $resultadoUsuario["registro"]->nombreUsuario,					
+					"GUID" =>$resultadoUsuario["registro"]->GUID
 					 ));
 
-					redirect('/portal/index', 'refresh');
+//					redirect('/portal/index', 'refresh');
+					echo json_encode(array("data"=> true)); 
 					exit(); 
 
 			} else {
-				$data["mensaje"] = '<div style="color: black;  font-weight: bold; background-color: pink;"> Nombre de usuario o clave incorrecta</div>';
-
-
+				echo json_encode(array("data"=> false));
+				// $data["mensaje"] = '<div style="color: black;  font-weight: bold; background-color: pink;"> Nombre de usuario o clave incorrecta</div>';
 			}
+
 
 
 			}

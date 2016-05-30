@@ -511,3 +511,17 @@ $config['rewrite_short_tags'] = FALSE;
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
 $config['proxy_ips'] = '';
+
+
+/*
+|-----------------------------------------
+| Servidores de servicios e integraciones.
+|-----------------------------------------
+
+*/
+$config['web_services_key'] = array(
+	'auth' => 
+		array('url'=>'http://cnddosdobis:8090/Account/api.asmx/ValidateUser', 
+			  'key_token'=>'AED6FACF-1048-4DFF-A9FB-E893949A5587'
+			  ) 
+	);

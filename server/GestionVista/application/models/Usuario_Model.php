@@ -10,24 +10,35 @@ function __construct()
 		
 	}
 	
-	public function validarUsaurio($usuario, $clave){
+	public function validarUsaurio($usuario, $clave, $keyS, $dispositivo){
 
 		$clave = md5($clave); 
 
 		$this->load->database();
-		$query = $this->db->query("select * from usuarios where nombreUsuario like '{$usuario}' and Clave = '{$clave}'");
+		$query = $this->db->query("select * from usuario_log_sesion where nombreUsuario like '{$usuario}'");
+
 
 		if ($query->num_rows() == 1)
 		{
-		
+			// Existe el Usuario.
+
 			foreach ($query->result() as $row)
 			{
 			$usuario = $row; 
 			}
-			
-			return array("resultado"=> true, "registro"=>$usuario);
+			// Actualizamos el Token y los secciones
+			$usuario->ultimaSesion = date("Y-m-d H:i:s");
+			$usuario->estatus = 1;
+			$usuario->GUID = $keyS;			
+			$this->db->where('usuario_log_sesionID', $usuario->usuario_log_sesionID);
+			$this->db->update('usuario_log_sesion', $usuario); 
+			 return array("resultado"=> true, "registro"=>$usuario);
 		} else {
-			return array("resultado"=> false, "registro"=>array()); 
+			// Crear Usuario Nuevo.
+			$registro = array("nombreUsuario"=> $usuario, "clave"=> $clave, "ultimaSesion"=> date("Y-m-d H:i:s"), "estatus"=> 1, "GUID"=> $keyS); 
+
+			$this->db->insert("usuario_log_sesion", $registro); 
+			return array("resultado"=> true, "registro"=>$registro); 
 		}
 
 	 
@@ -37,7 +48,7 @@ function __construct()
 	
 	public function obtenerUsuario(){
 		$this->load->database();
-		$query = $this->db->query("SELECT u.*, r.Descripcion, r.`IDrol` FROM Usuarios AS u
+		$query = $this->db->query("SELECT u.*, r.Descripcion, r.`IDrol` FROM usuario_log_sesion AS u
  LEFT JOIN 
 roles_usuario AS ru ON u.IDusuario = ru.IDusuario
 LEFT JOIN role AS r ON r.IDrol = ru.IDrol");		
