@@ -81,11 +81,11 @@ WHERE
 	$primary_key = ""; 
 
 	foreach ($listaCampos as $key => $value) {
-		foreach ($value as $key2 => $value2) {
-				if($value2['primary_key']){
-					$primary_key = $value2["name"]; 
+
+		if($value['primary_key']){
+					$primary_key = $value["name"]; 
 				}
-		}
+		
 	}
 		
 	$encabezado = "<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
@@ -98,48 +98,66 @@ WHERE
  
  	$pie = "\n }\n ?>";
 	
-	$metodosBasicos = 'public function obtener'.$entidadIns.'(){
-	$this->load->database();
-	$query = $this->db->query("SELECT * FROM '.$entidadTemp.'");
-		
-	$usuario = array();
-	foreach ($query->result() as $row)
-	{
-		$lista'.$entidadIns.'[] = '.$this->getInstianciaEntidad($tabla, $listaCampos).' 
-	}
-		return $lista'.$entidadIns.';
- }
+	$metodosBasicos = '
+	public function obtener'.$entidadIns.'(){
+		$this->load->database();
+		$query = $this->db->query("SELECT * FROM '.$entidadTemp.'");
+			
+		$usuario = array();
+		foreach ($query->result() as $row)
+		{
+			$lista'.$entidadIns.'[] = '.$this->getInstianciaEntidad($tabla, $listaCampos).' 
+		}
+			return $lista'.$entidadIns.';
+ 	}
 	
-  public function obtener'.$entidadIns.'Json(){
-	$this->load->database();
-	$query = $this->db->get('.$entidadTemp.');	
-		
-	$usuario = array();
-	foreach ($query->result() as $row)
-	{
-		$lista'.$entidadIns.'[] = $row; 
-	}
-		return json_encode($lista'.$entidadIns.');
+	public function obtener'.$entidadIns.'Json(){
+		$this->load->database();
+		$query = $this->db->get('.$tabla.');	
+			
+		$usuario = array();
+		foreach ($query->result() as $row)
+		{
+			$lista'.$entidadIns.'[] = $row; 
+		}
+			return json_encode($lista'.$entidadIns.');
   }	
 ';
 
-if()
+
 
 $metodosBasicos .= '
-
 	public function insertar($obj){
 
+		$this->db->insert("' . $tabla. '", $obj); 			
 
 	}
 
 	public function actualizar($obj){
 
-
-		$this->db->where("'.$primary_key .'", $obj->'.$primary_key .');
-		$this->db->update("usuario_log_sesion", $usuario); 
+		$this->db->where("'. $primary_key .'", $obj["'. $primary_key .'"]); 
+		$result = $this->db->get("'.$entidadTemp.'");
+		if ($result->num_rows() == 1)
+		{
+			$'.$entidadIns.' =  current($result->result()); 
+			$this->db->where("'.$primary_key .'", $'.$entidadIns.'->'.$primary_key .');
+			$rs = $this->db->update("'.$tabla.'", $'.$entidadIns.'); 
+			return $rs; 
+		} else {
+			return false;
+		}
 	}
 
 	public function ObtenerPorID($id){
+		$this->db->where("'.$primary_key .'", $id); 
+		$result = $this->db->get("'.$tabla.'");		
+
+		if ($result->num_rows() == 0)
+		{
+			return null; 
+		}
+
+		return current($result->result()); 
 	}
 	'; 
 

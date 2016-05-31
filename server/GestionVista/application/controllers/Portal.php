@@ -116,6 +116,22 @@ class Portal extends MY_Controller {
 		echo "COntroler";
 	}
 
+	public function Prueba(){
+		$this->load->model("bloqueContenido_Model", "BloquesCont");
+		$row = array();
+
+		$row['BloqueID'] = 2;
+		$row['ContenidoID'] = 1;
+		$row['Estado'] = 1;
+		$row['UsuarioModificaID'] = 1;
+		$row['FechaModifica'] = date("Y-m-d H:i:s"); 
+
+		// $this->BloquesCont->insertar($row); 
+		 print_r( $this->BloquesCont->ObtenerPorID(2) );
+
+
+	}
+
 
 	public function GenerarFiles($modo){
 
@@ -125,19 +141,20 @@ class Portal extends MY_Controller {
 			case 'modelo':
 
 			$vv = $this->Gen->obtenerTablas("bis_gestionvista"); 
-			echo "<pre>"; 
 
+			
 			$htmlT = ""; 
 			foreach ($vv as $key => $value) {
-				$htmlT .= $this->Gen->formarModel("", $key, $value); 
-
-			//	echo $htmlT;
-
-			//	exit(); 				
+				$htmlT .= "<hr> // Siguiente..  <br>". $this->Gen->formarModel("", $key, $value); 
+		//		exit(); 				
 
 			}
 
-			print_r($vv); 
+			echo "<hr> <pre> "; 
+				echo $htmlT;
+			echo "</pre> <hr> <br>"; 
+
+		//	print_r($vv); 
 				
 				break;
 

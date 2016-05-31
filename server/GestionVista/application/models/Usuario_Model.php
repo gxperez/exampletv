@@ -61,8 +61,7 @@ LEFT JOIN role AS r ON r.IDrol = ru.IDrol");
 	}
 	
 	public function setPermisos(){
-	$this->load->database();
-	
+	$this->load->database();	
 	}
 
 
