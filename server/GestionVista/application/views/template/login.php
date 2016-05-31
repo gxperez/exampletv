@@ -208,18 +208,7 @@ function EsperaLoginClose(){
         ); 
 }
 
-// Jquery Auth Server.
-$(function() {
-
-    $(".form-control").focus(
-        function(){
-            $("#msgServices").html(''); 
-
-        }
-        );
-
-    $("#submitLog").click(
-       function(){ 
+ function enviarForm(){ 
       
       EsperaLogin(); 
 
@@ -265,7 +254,25 @@ $(function() {
                 },"json" ); 
 
             }
-        ); 
+
+// Jquery Auth Server.
+$(function() {
+
+    $(".form-control").focus(
+        function(){
+            $("#msgServices").html(''); 
+        }
+        );
+
+    $("#submitLog").click( function() { enviarForm(); }  ); 
+
+  $(document.getElementsByName("login[clave]")).on('keypress', function (event) {
+         if(event.which === 13){
+           enviarForm();          
+         }
+   });
+
+
 
 }); 
 

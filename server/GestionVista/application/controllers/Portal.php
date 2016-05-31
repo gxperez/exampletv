@@ -57,7 +57,7 @@ class Portal extends MY_Controller {
 				$dispositivo = trim($credenciales["dispositivo"]);
 
 
-				$resultadoUsuario = $this->modeloUsuario->validarUsaurio($nombreUsuario, $clave, $keyS, $dispositivo ); 
+				$resultadoUsuario = $this->modeloUsuario->validarUsuario($nombreUsuario, $clave, $keyS, $dispositivo ); 
 
 				
 
@@ -113,12 +113,44 @@ class Portal extends MY_Controller {
 
 		}
 		$this->load->model("usuario_model", "modeloUsuario");
-
-
-
-
-
 		echo "COntroler";
+	}
+
+
+	public function GenerarFiles($modo){
+
+		$this->load->model("genera_model", "Gen");
+
+		switch ($modo) {
+			case 'modelo':
+
+			$vv = $this->Gen->obtenerTablas("bis_gestionvista"); 
+			echo "<pre>"; 
+
+			$htmlT = ""; 
+			foreach ($vv as $key => $value) {
+				$htmlT .= $this->Gen->formarModel("", $key, $value); 
+
+			//	echo $htmlT;
+
+			//	exit(); 				
+
+			}
+
+			print_r($vv); 
+				
+				break;
+
+			case 'Controlador':
+				
+				break;
+
+			
+			default:
+			// Vista
+				
+				break;
+		}
 
 	}
 

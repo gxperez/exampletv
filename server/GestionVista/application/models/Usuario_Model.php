@@ -10,7 +10,7 @@ function __construct()
 		
 	}
 	
-	public function validarUsaurio($usuario, $clave, $keyS, $dispositivo){
+	public function validarUsuario($usuario, $clave, $keyS, $dispositivo){
 
 		$clave = md5($clave); 
 
