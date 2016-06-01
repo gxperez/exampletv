@@ -11,15 +11,10 @@
  
 	public function obtenerUsuarioLogSesion(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM usuario_log_sesion");
+		$query = $this->db->get(usuario_log_sesion);			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaUsuarioLogSesion[] = new UsuarioLogSesion( $row['usuario_log_sesionID'], $row['nombreUsuario'], $row['email'], $row['clave'], $row['fechaCrea'], $row['ultimaSesion'], $row['estatus'], $row['GUID'], $row['ipUser']); 
- 
-		}
-			return $listaUsuarioLogSesion;
+		$listaUsuarioLogSesion = $query->result(); 
+		return $listaUsuarioLogSesion;
  	}
 	
 	public function obtenerUsuarioLogSesionJson(){
@@ -35,20 +30,28 @@
   }	
 
 	public function insertar($obj){
-
-		$this->db->insert("usuario_log_sesion", $obj); 			
-
+		$this->load->database();
+		$this->db->insert("usuario_log_sesion", $obj);
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("usuario_log_sesionID", $obj["usuario_log_sesionID"]); 
 		$result = $this->db->get("usuario_log_sesion");
 		if ($result->num_rows() == 1)
 		{
 			$UsuarioLogSesion =  current($result->result()); 
-			$this->db->where("usuario_log_sesionID", $UsuarioLogSesion->usuario_log_sesionID);
-			$rs = $this->db->update("usuario_log_sesion", $UsuarioLogSesion); 
+			foreach ($UsuarioLogSesion as $key => $value) {
+				if($key == "usuario_log_sesionID"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$UsuarioLogSesion->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -63,7 +66,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

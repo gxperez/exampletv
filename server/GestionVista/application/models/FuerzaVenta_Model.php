@@ -11,15 +11,10 @@
  
 	public function obtenerFuerzaVenta(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM fuerza_venta");
+		$query = $this->db->get(fuerza_venta);			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaFuerzaVenta[] = new FuerzaVenta( $row['GUID_FV'], $row['GUIDDependencia'], $row['Nombre'], $row['Descripcion'], $row['Nivel'], $row['Estatus'], $row['FechaCrea'], $row['FechaFin']); 
- 
-		}
-			return $listaFuerzaVenta;
+		$listaFuerzaVenta = $query->result(); 
+		return $listaFuerzaVenta;
  	}
 	
 	public function obtenerFuerzaVentaJson(){
@@ -35,20 +30,28 @@
   }	
 
 	public function insertar($obj){
-
-		$this->db->insert("fuerza_venta", $obj); 			
-
+		$this->load->database();
+		$this->db->insert("fuerza_venta", $obj);
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("GUID_FV", $obj["GUID_FV"]); 
 		$result = $this->db->get("fuerza_venta");
 		if ($result->num_rows() == 1)
 		{
 			$FuerzaVenta =  current($result->result()); 
-			$this->db->where("GUID_FV", $FuerzaVenta->GUID_FV);
-			$rs = $this->db->update("fuerza_venta", $FuerzaVenta); 
+			foreach ($FuerzaVenta as $key => $value) {
+				if($key == "GUID_FV"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$FuerzaVenta->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -63,7 +66,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

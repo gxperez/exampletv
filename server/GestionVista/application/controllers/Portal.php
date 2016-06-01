@@ -120,14 +120,16 @@ class Portal extends MY_Controller {
 		$this->load->model("bloqueContenido_Model", "BloquesCont");
 		$row = array();
 
+		$row['BloqueContenidoID'] = 4;
 		$row['BloqueID'] = 2;
 		$row['ContenidoID'] = 1;
-		$row['Estado'] = 1;
+		$row['Estado'] = 0;
 		$row['UsuarioModificaID'] = 1;
 		$row['FechaModifica'] = date("Y-m-d H:i:s"); 
 
-		// $this->BloquesCont->insertar($row); 
-		 print_r( $this->BloquesCont->ObtenerPorID(2) );
+	//	 $this->BloquesCont->insertar($row); 
+ // echo $this->BloquesCont->obtenerBloqueContenidoJson();
+		 print_r( $this->BloquesCont->actualizar($row) );
 
 
 	}

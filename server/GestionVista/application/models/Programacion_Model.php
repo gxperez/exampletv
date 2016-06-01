@@ -11,15 +11,10 @@
  
 	public function obtenerProgramacion(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM programacion");
+		$query = $this->db->get(programacion);			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaProgramacion[] = new Programacion( $row['ProgramacionID'], $row['Descripcion'], $row['EsRegular'], $row['FechaEjecutaInicio'], $row['FechaEjecutaFin'], $row['Estado'], $row['Guid'], $row['UsuarioModificaID'], $row['FechaModifica']); 
- 
-		}
-			return $listaProgramacion;
+		$listaProgramacion = $query->result(); 
+		return $listaProgramacion;
  	}
 	
 	public function obtenerProgramacionJson(){
@@ -35,20 +30,28 @@
   }	
 
 	public function insertar($obj){
-
-		$this->db->insert("programacion", $obj); 			
-
+		$this->load->database();
+		$this->db->insert("programacion", $obj);
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("ProgramacionID", $obj["ProgramacionID"]); 
 		$result = $this->db->get("programacion");
 		if ($result->num_rows() == 1)
 		{
 			$Programacion =  current($result->result()); 
-			$this->db->where("ProgramacionID", $Programacion->ProgramacionID);
-			$rs = $this->db->update("programacion", $Programacion); 
+			foreach ($Programacion as $key => $value) {
+				if($key == "ProgramacionID"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$Programacion->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -63,7 +66,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

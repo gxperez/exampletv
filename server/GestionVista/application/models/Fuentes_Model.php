@@ -11,15 +11,10 @@
  
 	public function obtenerFuentes(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM fuentes");
+		$query = $this->db->get(fuentes);			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaFuentes[] = new Fuentes( $row['FuenteID'], $row['FuenteTipo'], $row['FuenteTipoID'], $row['RepresentacionTipo'], $row['Url'], $row['GuidRelacionalJson'], $row['ContentByID'], $row['ContenidoTexto'], $row['EsManual'], $row['Estado'], $row['UsuarioModificaID'], $row['FechaModifica']); 
- 
-		}
-			return $listaFuentes;
+		$listaFuentes = $query->result(); 
+		return $listaFuentes;
  	}
 	
 	public function obtenerFuentesJson(){
@@ -35,20 +30,28 @@
   }	
 
 	public function insertar($obj){
-
-		$this->db->insert("fuentes", $obj); 			
-
+		$this->load->database();
+		$this->db->insert("fuentes", $obj);
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("FuenteID", $obj["FuenteID"]); 
 		$result = $this->db->get("fuentes");
 		if ($result->num_rows() == 1)
 		{
 			$Fuentes =  current($result->result()); 
-			$this->db->where("FuenteID", $Fuentes->FuenteID);
-			$rs = $this->db->update("fuentes", $Fuentes); 
+			foreach ($Fuentes as $key => $value) {
+				if($key == "FuenteID"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$Fuentes->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -63,7 +66,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

@@ -11,20 +11,15 @@
  
 	public function obtenerDispositivo(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM dispositivo");
+		$query = $this->db->get('dispositivo');			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaDispositivo[] = new Dispositivo( $row['DispositivoID'], $row['Nombre'], $row['Descripcion'], $row['DispositivoTipo'], $row['Marca'], $row['Estatus'], $row['Mac'], $row['IP'], $row['FechaCrea'], $row['UltimaSesion']); 
- 
-		}
-			return $listaDispositivo;
+		$listaDispositivo = $query->result(); 
+		return $listaDispositivo;
  	}
 	
 	public function obtenerDispositivoJson(){
 		$this->load->database();
-		$query = $this->db->get(dispositivo);	
+		$query = $this->db->get("dispositivo");	
 			
 		$usuario = array();
 		foreach ($query->result() as $row)
@@ -35,20 +30,30 @@
   }	
 
 	public function insertar($obj){
-
-		$this->db->insert("dispositivo", $obj); 			
-
+		$this->load->database();
+// Filtrar y Validar LA EXISTENCIA DE LOS Campos en la Entidad.
+		$this->db->insert("dispositivo", $obj);
+		return $this->db->insert_id();
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("DispositivoID", $obj["DispositivoID"]); 
 		$result = $this->db->get("dispositivo");
 		if ($result->num_rows() == 1)
 		{
 			$Dispositivo =  current($result->result()); 
-			$this->db->where("DispositivoID", $Dispositivo->DispositivoID);
-			$rs = $this->db->update("dispositivo", $Dispositivo); 
+			foreach ($Dispositivo as $key => $value) {
+				if($key == "DispositivoID"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$Dispositivo->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -63,7 +68,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

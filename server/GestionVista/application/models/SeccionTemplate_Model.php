@@ -11,15 +11,10 @@
  
 	public function obtenerSeccionTemplate(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM seccion_template");
+		$query = $this->db->get(seccion_template);			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaSeccionTemplate[] = new SeccionTemplate( $row['SeccionTemplateID'], $row['TemplatePagesID'], $row['ContenidoTipo'], $row['Posicion'], $row['Encabezado'], $row['FuenteID'], $row['Estado'], $row['UsuarioModificaID'], $row['FechaModificacion']); 
- 
-		}
-			return $listaSeccionTemplate;
+		$listaSeccionTemplate = $query->result(); 
+		return $listaSeccionTemplate;
  	}
 	
 	public function obtenerSeccionTemplateJson(){
@@ -35,20 +30,28 @@
   }	
 
 	public function insertar($obj){
-
-		$this->db->insert("seccion_template", $obj); 			
-
+		$this->load->database();
+		$this->db->insert("seccion_template", $obj);
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("SeccionTemplateID", $obj["SeccionTemplateID"]); 
 		$result = $this->db->get("seccion_template");
 		if ($result->num_rows() == 1)
 		{
 			$SeccionTemplate =  current($result->result()); 
-			$this->db->where("SeccionTemplateID", $SeccionTemplate->SeccionTemplateID);
-			$rs = $this->db->update("seccion_template", $SeccionTemplate); 
+			foreach ($SeccionTemplate as $key => $value) {
+				if($key == "SeccionTemplateID"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$SeccionTemplate->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -63,7 +66,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

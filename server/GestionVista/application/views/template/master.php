@@ -16,9 +16,14 @@
         
     <!-- Custom styles for this template -->
     <link href="<?php echo base_url(). "webApp/"; ?>assets/css/style.css" rel="stylesheet">
+    <link href="<?php echo base_url(). "webApp/"; ?>assets/css/main-style.css" rel="stylesheet">
     <link href="<?php echo base_url(). "webApp/"; ?>assets/css/style-responsive.css" rel="stylesheet">
-
     <link rel="stylesheet" href="<?php echo base_url(). "webApp/"; ?>assets/css/to-do.css">
+
+    <script type="text/javascript">
+    var base_url = "<?php echo base_url(); ?>";
+      
+    </script>
 
 <style type="text/css">
 
@@ -121,8 +126,8 @@ margin-left: 11px;
                           <span>Formularios</span>
                       </a>
                       <ul class="sub">
-                          <li><a  ng-click="SetMain('persona')">Persona</a></li>
-                           <li><a ng-click="SetMain('registro')">Registro de Miembros</a></li>
+                          <li><a  ng-click="SetMain('dispositivo')">Dispositivos</a></li>
+                           
                       </ul>
                   </li>
                 
@@ -206,6 +211,7 @@ margin-left: 11px;
         obj: {},       
         modo: 0,
         accion: 0,
+        selectedIndex: 0,
         initt: function(){
           $("#formulario").hide();          
           $("#ListMantenimiento").show();          

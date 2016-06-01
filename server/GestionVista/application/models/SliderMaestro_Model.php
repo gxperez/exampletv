@@ -11,15 +11,10 @@
  
 	public function obtenerSliderMaestro(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM slider_maestro");
+		$query = $this->db->get(slider_maestro);			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaSliderMaestro[] = new SliderMaestro( $row['SliderMaestroID'], $row['Duracion'], $row['Estado'], $row['UsuarioModificaID'], $row['FechaModifica']); 
- 
-		}
-			return $listaSliderMaestro;
+		$listaSliderMaestro = $query->result(); 
+		return $listaSliderMaestro;
  	}
 	
 	public function obtenerSliderMaestroJson(){
@@ -35,20 +30,28 @@
   }	
 
 	public function insertar($obj){
-
-		$this->db->insert("slider_maestro", $obj); 			
-
+		$this->load->database();
+		$this->db->insert("slider_maestro", $obj);
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("SliderMaestroID", $obj["SliderMaestroID"]); 
 		$result = $this->db->get("slider_maestro");
 		if ($result->num_rows() == 1)
 		{
 			$SliderMaestro =  current($result->result()); 
-			$this->db->where("SliderMaestroID", $SliderMaestro->SliderMaestroID);
-			$rs = $this->db->update("slider_maestro", $SliderMaestro); 
+			foreach ($SliderMaestro as $key => $value) {
+				if($key == "SliderMaestroID"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$SliderMaestro->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -63,7 +66,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

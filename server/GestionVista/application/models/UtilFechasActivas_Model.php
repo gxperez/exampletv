@@ -11,15 +11,10 @@
  
 	public function obtenerUtilFechasActivas(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM util_fechas_activas");
+		$query = $this->db->get(util_fechas_activas);			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaUtilFechasActivas[] = new UtilFechasActivas( $row['Fecha'], $row['DiaSemana'], $row['Abreviado'], $row['Literal'], $row['DiaNombre'], $row['Dia'], $row['Mes'], $row['Anio']); 
- 
-		}
-			return $listaUtilFechasActivas;
+		$listaUtilFechasActivas = $query->result(); 
+		return $listaUtilFechasActivas;
  	}
 	
 	public function obtenerUtilFechasActivasJson(){
@@ -35,20 +30,28 @@
   }	
 
 	public function insertar($obj){
-
-		$this->db->insert("util_fechas_activas", $obj); 			
-
+		$this->load->database();
+		$this->db->insert("util_fechas_activas", $obj);
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("Fecha", $obj["Fecha"]); 
 		$result = $this->db->get("util_fechas_activas");
 		if ($result->num_rows() == 1)
 		{
 			$UtilFechasActivas =  current($result->result()); 
-			$this->db->where("Fecha", $UtilFechasActivas->Fecha);
-			$rs = $this->db->update("util_fechas_activas", $UtilFechasActivas); 
+			foreach ($UtilFechasActivas as $key => $value) {
+				if($key == "Fecha"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$UtilFechasActivas->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -63,7 +66,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

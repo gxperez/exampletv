@@ -11,15 +11,10 @@
  
 	public function obtenerDispositivoLog(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM dispositivo_log");
+		$query = $this->db->get(dispositivo_log);			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaDispositivoLog[] = new DispositivoLog( $row['Dispositivo_log_ID'], $row['DispositivoID'], $row['Estatus'], $row['FechaHoraInicio'], $row['FechaHoraFin'], $row['FechaCrea']); 
- 
-		}
-			return $listaDispositivoLog;
+		$listaDispositivoLog = $query->result(); 
+		return $listaDispositivoLog;
  	}
 	
 	public function obtenerDispositivoLogJson(){
@@ -35,20 +30,28 @@
   }	
 
 	public function insertar($obj){
-
-		$this->db->insert("dispositivo_log", $obj); 			
-
+		$this->load->database();
+		$this->db->insert("dispositivo_log", $obj);
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("Dispositivo_log_ID", $obj["Dispositivo_log_ID"]); 
 		$result = $this->db->get("dispositivo_log");
 		if ($result->num_rows() == 1)
 		{
 			$DispositivoLog =  current($result->result()); 
-			$this->db->where("Dispositivo_log_ID", $DispositivoLog->Dispositivo_log_ID);
-			$rs = $this->db->update("dispositivo_log", $DispositivoLog); 
+			foreach ($DispositivoLog as $key => $value) {
+				if($key == "Dispositivo_log_ID"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$DispositivoLog->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -63,7 +66,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

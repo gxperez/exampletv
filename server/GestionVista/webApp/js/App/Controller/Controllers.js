@@ -1,12 +1,4 @@
 
-var pp;
-var px;
-var xx;
-
-var appprueba; var appcompile; var appcopes;
-
-
-
 (function () {
     var $ang = appAng;
 
@@ -49,11 +41,11 @@ var appprueba; var appcompile; var appcopes;
 
         $scope.SetMain = function (link) {
 
-        var link = "http://localhost:7777/dataclub/webApp/vistas/index.html"; 
+        var link = base_url + "webApp/vistas/sm_"+ link +".html"; 
         console.log(link);
 
         appHttp.Get(link, null, (function (res, status) {
-                $scope.AppHtml = res;            
+                $scope.AppHtml = res;
 
             }));        
         }
@@ -106,7 +98,6 @@ var appprueba; var appcompile; var appcopes;
         };
     }]);
 
-
  $ang.controller('SimpleFormController', ['$scope', '$http', 'AppHttp','AppMenuEvent', '$compile', function ($scope, $http, appHttp,appMenuEvent, $compile) {
 
         $scope.currentObj = {
@@ -125,6 +116,8 @@ var appprueba; var appcompile; var appcopes;
         }        
 
         $scope.initt = function () {
+
+            $scope.Pantalla = {nombre: "Mantenimientos"};
 
 
             $scope.listaMantenimiento = [
@@ -173,14 +166,115 @@ var appprueba; var appcompile; var appcopes;
 
 
         }
-
-
-
-
-
-
 }]);
 
+$ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuEvent', '$compile', function ($scope, $http, appHttp,appMenuEvent, $compile) {
+
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback)
+        }        
+
+        $scope.currentObj = {            
+            Descripcion: ""
+        };
+
+        $scope.CLUBCrud = CLUBCrud; 
+        $scope.CLUBCrud.initt(); 
+        
+        $scope.listaDispositivo =[]; 
+        $scope.pantallaNombre = "Registro Dispositivo";
+        $scope.buscarLista = ""; 
+
+
+        $scope.initt = function () {
+            $scope.Pantalla = {nombre: "Dispositivo"};            
+
+             http("Dispositivo/Obtener", {}, function (res) {
+                if(res.IsOk){
+                    $scope.listaDispositivo = res.data; 
+                } else {
+                    console.log("Uno un Error"); 
+
+                }
+                
+
+             }); 
+
+            
+        };        
+
+        $scope.Buscar = function(){                    
+            console.log("Buscar para enviar o recibior"); 
+
+            $.post(base_url + "Dispositivo/buscar",  function(res){
+                // Ajustes del Json. Respuesta del Formulario
+
+            }, 'json');
+
+
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+
+            var copiObj = JSON.parse(JSON.stringify(obj));
+            $scope.currentObj = copiObj;
+            $scope.CLUBCrud.obj = $scope.currentObj; 
+            $scope.CLUBCrud.selectedIndex = index; 
+
+        }; 
+
+        $scope.Eliminar = function(item, indice){
+
+            console.log("Eliminar");
+            console.log(indice);
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.Guardar = function(){
+            var form = $scope.currentObj; 
+
+        console.log("Guardar A ver si es Actualizar o Modificar"); 
+        switch($scope.CLUBCrud.modo){
+            case 0: // Nuevo Crear
+            console.log("Envio para la creacion de listaMantenimiento"); 
+
+            $.post(base_url + "Dispositivo/Crear", {objeto: form }, function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                if (res.IsOk){
+
+                    $scope.listaDispositivo.push(res.data);                                                              
+                    $scope.CLUBCrud.reset();
+                    
+
+
+                } else {
+                    console.log("El registro no pudo ser completado"); 
+                }
+
+
+            }, 'json');            
+
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + "Dispositivo/Actualizar", form, function(res){
+                // Ajustes del Json. Respuesta del Formulario
+
+            }, 'json');            
+
+            break;
+        }
+         
+
+          
+            console.log($scope.CLUBCrud.modo); 
+
+
+        }
+}]);
 
   
 

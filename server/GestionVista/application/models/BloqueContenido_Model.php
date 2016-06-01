@@ -11,20 +11,15 @@
  
 	public function obtenerBloqueContenido(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM bloque_contenido");
+		$query = $this->db->get(bloque_contenido);			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaBloqueContenido[] = new BloqueContenido( $row['BloqueContenidoID'], $row['BloqueID'], $row['ContenidoID'], $row['Estado'], $row['UsuarioModificaID'], $row['FechaModifica']); 
- 
-		}
-			return $listaBloqueContenido;
+		$listaBloqueContenido = $query->result(); 
+		return $listaBloqueContenido;
  	}
 	
 	public function obtenerBloqueContenidoJson(){
 		$this->load->database();
-		$query = $this->db->get('bloque_contenido');	
+		$query = $this->db->get(bloque_contenido);	
 			
 		$usuario = array();
 		foreach ($query->result() as $row)
@@ -36,19 +31,27 @@
 
 	public function insertar($obj){
 		$this->load->database();
-		$this->db->insert("bloque_contenido", $obj); 			
-
+		$this->db->insert("bloque_contenido", $obj);
 	}
 
 	public function actualizar($obj){
+
 		$this->load->database();
 		$this->db->where("BloqueContenidoID", $obj["BloqueContenidoID"]); 
 		$result = $this->db->get("bloque_contenido");
 		if ($result->num_rows() == 1)
 		{
 			$BloqueContenido =  current($result->result()); 
+			foreach ($BloqueContenido as $key => $value) {
+				if($key == "BloqueContenidoID"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$BloqueContenido->$key = $obj[$key];
+				}
+			}
+			
 			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
-			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -56,7 +59,6 @@
 	}
 
 	public function ObtenerPorID($id){
-		$this->load->database();
 		$this->db->where("BloqueContenidoID", $id); 
 		$result = $this->db->get("bloque_contenido");		
 
@@ -64,7 +66,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

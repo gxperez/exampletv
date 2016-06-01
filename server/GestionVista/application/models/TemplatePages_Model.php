@@ -11,15 +11,10 @@
  
 	public function obtenerTemplatePages(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM template_pages");
+		$query = $this->db->get(template_pages);			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaTemplatePages[] = new TemplatePages( $row['TemplatePagesID'], $row['SliderMaestroID'], $row['EsquemaTipo'], $row['MostrarHeader'], $row['Duracion'], $row['TransicionTipoIni'], $row['TransicionTipoFin'], $row['Estado'], $row['UsuarioModificaID'], $row['FechaModificacion']); 
- 
-		}
-			return $listaTemplatePages;
+		$listaTemplatePages = $query->result(); 
+		return $listaTemplatePages;
  	}
 	
 	public function obtenerTemplatePagesJson(){
@@ -35,20 +30,28 @@
   }	
 
 	public function insertar($obj){
-
-		$this->db->insert("template_pages", $obj); 			
-
+		$this->load->database();
+		$this->db->insert("template_pages", $obj);
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("TemplatePagesID", $obj["TemplatePagesID"]); 
 		$result = $this->db->get("template_pages");
 		if ($result->num_rows() == 1)
 		{
 			$TemplatePages =  current($result->result()); 
-			$this->db->where("TemplatePagesID", $TemplatePages->TemplatePagesID);
-			$rs = $this->db->update("template_pages", $TemplatePages); 
+			foreach ($TemplatePages as $key => $value) {
+				if($key == "TemplatePagesID"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$TemplatePages->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -63,7 +66,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

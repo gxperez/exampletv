@@ -11,15 +11,10 @@
  
 	public function obtenerFuerzaVentaDispositivo(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM fuerza_venta_dispositivo");
+		$query = $this->db->get(fuerza_venta_dispositivo);			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$listaFuerzaVentaDispositivo[] = new FuerzaVentaDispositivo( $row['FuerzaVentaDispositivoID'], $row['DispositivoID'], $row['GUID_FV'], $row['UsuarioCreaID'], $row['FechaCrea'], $row['Estatus']); 
- 
-		}
-			return $listaFuerzaVentaDispositivo;
+		$listaFuerzaVentaDispositivo = $query->result(); 
+		return $listaFuerzaVentaDispositivo;
  	}
 	
 	public function obtenerFuerzaVentaDispositivoJson(){
@@ -35,20 +30,28 @@
   }	
 
 	public function insertar($obj){
-
-		$this->db->insert("fuerza_venta_dispositivo", $obj); 			
-
+		$this->load->database();
+		$this->db->insert("fuerza_venta_dispositivo", $obj);
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("FuerzaVentaDispositivoID", $obj["FuerzaVentaDispositivoID"]); 
 		$result = $this->db->get("fuerza_venta_dispositivo");
 		if ($result->num_rows() == 1)
 		{
 			$FuerzaVentaDispositivo =  current($result->result()); 
-			$this->db->where("FuerzaVentaDispositivoID", $FuerzaVentaDispositivo->FuerzaVentaDispositivoID);
-			$rs = $this->db->update("fuerza_venta_dispositivo", $FuerzaVentaDispositivo); 
+			foreach ($FuerzaVentaDispositivo as $key => $value) {
+				if($key == "FuerzaVentaDispositivoID"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$FuerzaVentaDispositivo->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -63,7 +66,6 @@
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	

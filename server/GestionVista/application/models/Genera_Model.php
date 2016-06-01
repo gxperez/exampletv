@@ -76,8 +76,7 @@ WHERE
 	
 	$entidadTemp = strtolower($tabla);
 	$entidadIns = $this->limpiarCampo(trim($entidadTemp));
-	$claseNombre = $this->limpiarCampo($sufijo). $entidadIns; 
-
+	$claseNombre = $this->limpiarCampo($sufijo). $entidadIns;
 	$primary_key = ""; 
 
 	foreach ($listaCampos as $key => $value) {
@@ -101,14 +100,10 @@ WHERE
 	$metodosBasicos = '
 	public function obtener'.$entidadIns.'(){
 		$this->load->database();
-		$query = $this->db->query("SELECT * FROM '.$entidadTemp.'");
+		$query = $this->db->get('. $tabla .');			
 			
-		$usuario = array();
-		foreach ($query->result() as $row)
-		{
-			$lista'.$entidadIns.'[] = '.$this->getInstianciaEntidad($tabla, $listaCampos).' 
-		}
-			return $lista'.$entidadIns.';
+		$lista'.$claseNombre.' = $query->result(); 
+		return $lista'.$claseNombre.';
  	}
 	
 	public function obtener'.$entidadIns.'Json(){
@@ -128,20 +123,28 @@ WHERE
 
 $metodosBasicos .= '
 	public function insertar($obj){
-
-		$this->db->insert("' . $tabla. '", $obj); 			
-
+		$this->load->database();
+		$this->db->insert("' . $tabla. '", $obj);
 	}
 
 	public function actualizar($obj){
 
+		$this->load->database();
 		$this->db->where("'. $primary_key .'", $obj["'. $primary_key .'"]); 
-		$result = $this->db->get("'.$entidadTemp.'");
+		$result = $this->db->get("'.$tabla.'");
 		if ($result->num_rows() == 1)
 		{
 			$'.$entidadIns.' =  current($result->result()); 
-			$this->db->where("'.$primary_key .'", $'.$entidadIns.'->'.$primary_key .');
-			$rs = $this->db->update("'.$tabla.'", $'.$entidadIns.'); 
+			foreach ($'.$entidadIns.' as $key => $value) {
+				if($key == "'. $primary_key .'"){ continue; }							
+
+				if( array_key_exists($key, $obj)){					
+					$'.$entidadIns.'->$key = $obj[$key];
+				}
+			}
+			
+			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
+			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
 			return $rs; 
 		} else {
 			return false;
@@ -156,11 +159,9 @@ $metodosBasicos .= '
 		{
 			return null; 
 		}
-
 		return current($result->result()); 
 	}
 	'; 
-
 				
 	$string = $encabezado.$constructor. $metodosBasicos. $pie;
 				
@@ -203,6 +204,21 @@ public function getInstianciaEntidad($tabla, $listaCampos){
 	$this->load->database();
 	}
 
+public function formarVista($sufijo, $tabla, $listaCampos, $login = false, $campos = null){
+	
+	$entidadTemp = strtolower($tabla);
+	$entidadIns = $this->limpiarCampo(trim($entidadTemp));
+	$claseNombre = $this->limpiarCampo($sufijo). $entidadIns;
+	$primary_key = ""; 
+
+	foreach ($listaCampos as $key => $value) {
+
+		if($value['primary_key']){
+					$primary_key = $value["name"]; 
+				}
+		
+	}
+}
 
 }
 ?>
