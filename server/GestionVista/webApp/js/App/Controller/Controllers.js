@@ -168,7 +168,7 @@
         }
 }]);
 
-$ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuEvent', '$compile', function ($scope, $http, appHttp,appMenuEvent, $compile) {
+$ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHttp','AppMenuEvent', '$compile', function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile) {
 
         function http(url, data, callback) {
             appHttp.Get(url, data, callback)
@@ -180,10 +180,10 @@ $ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuE
 
         };
 
-        $scope.CLUBCrud = CLUBCrud; 
-        $scope.CLUBCrud.initt();
-        $scope.CLUBCrud.obj = form; 
-        $scope.CLUBCrud.form = form; 
+        $scope.vCrud = appCrud;
+        $scope.vCrud.initt();
+        $scope.vCrud.obj = form; 
+        $scope.vCrud.form = form; 
         
         $scope.listaDispositivo =[]; 
         $scope.pantallaNombre = "Registro Dispositivo";
@@ -219,9 +219,9 @@ $ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuE
         $scope.Llenar = function(obj, index){            
 
             var copiObj = JSON.parse(JSON.stringify(obj));
-            $scope.CLUBCrud.form = copiObj;
-            $scope.CLUBCrud.obj = $scope.CLUBCrud.form; // $scope.currentObj; 
-            $scope.CLUBCrud.selectedIndex = index; 
+            $scope.vCrud.form = copiObj;
+            $scope.vCrud.obj = $scope.vCrud.form; // $scope.currentObj; 
+            $scope.vCrud.selectedIndex = index; 
 
         }; 
 
@@ -236,7 +236,7 @@ $ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuE
 
         $scope.Guardar = function(){
 
-            if(!$scope.CLUBCrud.validate()){
+            if(!$scope.vCrud.validate()){
                 alert("No lo esta"); 
                 return false; 
             }
@@ -245,7 +245,7 @@ $ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuE
 
             return false; 
 
-        switch($scope.CLUBCrud.modo) {
+        switch($scope.vCrud.modo) {
             case 0: // Nuevo Crear
             console.log("Envio para la creacion de listaMantenimiento"); 
 
@@ -254,7 +254,7 @@ $ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuE
                 if (res.IsOk){
 
                     $scope.listaDispositivo.push(res.data);
-                    $scope.CLUBCrud.reset();
+                    $scope.vCrud.reset();
 
                 } else {
                     console.log("El registro no pudo ser completado"); 
@@ -277,7 +277,7 @@ $ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuE
          
 
           
-            console.log($scope.CLUBCrud.modo); 
+            console.log($scope.vCrud.modo); 
 
 
         }

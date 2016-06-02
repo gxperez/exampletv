@@ -206,75 +206,7 @@ margin-left: 11px;
         </script>
     <![endif]-->
     <script type="text/javascript">
-
-    var CLUBCrud = {
-        form: {},
-        obj: {},       
-        modo: 0,
-        accion: 0,
-        selectedIndex: 0,
-        esValido: false,
-        vldt: null,
-
-        initt: function(){
-
-          console.log("Llego el Initt"); 
-
-          $("#formulario").hide();          
-          $("#ListMantenimiento").show();
-
-          // EL validador.
-
-          CLUBCrud.vldt = $("#vform").validator();
-
-        },
-
-        Cancelar: function(){
-          $("#formulario").hide();          
-          $("#ListMantenimiento").show();          
-        },
-
-        Editar: function(modo){
-          $("#formulario").show();          
-          $("#ListMantenimiento").hide();     
-
-               CLUBCrud.modo = modo; 
-
-        },
-        reset: function(){  
-          $("#formulario").hide();          
-          $("#ListMantenimiento").show();
-
-          for(var i in CLUBCrud.obj){
-            if(CLUBCrud.obj.hasOwnProperty(i) ){
-              CLUBCrud.obj[i] = ""; 
-            }
-          } 
-        },
-
-        validate: function(){
-
-          var esValidado = false; 
-          if(CLUBCrud.vldt == null){
-
-            CLUBCrud.vldt = $("#vform").validator();
-          } 
-
-          CLUBCrud.vldt.validator("validate"); 
-
-           CLUBCrud.vldt.validator({"isValidate": function(d) {   
-           alert("AA"); 
-
-           console.log(d);
-              if(!(d.isInComplete || d.hasErrors)){
-                esValidado = true;            
-              } 
-             }
-          });
-
-          return esValidado; 
-        }
-}; 
+   
     </script>
 
 

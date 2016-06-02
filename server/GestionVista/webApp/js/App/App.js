@@ -31,6 +31,19 @@ var appAng = angular.module("App", appAngularDependecies, function ($compileProv
     });
 });
 
+/*
+
+.run([ /*Module:  jcs-autoValidate*/ /*
+    'defaultErrorMessageResolver',
+    function (defaultErrorMessageResolver) {
+        // To change the root resource file path
+        defaultErrorMessageResolver.setI18nFileRootPath('Scripts/Jcs-auto-validate/lang');
+        defaultErrorMessageResolver.setCulture('es-es');
+    }
+]);
+
+
+*/
 
 //1 - Validation
 //2 - Format

@@ -4,8 +4,7 @@
     var $ang = appAng;
 
     var $app = new app();
-    var $sys = $app.System;
-    var $tool = $app.Tool; //ObjectcleanValue
+    var $sys = $app.System;    
     var $format = $app.Format; 
     var $sysCrud = $sys.Crud;
     var $sysEnum = $sys.Enum.CrudState;
@@ -15,6 +14,54 @@
 
     /*CRUD*/
     $ang.factory('AppCrud', function () {
+
+         var Crud = {
+            form: {},
+            obj: {},       
+            modo: 0,
+            accion: 0,
+            selectedIndex: 0,
+            esValido: false,
+            vldt: null,
+
+        initt: function(){
+          $("#formulario").hide();          
+          $("#ListMantenimiento").show();
+        },
+
+        Cancelar: function(){
+          $("#formulario").hide();          
+          $("#ListMantenimiento").show();          
+        },
+
+        Editar: function(modo){
+          $("#formulario").show();          
+          $("#ListMantenimiento").hide();     
+
+               Crud.modo = modo;                
+               console.log("Este es el Crud en el Cliente."); 
+
+        },
+        reset: function(){  
+          $("#formulario").hide();          
+          $("#ListMantenimiento").show();
+
+          for(var i in Crud.obj){
+            if(Crud.obj.hasOwnProperty(i) ){
+              Crud.obj[i] = ""; 
+            }
+          } 
+        },
+
+        validate: function(){
+
+          var esValidado = false; 
+          return esValidado; 
+        }
+}; 
+
+return Crud; 
+
         var Crud = function () {
             var _crud = {
                 ListShow: true,

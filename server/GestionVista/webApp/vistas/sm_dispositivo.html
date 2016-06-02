@@ -28,7 +28,7 @@ border: #817F7F 2px;
                     <div class="panel-heading">
 
                       <div class=" add-task-row">                                  
-                                  <a class="btn btn-success btn-sm pull-right" ng-click="CLUBCrud.Editar(0)">Agregar Nuevo</a>
+                                  <a class="btn btn-success btn-sm pull-right" ng-click="vCrud.Editar(0)">Agregar Nuevo</a>
                       </div>
 
 
@@ -55,7 +55,7 @@ border: #817F7F 2px;
                                           <div class="task-title">
                                               <span class="task-title-sp">{{item.Descripcion}}</span>
                                               <div class="pull-right hidden-phone">                                                  
-                                            <button class="btn btn-primary btn-xs fa fa-pencil" ng-click="Llenar(item); CLUBCrud.Editar(1);"></button>
+                                            <button class="btn btn-primary btn-xs fa fa-pencil" ng-click="Llenar(item); vCrud.Editar(1);"></button>
                                                   <button class="btn btn-danger btn-xs fa fa-trash-o" ng-click="Eliminar(item, $index)"></button>
                                               </div>
                                           </div>
@@ -82,8 +82,8 @@ border: #817F7F 2px;
                   <div>
                     <div class="btn-group">                      
                       <button type="button" class="btn btn-default" ng-click="Guardar()"><span class="fa fa-floppy-o"> </span> Guardar</button>
-                      <button type="button" class="btn btn-default" ng-click="CLUBCrud.reset();"> <span class="fa fa-arrow-left" > </span> Cancelar</button>
-                      <button type="button" class="btn btn-default" ng-click="CLUBCrud.reset()"> <span class="fa fa-times"> </span> Salir</button>
+                      <button type="button" class="btn btn-default" ng-click="vCrud.reset();"> <span class="fa fa-arrow-left" > </span> Cancelar</button>
+                      <button type="button" class="btn btn-default" ng-click="vCrud.reset()"> <span class="fa fa-times"> </span> Salir</button>
                   </div>
                   </div>
               </div>              
@@ -97,28 +97,28 @@ border: #817F7F 2px;
                       <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label">Nombre</label>
                               <div class="col-sm-10">
-                                  <input type="text" ng-model="CLUBCrud.form.Nombre" class="form-control" required>
+                                  <input type="text" ng-model="vCrud.form.Nombre" class="form-control" required>
                               </div>
                        </div>
 
                         <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label">Descripcion</label>
                               <div class="col-sm-10">
-                                  <input type="text" ng-model="CLUBCrud.form.Descripcion" class="form-control">
+                                  <input type="text" ng-model="vCrud.form.Descripcion" class="form-control">
                               </div>
                           </div>
 
                       <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label" >DispositivoTipo</label>
                               <div class="col-sm-10">
-                                  <input type="number" ng-model="CLUBCrud.form.DispositivoTipo" class="form-control" required>
+                                  <input type="number" ng-model="vCrud.form.DispositivoTipo" class="form-control" required>
                               </div>
                        </div>
 
                        <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label">Marca</label>
                               <div class="col-sm-10">
-                                  <input type="text" ng-model="CLUBCrud.form.Marca" class="form-control">
+                                  <input type="text" ng-model="vCrud.form.Marca" class="form-control">
                               </div>
                        </div>
 
@@ -126,14 +126,14 @@ border: #817F7F 2px;
                        <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label" >Estatus</label>
                               <div class="col-sm-10">
-                                  <input type="text" ng-model="currentObj.Estatus" class="form-control" required>
+                                  <input type="text" ng-model="vCrud.form.Estatus" class="form-control" required>
                               </div>                              
                        </div>
 
                        <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label">Mac</label>
                               <div class="col-sm-10">
-                                  <input type="text" ng-model="currentObj.Mac" class="form-control">
+                                  <input type="text" ng-model="vCrud.form.Mac" class="form-control">
                               </div>
                        </div>
 
