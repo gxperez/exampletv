@@ -208,13 +208,25 @@ margin-left: 11px;
     <script type="text/javascript">
 
     var CLUBCrud = {
+        form: {},
         obj: {},       
         modo: 0,
         accion: 0,
         selectedIndex: 0,
+        esValido: false,
+        vldt: null,
+
         initt: function(){
+
+          console.log("Llego el Initt"); 
+
           $("#formulario").hide();          
-          $("#ListMantenimiento").show();          
+          $("#ListMantenimiento").show();
+
+          // EL validador.
+
+          CLUBCrud.vldt = $("#vform").validator();
+
         },
 
         Cancelar: function(){
@@ -238,6 +250,29 @@ margin-left: 11px;
               CLUBCrud.obj[i] = ""; 
             }
           } 
+        },
+
+        validate: function(){
+
+          var esValidado = false; 
+          if(CLUBCrud.vldt == null){
+
+            CLUBCrud.vldt = $("#vform").validator();
+          } 
+
+          CLUBCrud.vldt.validator("validate"); 
+
+           CLUBCrud.vldt.validator({"isValidate": function(d) {   
+           alert("AA"); 
+
+           console.log(d);
+              if(!(d.isInComplete || d.hasErrors)){
+                esValidado = true;            
+              } 
+             }
+          });
+
+          return esValidado; 
         }
 }; 
     </script>
@@ -256,6 +291,10 @@ margin-left: 11px;
     <script src="<?php echo base_url(). "webApp/"; ?>js/App/Factory/Factories.js"></script>
     <script src="<?php echo base_url(). "webApp/"; ?>js/App/Service/Services.js"></script>
     <script src="<?php echo base_url(). "webApp/"; ?>js/App/Controller/Controllers.js"></script>
+
+    <script src="<?php echo base_url(). "webApp/"; ?>js/validator.js"></script>
+
+
 
     <script type="text/javascript">    
     </script>    

@@ -174,17 +174,20 @@ $ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuE
             appHttp.Get(url, data, callback)
         }        
 
-        $scope.currentObj = {            
-            Descripcion: ""
+        var form = {     
+            Nombre: "",               
+            Descripcion: "", 
+
         };
 
         $scope.CLUBCrud = CLUBCrud; 
-        $scope.CLUBCrud.initt(); 
+        $scope.CLUBCrud.initt();
+        $scope.CLUBCrud.obj = form; 
+        $scope.CLUBCrud.form = form; 
         
         $scope.listaDispositivo =[]; 
         $scope.pantallaNombre = "Registro Dispositivo";
-        $scope.buscarLista = ""; 
-
+        $scope.buscarLista = "";
 
         $scope.initt = function () {
             $scope.Pantalla = {nombre: "Dispositivo"};            
@@ -193,8 +196,7 @@ $ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuE
                 if(res.IsOk){
                     $scope.listaDispositivo = res.data; 
                 } else {
-                    console.log("Uno un Error"); 
-
+                    console.log("Uno un Error");
                 }
                 
 
@@ -217,8 +219,8 @@ $ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuE
         $scope.Llenar = function(obj, index){            
 
             var copiObj = JSON.parse(JSON.stringify(obj));
-            $scope.currentObj = copiObj;
-            $scope.CLUBCrud.obj = $scope.currentObj; 
+            $scope.CLUBCrud.form = copiObj;
+            $scope.CLUBCrud.obj = $scope.CLUBCrud.form; // $scope.currentObj; 
             $scope.CLUBCrud.selectedIndex = index; 
 
         }; 
@@ -233,10 +235,17 @@ $ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuE
         }
 
         $scope.Guardar = function(){
-            var form = $scope.currentObj; 
 
-        console.log("Guardar A ver si es Actualizar o Modificar"); 
-        switch($scope.CLUBCrud.modo){
+            if(!$scope.CLUBCrud.validate()){
+                alert("No lo esta"); 
+                return false; 
+            }
+
+            var form = $scope.CLUBCrud.form;
+
+            return false; 
+
+        switch($scope.CLUBCrud.modo) {
             case 0: // Nuevo Crear
             console.log("Envio para la creacion de listaMantenimiento"); 
 
@@ -244,10 +253,8 @@ $ang.controller('DispositivoController', ['$scope', '$http', 'AppHttp','AppMenuE
                     // Ajustes del Json. Respuesta del Formulario.
                 if (res.IsOk){
 
-                    $scope.listaDispositivo.push(res.data);                                                              
+                    $scope.listaDispositivo.push(res.data);
                     $scope.CLUBCrud.reset();
-                    
-
 
                 } else {
                     console.log("El registro no pudo ser completado"); 
