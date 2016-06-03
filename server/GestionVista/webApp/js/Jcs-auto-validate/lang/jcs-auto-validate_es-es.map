@@ -1,0 +1,13 @@
+{
+    "defaultMsg": "Por favor agregar error al {0}",
+    "email": "Por favor digitar un formato de correo correcto",
+    "minlength": "Minimo de caracteres {0} ",
+    "maxlength": "Maximo caracteres {0} ",
+    "min": "Por favor digital lo minimo en numero {0}",
+    "max": "Por favor digital lo maximo en numero {0}",
+    "required": "Campo requerido",
+    "date": "Por favor digitar un formato de fecha correcto",
+    "pattern": "Por favor asegurarse que esta usando este patron {0}",
+    "number": "Por favor digital numero correcto",
+    "url": "Por favor digital la URL con este formato http(s)://wwww.google.com"
+}

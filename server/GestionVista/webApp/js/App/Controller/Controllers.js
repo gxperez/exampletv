@@ -192,7 +192,7 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         $scope.initt = function () {
             $scope.Pantalla = {nombre: "Dispositivo"};            
 
-             http("Dispositivo/Obtener", {}, function (res) {
+             http(base_url + "Dispositivo/Obtener", {}, function (res) {
                 if(res.IsOk){
                     $scope.listaDispositivo = res.data; 
                 } else {
@@ -235,13 +235,14 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         }
 
         $scope.Guardar = function(){
+            console.log("Le da a Guardar"); 
 
-            if(!$scope.vCrud.validate()){
-                alert("No lo esta"); 
+            if(!$scope.vCrud.validate()){                
                 return false; 
             }
 
-            var form = $scope.CLUBCrud.form;
+           // var form = $scope.CLUBCrud.form;
+           console.log("Procura llegar al FInal"); 
 
             return false; 
 

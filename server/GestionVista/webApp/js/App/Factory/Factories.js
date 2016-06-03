@@ -23,10 +23,30 @@
             selectedIndex: 0,
             esValido: false,
             vldt: null,
+            $Form: {},
+            $Pagination: {},
+            $Search: {},
 
-        initt: function(){
+        initt: function(options){
           $("#formulario").hide();          
           $("#ListMantenimiento").show();
+          Crud.renderPaginate(); 
+
+
+        },
+
+        renderPaginate: function(opt){
+
+            // configuracion de la cantidad de registros, cantidad de Paginas 
+
+            Crud.$Pagination = $('#page-selection-APP').bootpag({
+                   total: 0,                   
+                   maxVisible: 10
+                }).on('page', function(event, num){                                    
+                    // Angular Ajax or whiting search.
+                });
+
+
         },
 
         Cancelar: function(){
@@ -54,183 +74,18 @@
         },
 
         validate: function(){
-
-          var esValidado = false; 
-          return esValidado; 
+            for (var form in Crud.$Form) {
+                if (Crud.$Form[form].hasOwnProperty("$invalid") && Crud.$Form[form].$invalid) {
+                    alert("Favor llenar el Formulario Sip");
+                 //$sysUtil.ShowMessage($smt.info, "Favor de completar los registros correctamente.");
+                return false;
+            }
         }
+    }
 }; 
 
 return Crud; 
-
-        var Crud = function () {
-            var _crud = {
-                ListShow: true,
-                SaveShow: false,
-                AddShow: true,
-                EditShow: true,
-                DelShow: true,
-                CancelShow: true,
-                ShowTab: function (showForm) {
-                    var Formulario = $('.panel #Formulario');
-                    var Lista = $('.panel #Lista');
-
-                    if (!Formulario || !Lista)
-                        return null;
-
-                    if (showForm) {
-                        Formulario.removeClass("disabled");
-                        Formulario.find('a').attr("data-toggle", "tab");
-
-                        Lista.removeClass("active").addClass("disabled");
-                        Lista.find('a').attr("data-toggle", "");
-
-                        Formulario.find('a').click();
-                    }
-                    else {
-                        Lista.removeClass("disabled");
-                        Lista.find('a').attr("data-toggle", "tab");
-
-                        Formulario.removeClass("active").addClass("disabled");
-                        Formulario.find('a').attr("data-toggle", "");
-
-                        Lista.find('a').click();
-                    }
-                },
-                ResetCrud: function () {
-                    this.ListShow = true;
-                    this.SaveShow = false;
-                    this.AddShow = true;
-                    this.EditShow = true;
-                    this.DelShow = true;
-                    this.CancelShow = true;
-                    this.ShowTab(false);
-                    this.SelectedRowIndex = null;
-
-                    $tool.ObjectcleanValue(this.$Data);
-                    $tool.CleanForm("#FormularioContainer");
-
-                    for (var form in this.$Form) {
-                        //AngularJs: Reset Input Validation
-                        if (this.$Form[form].hasOwnProperty("$setPristine"))
-                        {
-                            this.$Form[form].$setPristine();
-                        }
-                    }
-
-                    $sysCrud.Reset();
-
-                    this.$ResetCrudCallBack();
-                },
-                SelectedRowIndex: null,
-                SelectRow: function (index) {
-                    var status = $sysCrud.GetState();
-
-                    //AppCrud: If we aren't editing, adding or deleting
-                    if (!status) {
-                        this.SelectedRowIndex = index;
-                    }
-                },
-                SelectRowClass: function (index) {
-                    return this.SelectedRowIndex == index ? 'selected' : "";
-                },
-                $List: function () {
-                    this.ResetCrud();
-                },
-                $Save: function () {
-                    if (!this.$Validate()) {
-                        return false;
-                    }
-
-                    var status = $sysCrud.GetState();
-
-                    if (status == $sysEnum.Create) {
-                        setTimeout(function () {
-                            $("#AddClick").click();
-                        }, 0);
-                    }
-                    else if (status == $sysEnum.Update) {
-                        setTimeout(function () {
-                            $("#EditClick").click();
-                        }, 0);
-                    }
-                },
-                $Validate: function () {
-                    //AngularJs: Check Input Validation (Errors)
-                    for (var form in this.$Form)
-                    {
-                        if (this.$Form[form].hasOwnProperty("$invalid") && this.$Form[form].$invalid) {
-                            //if (this.$Form.hasOwnProperty("$error")) {
-                            //}
-                    
-                            $sysUtil.ShowMessage($smt.info, "Favor de completar los registros correctamente.");
-                            return false;
-                        }
-                    }
-                    
-                    
-                    return true;
-                },
-                $Add: function () {
-                    this.ResetCrud();
-
-                    this.ListShow = true;
-                    this.SaveShow = true;
-                    this.AddShow = false;
-                    this.EditShow = false;
-                    this.DelShow = false;
-                    this.CancelShow = true;
-
-                    this.ShowTab(true);
-                    $sysCrud.SetCreate();
-
-                    this.$AddCallBack();
-                },
-                $Edit: function () {
-                    if (this.SelectedRowIndex != null && this.SelectedRowIndex >= 0) {
-                        this.ListShow = true;
-                        this.SaveShow = true;
-                        this.AddShow = false;
-                        this.EditShow = false;
-                        this.DelShow = false;
-                        this.CancelShow = true;
-                        this.ShowTab(true);
-
-                        $sysCrud.SetUpdate();
-
-                        this.$EditCallBack();
-                    }
-                    else {
-
-                        $sysUtil.ShowMessage($smt.info, "Favor de seleccionar un registro.");
-                    }
-
-                },
-                $Del: function () {
-                    if (this.SelectedRowIndex != null && this.SelectedRowIndex >= 0) {
-                        $sysCrud.SetDelete();
-
-                        setTimeout(function () {
-                            $("#ElimClick").click();
-                        }, 0);
-                    }
-                    else {
-                        $sysUtil.ShowMessage($smt.info, "Favor de seleccionar un registro.");
-                    }
-                },
-                $Cancel: function () {
-                    this.ResetCrud();
-                },
-                $Form: {},
-                $ResetCrudCallBack: function(){},
-                $AddCallBack: function () { },
-                $EditCallBack: function () { },
-                $Data: {}
-            };
-
-            return _crud;
-        }
-
-        return Crud;
+       
     });
 
     /*Pagination*/

@@ -13,7 +13,7 @@ var app = function () {
     return instance;
 };
 
-appAngularDependecies.push('ngSanitize');
+appAngularDependecies.push('ngSanitize', 'jcs-autoValidate');
 
 var appAng = angular.module("App", appAngularDependecies, function ($compileProvider) {
     $compileProvider.directive('compile', function ($compile) {
@@ -29,21 +29,19 @@ var appAng = angular.module("App", appAngularDependecies, function ($compileProv
             );
         };
     });
-});
-
-/*
-
-.run([ /*Module:  jcs-autoValidate*/ /*
-    'defaultErrorMessageResolver',
-    function (defaultErrorMessageResolver) {
+})
+.run([ /*Module:  jcs-autoValidate*/ 
+    'defaultErrorMessageResolver',    
+    'bootstrap3ElementModifier',
+    function (defaultErrorMessageResolver,  bootstrap3ElementModifier) {
         // To change the root resource file path
-        defaultErrorMessageResolver.setI18nFileRootPath('Scripts/Jcs-auto-validate/lang');
+        defaultErrorMessageResolver.setI18nFileRootPath( base_url + 'webApp/js/Jcs-auto-validate/lang');
         defaultErrorMessageResolver.setCulture('es-es');
+         bootstrap3ElementModifier.enableValidationStateIcons(true);
+
     }
 ]);
 
-
-*/
 
 //1 - Validation
 //2 - Format

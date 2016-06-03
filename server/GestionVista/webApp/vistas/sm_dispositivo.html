@@ -22,23 +22,32 @@ border: #817F7F 2px;
     <!-- SORTABLE TO DO LIST -->
       
               <div class="row mt mb">
+
+<div id="header-crudTools" class="crudTools col-md-12">     
+                  <div>
+                    <div class="btn-group">                      
+                      
+                                  <a class="btn btn-success btn-sm pull-right" ng-click="vCrud.Editar(0)"> <span class="fa fa-plus"></span> Agregar</a>
+                      
+                  </div>
+                  </div>
+              </div>  
+
                   <div class="col-md-12">
                       <section class="task-panel tasks-widget">
 
                     <div class="panel-heading">
 
-                      <div class=" add-task-row">                                  
-                                  <a class="btn btn-success btn-sm pull-right" ng-click="vCrud.Editar(0)">Agregar Nuevo</a>
+
+            <div class="pull-right">                                  
+
+                            <input type="text" ng-model="buscarLista" class="round-form">                            
+                            <button type="button" class="btn btn-round btn-default" ng-click="Buscar()"><i class="fa fa-search"></i>  </button>
                       </div>
-
-
                           
                     
 
                           <div class="pull-left"> 
-                            <input type="text" ng-model="buscarLista" class="round-form">                            
-                            <button type="button" class="btn btn-round btn-default" ng-click="Buscar()"><i class="fa fa-search"></i>  </button>
-
                             <h5><i class="fa fa-tasks"></i> {{Pantalla.nombre}}</h5>
                            </div>
                           <br>
@@ -63,7 +72,9 @@ border: #817F7F 2px;
 
                                   </ul>
                               </div>
-                              <div class=" add-task-row">                                  
+                              <div class=" add-task-row">   
+                               <div id="page-selection-APP"></div> 
+
                                   <a class="btn btn-default btn-sm pull-right" ng-click="ListAll()">Ver Todo</a>
                               </div>
                           </div>
@@ -74,25 +85,25 @@ border: #817F7F 2px;
 
 </div>		
 			
-			<div id="formulario">        
-			
+			<div id="formulario" >        
+			 <form id="vform" class="form-horizontal style-form" method="get" data-toggle="validator"  >
           	<!-- BASIC FORM ELELEMNTS -->
           	<div class="row mt">
               <div id="header-crudTools" class="crudTools col-md-12">     
                   <div>
                     <div class="btn-group">                      
-                      <button type="button" class="btn btn-default" ng-click="Guardar()"><span class="fa fa-floppy-o"> </span> Guardar</button>
-                      <button type="button" class="btn btn-default" ng-click="vCrud.reset();"> <span class="fa fa-arrow-left" > </span> Cancelar</button>
-                      <button type="button" class="btn btn-default" ng-click="vCrud.reset()"> <span class="fa fa-times"> </span> Salir</button>
+                      <button id="btnGuardar" type="submit" class="btn btn-default" ng-click="Guardar()" ><span class="fa fa-floppy-o"> </span> Guardar</button>
+                      <button type="reset" class="btn btn-default" ng-click="vCrud.reset();"> <span class="fa fa-arrow-left" > </span> Cancelar</button>
+                      <button type="reset" class="btn btn-default" ng-click="vCrud.reset()"> <span class="fa fa-times"> </span> Salir</button>
                   </div>
                   </div>
               </div>              
 
 
           		<div class="col-lg-12">
-                  <div class="form-panel">
+                  <div class="form-panel" ng-form="vCrud.$Form.Main" >
                   	  <h4 class="mb"><i class="fa fa-angle-right"></i> {{Pantalla.nombre}}</h4>
-                      <form id="vform" class="form-horizontal style-form" method="get" data-toggle="validator"  >
+                     
 
                       <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label">Nombre</label>
@@ -138,12 +149,12 @@ border: #817F7F 2px;
                        </div>
 
 
-                         
-                      </form>
+                    
+                    
                   </div>
           		</div><!-- col-lg-12-->      	
           	</div><!-- /row -->         	
-          	
+          	  </form>
 			</div>
     </div>
 

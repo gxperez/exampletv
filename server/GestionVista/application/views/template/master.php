@@ -223,8 +223,10 @@ margin-left: 11px;
     <script src="<?php echo base_url(). "webApp/"; ?>js/App/Factory/Factories.js"></script>
     <script src="<?php echo base_url(). "webApp/"; ?>js/App/Service/Services.js"></script>
     <script src="<?php echo base_url(). "webApp/"; ?>js/App/Controller/Controllers.js"></script>
+    <script src="<?php echo base_url(). "webApp/"; ?>js/jquery-bootpag.js"></script>
+    
 
-    <script src="<?php echo base_url(). "webApp/"; ?>js/validator.js"></script>
+ 
 
 
 
