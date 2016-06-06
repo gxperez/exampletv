@@ -525,3 +525,9 @@ $config['web_services_key'] = array(
 			  'key_token'=>'AED6FACF-1048-4DFF-A9FB-E893949A5587'
 			  ) 
 	);
+
+$config['client_pagination'] = array(
+	'maxRequestRows' => 120, 
+	'RowsPerPages'	=> 12,
+	'maxVisiblePages' => 9	
+	);

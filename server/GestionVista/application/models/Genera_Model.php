@@ -9,6 +9,7 @@ function __construct()
 	}
 
 
+
 	public function obtenerTablas($baseDatos){
 	
 		$this->load->database();
@@ -215,8 +216,7 @@ public function formarVista($sufijo, $tabla, $listaCampos, $login = false, $camp
 
 		if($value['primary_key']){
 					$primary_key = $value["name"]; 
-				}
-		
+				}		
 	}
 }
 

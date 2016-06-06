@@ -189,10 +189,12 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         $scope.pantallaNombre = "Registro Dispositivo";
         $scope.buscarLista = "";
 
+
         $scope.initt = function () {
             $scope.Pantalla = {nombre: "Dispositivo"};            
 
              http(base_url + "Dispositivo/Obtener", {}, function (res) {
+
                 if(res.IsOk){
                     $scope.listaDispositivo = res.data; 
                 } else {

@@ -16,6 +16,17 @@
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;
  	}
+
+ 	public function obtenerDispositivoPaginado($limit, $row, $condicion = " 1=1"){
+		$this->load->database();
+
+		$arrFill = array('vLimit' => $limit, 'vPage'=> $row, 'vCondicion'=> $condicion);
+
+		$stored_procedure = "call sp_PaginarResultTabla('dispositivo', ?, ?, ?);";		
+		$query = $this->db->query($stored_procedure, $arrFill);
+		$listaDispositivo = $query->result(); 
+		return $listaDispositivo;
+ 	}
 	
 	public function obtenerDispositivoJson(){
 		$this->load->database();

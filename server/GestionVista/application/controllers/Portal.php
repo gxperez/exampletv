@@ -149,7 +149,6 @@ class Portal extends MY_Controller {
 			foreach ($vv as $key => $value) {
 				$htmlT .= "<hr> // Siguiente..  <br>". $this->Gen->formarModel("", $key, $value); 
 		//		exit(); 				
-
 			}
 
 			echo "<hr> <pre> "; 
@@ -170,6 +169,20 @@ class Portal extends MY_Controller {
 				
 				break;
 		}
+
+	}
+
+	public function CrearQuerys(){
+		for ($i=161; $i < 310 ; $i++) { 
+
+
+		$query = "INSERT INTO `bis_gestionvista`.`dispositivo` (`Nombre`, `Descripcion`, `DispositivoTipo`, `Marca`, `Estatus`, `Mac`, `IP`, `FechaCrea`, `UltimaSesion`) VALUES ('TV-SONY-smart-gen{$i}', 'smartTV00-{$i}', '1', 'SONY', '1', '52:camre:25:tu:85no:am:{$i}', '22.35.0.{$i}', '2016-06-05', '2016-06-05');"; 
+
+		echo "<br> -- tt <br> ". $query; 
+
+		}
+
+
 
 	}
 

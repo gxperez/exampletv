@@ -25,28 +25,49 @@
             vldt: null,
             $Form: {},
             $Pagination: {},
+            $configPagination: { maxRowsPage: 15, maxVisiblePage: 8},
+            totalPages: 0,
+
             $Search: {},
 
         initt: function(options){
           $("#formulario").hide();          
           $("#ListMantenimiento").show();
-          Crud.renderPaginate(); 
-
+          Crud.renderPaginate();
 
         },
 
-        renderPaginate: function(opt){
+        setPages: function(opt){
+            Crud.$Pagination.bootpag(opt);
+        },
 
+        pageCalculate: function(opt){            
+            if("totalResult" in opt){
+                Crud.totalPages = parseInt(opt.totalResult/Crud.$configPagination.maxRowsPage);
+                
+
+
+
+
+                
+
+            }
+
+            
+
+
+        }, 
+
+
+        renderPaginate: function(opt){
             // configuracion de la cantidad de registros, cantidad de Paginas 
 
             Crud.$Pagination = $('#page-selection-APP').bootpag({
-                   total: 0,                   
+                   total: 5,                   
                    maxVisible: 10
                 }).on('page', function(event, num){                                    
                     // Angular Ajax or whiting search.
                 });
-
-
         },
 
         Cancelar: function(){

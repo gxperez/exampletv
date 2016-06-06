@@ -22,8 +22,16 @@ class Dispositivo extends MY_Controller {
 		$idRol = 0; 
 		$this->load->model('Dispositivo_model', 'mDispositivo');
 
-		$listaDispositivo = $this->mDispositivo->obtenerDispositivo(); 
-		echo json_encode(array('data' => $listaDispositivo, 'IsOk'=> true)); 
+		if($this->input->get('vNumPage')){
+
+
+		} else {
+			$listaDispositivo = $this->mDispositivo->obtenerDispositivoPaginado(120, 0);
+		}
+
+		
+		$first = current($listaDispositivo); 
+		echo json_encode(array('data' => $listaDispositivo, 'totalResult'=> $first['CountRow'],  'IsOk'=> true)); 
 	}
 
 	public function Crear(){
