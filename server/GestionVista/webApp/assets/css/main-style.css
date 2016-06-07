@@ -181,3 +181,17 @@ border-color: #27A6BE;
     
 }
 }
+
+#header-crudTools {
+height: inherit;
+min-height: inherit;
+position: fixed;
+z-index: 50;
+background: #FFF;
+top: 58px;
+border: #817F7F 2px;
+}
+
+.styleCrud{
+  padding-top: 15px;
+ }

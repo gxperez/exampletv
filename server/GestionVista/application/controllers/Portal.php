@@ -12,7 +12,7 @@ class Portal extends MY_Controller {
 	 * 		http://example.com/index.php/welcome/index
 	 *	- or -
 	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
+	 * config/routes.php, it's displayed at http://example.com/  
 	 *
 	 * So any other public methods not prefixed with an underscore will
 	 * map to /index.php/welcome/<method_name>
@@ -138,28 +138,35 @@ class Portal extends MY_Controller {
 	public function GenerarFiles($modo){
 
 		$this->load->model("genera_model", "Gen");
+		$vv = $this->Gen->obtenerTablas("bis_gestionvista"); 
 
 		switch ($modo) {
 			case 'modelo':
-
-			$vv = $this->Gen->obtenerTablas("bis_gestionvista"); 
-
 			
 			$htmlT = ""; 
 			foreach ($vv as $key => $value) {
 				$htmlT .= "<hr> // Siguiente..  <br>". $this->Gen->formarModel("", $key, $value); 
-		//		exit(); 				
 			}
 
 			echo "<hr> <pre> "; 
 				echo $htmlT;
 			echo "</pre> <hr> <br>"; 
-
-		//	print_r($vv); 
-				
 				break;
 
-			case 'Controlador':
+			case 'Controlador':				
+				break;
+
+			case 'Entidad':
+
+			$htmlT= ""; 
+
+				foreach ($vv as $key => $value) {
+					$htmlT .= "<hr> <pre> ". $this->Gen->generarEntidad("", $key, $value); 
+
+					echo $htmlT;
+
+					exit();
+				}
 				
 				break;
 

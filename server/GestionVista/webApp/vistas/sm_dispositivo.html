@@ -1,18 +1,5 @@
 <div  ng-controller="DispositivoController" ng-init="initt()" >
-  <style type="text/css">  
-#header-crudTools {
-height: inherit;
-min-height: inherit;
-position: fixed;
-z-index: 50;
-background: #FFF;
-top: 61px;
-border: #817F7F 2px;
-}
-
-.styleCrud{
-  padding-top: 15px;
- } 
+  <style type="text/css">   
 </style>
 
 
@@ -26,8 +13,9 @@ border: #817F7F 2px;
 <div id="header-crudTools" class="crudTools col-md-12">     
                   <div>
                     <div class="btn-group">                      
-                      
-                                  <a class="btn btn-success btn-sm pull-right" ng-click="vCrud.Editar(0)"> <span class="fa fa-plus"></span> Agregar</a>
+
+                    <button id="btnGuardar" type="submit" class="btn btn-default" ng-click="vCrud.Editar(0)"><span class="fa fa-plus"></span> Agregar </button>
+                                  
                       
                   </div>
                   </div>

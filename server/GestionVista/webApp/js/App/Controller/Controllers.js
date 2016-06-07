@@ -180,28 +180,45 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
 
         };
 
-        $scope.vCrud = appCrud;
-        $scope.vCrud.initt();
-        $scope.vCrud.obj = form; 
-        $scope.vCrud.form = form; 
-        
+
         $scope.listaDispositivo =[]; 
         $scope.pantallaNombre = "Registro Dispositivo";
         $scope.buscarLista = "";
+        $scope.vCrud = appCrud;
+        $scope.vCrud.obj = form; 
+        $scope.vCrud.form = form; 
+
+        $scope.vCrud.initt({url: base_url + "Dispositivo/Obtener", 
+            "callback": function(res, num){
+                $scope.ObtenerPaginacionRes(res, num);     
+                $scope.$apply();           
+            }
+        });
+
+        
+        
+
+        $scope.ObtenerPaginacionRes = function(res, num){
+
+        console.log("Obtener");             
+
+            if(res.IsOk){
+                    $scope.listaDispositivo = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+                    
+                } else {
+
+                    console.log("Uno un Error");
+                }
+
+        }
 
 
         $scope.initt = function () {
             $scope.Pantalla = {nombre: "Dispositivo"};            
 
-             http(base_url + "Dispositivo/Obtener", {}, function (res) {
-
-                if(res.IsOk){
-                    $scope.listaDispositivo = res.data; 
-                } else {
-                    console.log("Uno un Error");
-                }
-                
-
+             http(base_url + "Dispositivo/Obtener", {}, function (dt) {
+                    $scope.ObtenerPaginacionRes(dt); 
              }); 
 
             

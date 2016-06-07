@@ -22,16 +22,20 @@ class Dispositivo extends MY_Controller {
 		$idRol = 0; 
 		$this->load->model('Dispositivo_model', 'mDispositivo');
 
-		if($this->input->get('vNumPage')){
+		$pagConf =  $this->config->item("client_pagination");
 
+		if($this->input->get('vNumPage')){
+			$pagina = $this->input->get('vNumPage'); 
+
+			$listaDispositivo = $this->mDispositivo->obtenerDispositivoPaginado($pagConf["RowsPerPages"], Text::calcularOffset($pagConf["RowsPerPages"],  $pagina) );
 
 		} else {
-			$listaDispositivo = $this->mDispositivo->obtenerDispositivoPaginado(120, 0);
+			$listaDispositivo = $this->mDispositivo->obtenerDispositivoPaginado($pagConf["RowsPerPages"], 0);
 		}
 
 		
 		$first = current($listaDispositivo); 
-		echo json_encode(array('data' => $listaDispositivo, 'totalResult'=> $first['CountRow'],  'IsOk'=> true)); 
+		echo json_encode(array('data' => $listaDispositivo, 'totalResult'=> $first->CountRow, "count"=> count($listaDispositivo), 'IsOk'=> true, 'rowsPerPages'=> $pagConf["RowsPerPages"])); 
 	}
 
 	public function Crear(){

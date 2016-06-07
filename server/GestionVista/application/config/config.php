@@ -526,8 +526,7 @@ $config['web_services_key'] = array(
 			  ) 
 	);
 
-$config['client_pagination'] = array(
-	'maxRequestRows' => 120, 
-	'RowsPerPages'	=> 12,
+$config['client_pagination'] = array(	
+	'RowsPerPages'	=> 13,
 	'maxVisiblePages' => 9	
 	);

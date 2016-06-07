@@ -193,9 +193,76 @@ public function getInstianciaEntidad($tabla, $listaCampos){
 				 return "new $entidadIns( ".$constructorParametros;
 	}
 
+
+
+	// Ajustes de todos los mas grandes.
+
+	public function generarEntidad($sufijo, $tabla, $listaCampos){
+
+		$entidadTemp = strtolower($tabla);
+		$entidadIns = $this->limpiarCampo(trim($entidadTemp));
+		$claseNombre = $this->limpiarCampo($sufijo). $entidadIns;
+		$primary_key = ""; 
+
+		$encabezado = "<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); \n
+class E_{$entidadIns} { \n";
+		
+		$variables = ""; 
+		$config = '  var $_config = array( '; 
+
+		$metodos = ""; 
+
+	foreach ($listaCampos as $key => $value) {
+
+
+		if($value['primary_key']){
+			$primary_key = $value["name"]; 
+			$variables .= '  var $_primary = "'. $value["name"] .'";'. "\n";
+		}	
+
+		$variables .= '  var $'.$value["name"]. "; \n";
+		$config .= '"'.$value["name"]. '"=> "'. print_r($value["type"], true).'"'. " \n ";
+		
+		$metodos .= ' public function get'.$value["name"]."(){
+   return ". '$this->'.$value["name"]."; \n
+ } \n \n " .
+ ' public function set'.$value["name"].'($'. lcfirst($value["name"]) . "){
+   ". ' $this->'.$value["name"]." = ". lcfirst($value["name"]) . "; \n
+ } \n \n "; 
+
+
+		 if( (count($listaCampos)-1) != $key){
+		 	$config .= "\t ,";
+		 } else {
+		 	$config .= "); \n \n";
+		 }
+	};
+
+		
+
+
+		$contructor = ' public function __construct($obj = null) {
+  if($obj !== null){
+ // Recorrer Arreglo.
+ 	 foreach ($obj as $keys => $val) {
+ 	  if(array_key_exists($keys, $this->_config)){
+ 		$this->$keys = $val; 
+ 	  }
+ 	 }
+  }
+ }'. "\n  \n ";
+
+		$general = $encabezado . $variables. $config . $contructor . $metodos. "} ?>";
+
+return htmlentities($general);
+		// Recorrido
+
+	}
+
 	
 	public function generarModelo($listaTabla){
-		// Genrar el Modelo		
+		// Genrar el Modelo	
+
 	}
 	
 	public function obtenerUsuario(){	

@@ -27,46 +27,44 @@
             $Pagination: {},
             $configPagination: { maxRowsPage: 15, maxVisiblePage: 8},
             totalPages: 0,
+            pageCallBack : function(){},
 
             $Search: {},
 
         initt: function(options){
           $("#formulario").hide();          
           $("#ListMantenimiento").show();
-          Crud.renderPaginate();
+          Crud.renderPaginate(options);
 
         },
 
         setPages: function(opt){
-            Crud.$Pagination.bootpag(opt);
+
+            Crud.$configPagination.maxRowsPage = opt.maxRowsPage;
+            Crud.pageCalculate(opt); 
+            
         },
 
-        pageCalculate: function(opt){            
-            if("totalResult" in opt){
-                Crud.totalPages = parseInt(opt.totalResult/Crud.$configPagination.maxRowsPage);
+        pageCalculate: function(opt){  
+        // Calculador a de variavbles          
+            if("totalResult" in opt){                
+                Crud.totalPages = parseInt(opt.totalResult/Crud.$configPagination.maxRowsPage);                                
                 
-
-
-
-
-                
-
+                Crud.$Pagination.bootpag( {total: (Crud.totalPages+ 1), maxVisible: 10 } ); 
             }
-
-            
-
-
         }, 
 
-
-        renderPaginate: function(opt){
+        renderPaginate: function(option){
             // configuracion de la cantidad de registros, cantidad de Paginas 
-
+            Crud.pageCallBack = option.callback;
             Crud.$Pagination = $('#page-selection-APP').bootpag({
-                   total: 5,                   
+                   total: 0,                   
                    maxVisible: 10
-                }).on('page', function(event, num){                                    
-                    // Angular Ajax or whiting search.
+                }).on('page', function(event, num){
+
+                    $.getJSON( option.url + "?vNumPage=" + (num-1), function(res){
+                        Crud.pageCallBack(res, num); 
+                    } ); 
                 });
         },
 
@@ -78,10 +76,7 @@
         Editar: function(modo){
           $("#formulario").show();          
           $("#ListMantenimiento").hide();     
-
-               Crud.modo = modo;                
-               console.log("Este es el Crud en el Cliente."); 
-
+               Crud.modo = modo;              
         },
         reset: function(){  
           $("#formulario").hide();          

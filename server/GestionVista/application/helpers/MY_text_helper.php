@@ -192,7 +192,6 @@ class Text
 				}
 			}
 		}
-
 		return true;
 	}
 
@@ -965,6 +964,10 @@ class Text
 	public static function ultimoDiaMes($ano,$mes) {
 		return date("d",(mktime(0,0,0,$mes+1,1,$ano)-1));
 	}
+
+	public static function calcularOffset($cantidad, $pagina){
+		return $cantidad * $pagina;
+	}
 }
 
 Class Encryption {
@@ -980,4 +983,6 @@ Class Encryption {
 	
 	}
 }
+
+
 ?>
