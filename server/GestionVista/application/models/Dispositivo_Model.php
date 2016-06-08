@@ -41,7 +41,23 @@
   }	
 
 	public function insertar($obj){
+
 		$this->load->database();
+
+		$listaCampos = $this->db->field_data("dispositivo");
+		$ppp = $listaCampos[6]; // current($listaCampos); 
+
+		var_dump($ppp->default); 
+		echo "<br>"; 
+		var_dump($ppp->name); 
+
+
+		echo "<br>"; 
+		echo "<pre>"; 
+
+		print_r($listaCampos); 
+		exit(); 
+		
 // Filtrar y Validar LA EXISTENCIA DE LOS Campos en la Entidad.
 		$this->db->insert("dispositivo", $obj);
 		return $this->db->insert_id();
@@ -62,6 +78,7 @@
 					$Dispositivo->$key = $obj[$key];
 				}
 			}
+
 			
 			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
 			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
@@ -80,6 +97,10 @@
 			return null; 
 		}
 		return current($result->result()); 
+	}
+
+	public function ObtenerCampos(){
+				
 	}
 	
  }

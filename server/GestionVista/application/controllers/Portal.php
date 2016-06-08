@@ -37,11 +37,18 @@ class Portal extends MY_Controller {
 
 	}
 
-	public function login() {
+	public function login() {		
 		$myServices = $this->config->item("web_services_key"); 
-			
 
-		$data = array('registro' => "Registro", "mensaje"=> "", "services" => $myServices["auth"]);
+
+
+		$data = array('registro' => "Registro", "mensaje"=> "", "services" => $myServices["auth"],
+
+			"csrf" =>array(
+        'name' => $this->security->get_csrf_token_name(),
+        'hash' => $this->security->get_csrf_hash()
+        ) );
+
 
 		if (!$this->session->userdata('sUsuario')){
 
@@ -50,6 +57,7 @@ class Portal extends MY_Controller {
 
 				$credenciales = $_POST["login"]; 
 				$this->load->model("usuario_model", "modeloUsuario");
+
 
 				$nombreUsuario = trim($credenciales["userName"]);
 				$clave = trim($credenciales["userPw"]);
@@ -169,6 +177,26 @@ class Portal extends MY_Controller {
 				}
 				
 				break;
+
+			case 'Rule':
+
+			$htmlT= ""; 			
+
+				foreach ($vv as $key => $value) {
+
+					$htmlT .= "<br> $key <hr>  <pre> ". $this->Gen->generarRules("objeto", $key, $value); 
+					echo $htmlT;
+					// exit();
+				}
+				
+				break;
+/*
+				$this->form_validation->set_rules('username', 'Username', 'callback_username_check');
+                $this->form_validation->set_rules('password', 'Password', 'required');
+                $this->form_validation->set_rules('passconf', 'Password Confirmation', 'required');
+                $this->form_validation->set_rules('email', 'Email', 'required|is_unique[users.email]');
+
+                */
 
 			
 			default:

@@ -126,7 +126,7 @@ margin-left: 11px;
                           <span>Formularios</span>
                       </a>
                       <ul class="sub">
-                          <li><a  ng-click="SetMain('dispositivo')">Dispositivos</a></li>
+                          <li><a  ng-click="SetMain('dispositivo/sm')">Dispositivos</a></li>
                            
                       </ul>
                   </li>
@@ -224,6 +224,8 @@ margin-left: 11px;
     <script src="<?php echo base_url(). "webApp/"; ?>js/App/Service/Services.js"></script>
     <script src="<?php echo base_url(). "webApp/"; ?>js/App/Controller/Controllers.js"></script>
     <script src="<?php echo base_url(). "webApp/"; ?>js/jquery-bootpag.js"></script>
+    <script src="<?php echo base_url(). "webApp/"; ?>js/jquery.blockUI.js"></script>
+    
     
 
  

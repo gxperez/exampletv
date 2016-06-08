@@ -2,12 +2,11 @@
 
 class Genera_Model extends CI_Model {
 
-function __construct()
+	function __construct()
 	{
 		// Llamando al contructor del Modelo
 		parent::__construct();
 	}
-
 
 
 	public function obtenerTablas($baseDatos){
@@ -55,6 +54,35 @@ WHERE
 		
 			return $resultado; 
 	}
+
+	function obtenerDetalleTabla( $table_name, $database){
+
+		$this->load->database();
+		$query = $this->db->query("SELECT COLUMN_NAME as 'Nombre', IS_NULLABLE as 'IsNullable', DATA_TYPE as 'Type',  A.COLUMN_KEY as 'Key' , 
+A.CHARACTER_MAXIMUM_LENGTH as max_length
+
+FROM
+    information_schema.COLUMNS as A
+WHERE 
+TABLE_SCHEMA = '{$database}' and table_name = '{$table_name}'"); 
+
+		return $query->result(); 
+	}
+
+	public function obtenerDetalleTablaCampo($campo,  $table_name, $database){
+
+		$this->load->database();
+		$query = $this->db->query("SELECT COLUMN_NAME as 'Nombre', IS_NULLABLE as 'IsNullaBle', DATA_TYPE as 'Type',  A.COLUMN_KEY as 'Key' , 
+A.CHARACTER_MAXIMUM_LENGTH as max_length
+
+FROM
+    information_schema.COLUMNS as A
+WHERE 
+TABLE_SCHEMA ='{$database}' and table_name = '{$table_name}' and COLUMN_NAME = '{$campo}'"); 
+
+		return $query->result(); 
+
+ }
 
 
 
@@ -194,6 +222,53 @@ public function getInstianciaEntidad($tabla, $listaCampos){
 	}
 
 
+public function generarRules($sufijo, $tabla, $listaCampos){
+
+	$listado = $this->obtenerDetalleTabla($tabla, 'bis_gestionvista'); 
+
+	$text = ""; 
+
+	foreach ($listado as $key => $value) {
+		if($value->Key != "PRI"){
+
+			$attr = "";		
+
+		if ($value->IsNullable == "NO") {
+			$attr .= "required"; 
+		}
+
+		if($value->Key == "UNI"){
+			if($attr != ""){
+				$attr .="|"; 
+			}
+			$attr .= "is_unique[{$tabla}.{$value->Nombre}]"; 
+		}
+
+		if($value->max_length != null && $value->Type == "varchar"){
+			if($attr != ""){
+				$attr .="|"; 
+			}
+			$attr .= "max_length[{$value->max_length}]"; 
+		}
+
+		if($value->Type == "int"){
+			if($attr != ""){
+				$attr .="|"; 
+			}
+			$attr .= "integer"; 
+		}		
+
+$text .= '$this->form_validation->set_rules("'. $sufijo. '['. $value->Nombre. ']", "' . $value->Nombre . '", "'.    $attr . '"); '. "\n";
+
+		}
+
+		
+	}
+
+	 return htmlentities( $text); 
+
+}
+
 
 	// Ajustes de todos los mas grandes.
 
@@ -222,7 +297,7 @@ class E_{$entidadIns} { \n";
 
 		$variables .= '  var $'.$value["name"]. "; \n";
 		$config .= '"'.$value["name"]. '"=> "'. print_r($value["type"], true).'"'. " \n ";
-		
+
 		$metodos .= ' public function get'.$value["name"]."(){
    return ". '$this->'.$value["name"]."; \n
  } \n \n " .

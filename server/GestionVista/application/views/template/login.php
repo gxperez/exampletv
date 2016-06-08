@@ -104,9 +104,9 @@ Bienvenido</h2>
 		            <input name="login[usuario]" type="text" class="form-control" placeholder="Usuario" autofocus>
 		            <br>
 		            <input type="password" name= "login[clave]" class="form-control" placeholder="Contraseña">
-		            <label class="checkbox">
-		               
+		            <label class="checkbox">		               
 		            </label>
+                    <input id="thash" type="hidden" name="<?=$csrf['name'];?>" value="<?=$csrf['hash'];?>" />
 		            <button id="submitLog" class="btn btn-theme btn-block" type="button"><i class="fa fa-lock"></i> Entrar</button>
 		            <hr>            	            
 		            <?php echo $mensaje;  ?>
@@ -125,6 +125,9 @@ Bienvenido</h2>
 		                      <div class="modal-body">
 		                          <p>  Entra tu dirección de correo para restablecer tu contraseña.</p>
 		                          <input type="text" name="email" placeholder="Email" autocomplete="off" class="form-control placeholder-no-fix">
+
+
+                            
 		
 		                      </div>
 		                      <div class="modal-footer">
@@ -227,7 +230,7 @@ function EsperaLoginClose(){
                 // Si es OK envio de Informacion al Login Local
                 form.Data = res.Data;
                 form.IsOk = true;
-                $.post(base_url + "index.php/portal/login/", {login: form} , function(rs){
+                $.post(base_url + "index.php/portal/login/", {login: form, <?=$csrf['name'];?>:"<?=$csrf['hash'];?>" } , function(rs){
 
                     EsperaLoginClose(); 
 
@@ -251,7 +254,18 @@ function EsperaLoginClose(){
 
             } 
 
-                },"json" ); 
+                },"json" )
+  .fail(function() {
+
+    EsperaLoginClose(); 
+
+    $("#msgServices").html('<div style="color: red; font-weight: bold;  text-align: center;"> Ha ocurrido un fallo al enviar la información suministrada. Favor intentar mas tarde. </div>'); 
+    
+  })
+  .always(function(dt) {
+    console.log(dt); 
+
+});; 
 
             }
 

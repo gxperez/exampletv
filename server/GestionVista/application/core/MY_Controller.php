@@ -28,21 +28,11 @@ class MY_Controller extends CI_Controller {
 		} else {
 			$this->GETLANGUAGE = $this->session->userdata('GETLANGUAGE');
 		}
+	}	
+
 		
-		
-	}
-	
-	public function mostrar($view, $dato){
-		$this->load->view(TEMADEFAULT.'header', $dato);	
-		$this->load->view(TEMADEFAULT."{$view}", $dato);
-		$this->load->view(TEMADEFAULT.'footer');
-	}
-	
-	public function usuarioLogueado(){
-	
-	}
-	
 	public function usuarioPermiso($usuarioRol =array()) {	
+
 		if (!in_array($this->session->userdata("sRol"), $usuarioRol) ) {
 		
 		return false;

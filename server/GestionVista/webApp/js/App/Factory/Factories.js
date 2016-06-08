@@ -16,10 +16,9 @@
     $ang.factory('AppCrud', function () {
 
          var Crud = {
-            form: {},
-            obj: {},       
+            form: {},            
             modo: 0,
-            accion: 0,
+            hash: {},
             selectedIndex: 0,
             esValido: false,
             vldt: null,
@@ -82,21 +81,82 @@
           $("#formulario").hide();          
           $("#ListMantenimiento").show();
 
-          for(var i in Crud.obj){
-            if(Crud.obj.hasOwnProperty(i) ){
-              Crud.obj[i] = ""; 
+          for(var i in Crud.form){
+            if(Crud.form.hasOwnProperty(i) ){
+                if(!(i in Crud.hash)){
+                    Crud.form[i] =  "";                     
+                }
+              
             }
           } 
         },
 
+        setForm: function( obj ){
+            Crud.form = obj; 
+        },
+
+        getForm: function( nameVar ){
+
+            // Sus manos martille.
+            console.log(nameVar);
+            console.log("Esperes Hasta el Final");
+
+            var rest = {}; 
+            if (typeof nameVar === 'undefined' || nameVar === null ){
+                rest['objeto'] = Crud.form;                 
+             // return {objeto: form }
+            } else {
+                rest[nameVar] = Crud.form;                
+            }
+            
+
+            for(var i in Crud.hash) {
+                if(Crud.hash.hasOwnProperty(i)){
+                    rest[i] = Crud.hash[i]; 
+                }
+            }
+            return rest; 
+        }, 
+
+        setHash: function(name, val){
+            Crud.hash[name.trim()] = val.trim();
+             Crud.form[name.trim()] = val.trim();
+        },
+
+
+
         validate: function(){
             for (var form in Crud.$Form) {
                 if (Crud.$Form[form].hasOwnProperty("$invalid") && Crud.$Form[form].$invalid) {
-                    alert("Favor llenar el Formulario Sip");
+
+                       $.blockUI({ 
+            message: $('<div style="size: font-size: 20px;"> <span>Campos incompletos </span>  <p>hay campos obligatorios que debes completar </p></div>'),
+            fadeIn: 700, 
+            fadeOut: 700, 
+            timeout: 2000, 
+            showOverlay: false, 
+            centerY: false, 
+            css: { 
+                width: '350px', 
+                top: '60px', 
+                left: '', 
+                right: '10px', 
+                border: 'none', 
+                padding: '5px', 
+                backgroundColor: '#000', 
+                '-webkit-border-radius': '10px', 
+                '-moz-border-radius': '10px', 
+                opacity: .6, 
+                color: '#fff' 
+            } 
+        }); 
+                    
                  //$sysUtil.ShowMessage($smt.info, "Favor de completar los registros correctamente.");
                 return false;
             }
         }
+
+        return true; 
     }
 }; 
 

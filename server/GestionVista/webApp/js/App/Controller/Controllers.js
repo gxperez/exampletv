@@ -41,7 +41,7 @@
 
         $scope.SetMain = function (link) {
 
-        var link = base_url + "webApp/vistas/sm_"+ link +".html"; 
+        var link = base_url + link; 
         console.log(link);
 
         appHttp.Get(link, null, (function (res, status) {
@@ -174,10 +174,9 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
             appHttp.Get(url, data, callback)
         }        
 
-        var form = {     
+        var form = {                 
             Nombre: "",               
             Descripcion: "", 
-
         };
 
 
@@ -185,8 +184,7 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         $scope.pantallaNombre = "Registro Dispositivo";
         $scope.buscarLista = "";
         $scope.vCrud = appCrud;
-        $scope.vCrud.obj = form; 
-        $scope.vCrud.form = form; 
+        $scope.vCrud.setForm(form); 
 
         $scope.vCrud.initt({url: base_url + "Dispositivo/Obtener", 
             "callback": function(res, num){
@@ -237,11 +235,9 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
 
         $scope.Llenar = function(obj, index){            
 
-            var copiObj = JSON.parse(JSON.stringify(obj));
-            $scope.vCrud.form = copiObj;
-            $scope.vCrud.obj = $scope.vCrud.form; // $scope.currentObj; 
+            var copiObj = JSON.parse(JSON.stringify(obj));            
+            $scope.vCrud.setForm(copiObj);            
             $scope.vCrud.selectedIndex = index; 
-
         }; 
 
         $scope.Eliminar = function(item, indice){
@@ -253,28 +249,25 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         $scope.ListAll = function(){
         }
 
-        $scope.Guardar = function(){
-            console.log("Le da a Guardar"); 
+        $scope.Guardar = function(){            
 
-            if(!$scope.vCrud.validate()){                
+            if(!$scope.vCrud.validate()){
                 return false; 
             }
 
-           // var form = $scope.CLUBCrud.form;
-           console.log("Procura llegar al FInal"); 
-
-            return false; 
+           var form = $scope.vCrud.form;
+           
 
         switch($scope.vCrud.modo) {
             case 0: // Nuevo Crear
             console.log("Envio para la creacion de listaMantenimiento"); 
 
-            $.post(base_url + "Dispositivo/Crear", {objeto: form }, function(res){
+            $.post(base_url + "Dispositivo/Crear", $scope.vCrud.getForm(), function(res){
                     // Ajustes del Json. Respuesta del Formulario.
                 if (res.IsOk){
 
                     $scope.listaDispositivo.push(res.data);
-                    $scope.vCrud.reset();
+                    $scope.vCrud.reset();                    
 
                 } else {
                     console.log("El registro no pudo ser completado"); 
