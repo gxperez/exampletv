@@ -41,8 +41,7 @@
 
         $scope.SetMain = function (link) {
 
-        var link = base_url + link; 
-        console.log(link);
+        var link = base_url + link;         
 
         appHttp.Get(link, null, (function (res, status) {
                 $scope.AppHtml = res;
@@ -140,13 +139,8 @@
         }; 
 
         $scope.Llenar = function(obj){
-            console.log(":Llenar");
-
             var copiObj = JSON.parse(JSON.stringify(obj));
             $scope.currentObj = copiObj;
-            $scope.CLUBCrud.obj = $scope.currentObj; 
-
-
         }; 
 
         $scope.Eliminar = function(item, indice){
@@ -189,7 +183,7 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         $scope.vCrud.initt({url: base_url + "Dispositivo/Obtener", 
             "callback": function(res, num){
                 $scope.ObtenerPaginacionRes(res, num);     
-                $scope.$apply();           
+                $scope.$apply();
             }
         });
 
@@ -197,101 +191,98 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         
 
         $scope.ObtenerPaginacionRes = function(res, num){
-
-        console.log("Obtener");             
-
             if(res.IsOk){
                     $scope.listaDispositivo = res.data; 
                     $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
-                    
                 } else {
-
                     console.log("Uno un Error");
                 }
-
         }
-
 
         $scope.initt = function () {
             $scope.Pantalla = {nombre: "Dispositivo"};            
 
              http(base_url + "Dispositivo/Obtener", {}, function (dt) {
                     $scope.ObtenerPaginacionRes(dt); 
-             }); 
-
-            
+             });
         };        
 
-        $scope.Buscar = function(){                    
-            console.log("Buscar para enviar o recibior"); 
-
+        $scope.Buscar = function(){                                
             $.post(base_url + "Dispositivo/buscar",  function(res){
                 // Ajustes del Json. Respuesta del Formulario
-
             }, 'json');
-
-
         }; 
 
         $scope.Llenar = function(obj, index){            
 
-            var copiObj = JSON.parse(JSON.stringify(obj));            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
             $scope.vCrud.setForm(copiObj);            
-            $scope.vCrud.selectedIndex = index; 
+            $scope.vCrud.selectedIndex = index;             
         }; 
 
         $scope.Eliminar = function(item, indice){
-
-            console.log("Eliminar");
+            console.log("Eliminar: ");
             console.log(indice);
         }; 
 
         $scope.ListAll = function(){
         }
 
-        $scope.Guardar = function(){            
+        $scope.Guardar = function(){
 
             if(!$scope.vCrud.validate()){
                 return false; 
             }
-
-           var form = $scope.vCrud.form;
-           
+                      
 
         switch($scope.vCrud.modo) {
             case 0: // Nuevo Crear
-            console.log("Envio para la creacion de listaMantenimiento"); 
-
             $.post(base_url + "Dispositivo/Crear", $scope.vCrud.getForm(), function(res){
                     // Ajustes del Json. Respuesta del Formulario.
                 if (res.IsOk){
-
                     $scope.listaDispositivo.push(res.data);
                     $scope.vCrud.reset();                    
-
                 } else {
-                    console.log("El registro no pudo ser completado"); 
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
                 }
-
-
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
             }, 'json');            
 
 
             break;
             case 1: // Actualizar Existe 
 
-            $.post(base_url + "Dispositivo/Actualizar", form, function(res){
+            $.post(base_url + "Dispositivo/Actualizar", $scope.vCrud.getForm(), function(res){
                 // Ajustes del Json. Respuesta del Formulario
+                if (res.IsOk){
 
-            }, 'json');            
+                    console.log($scope.vCrud.selectedIndex);
+                    console.log("Sin Saber Crucifique"); 
+                    console.log($scope.vCrud.modo); 
+                    console.log(res.data);
 
+                    $scope.listaDispositivo[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+
+                    $scope.vCrud.reset();                    
+
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert("Este es la culpa tuy ay mia hermano"); 
+            });            
             break;
         }
-         
-
-          
-            console.log($scope.vCrud.modo); 
-
 
         }
 }]);

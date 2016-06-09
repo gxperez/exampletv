@@ -143,7 +143,7 @@ class Portal extends MY_Controller {
 	}
 
 
-	public function GenerarFiles($modo){
+	public function GenerarFiles($modo, $fal = false){
 
 		$this->load->model("genera_model", "Gen");
 		$vv = $this->Gen->obtenerTablas("bis_gestionvista"); 
@@ -179,24 +179,25 @@ class Portal extends MY_Controller {
 				break;
 
 			case 'Rule':
-
-			$htmlT= ""; 			
-
+			$htmlT= ""; 		
 				foreach ($vv as $key => $value) {
-
 					$htmlT .= "<br> $key <hr>  <pre> ". $this->Gen->generarRules("objeto", $key, $value); 
 					echo $htmlT;
 					// exit();
 				}
-				
 				break;
 /*
 				$this->form_validation->set_rules('username', 'Username', 'callback_username_check');
-                $this->form_validation->set_rules('password', 'Password', 'required');
-                $this->form_validation->set_rules('passconf', 'Password Confirmation', 'required');
-                $this->form_validation->set_rules('email', 'Email', 'required|is_unique[users.email]');
-
                 */
+
+              case 'asignateArray':
+			$htmlT= ""; 		
+				foreach ($vv as $key => $value) {
+					$htmlT .= "<br><hr>  <pre> ". $this->Gen->generarAsignate("objeto", $key, $value, $fal); 
+					echo $htmlT;
+					// exit();
+				}
+				break;
 
 			
 			default:

@@ -47,7 +47,7 @@ WHERE
 			if (array_key_exists($field->name, $foraneas)) {
 				$resultado[] = array("name"=>$field->name, "type"=>$field->type, "max_length"=>$field->max_length, "primary_key"=>$field->primary_key, "foraneas"=> $foraneas[$field->name]);
 			} else {
-				$resultado[] = array("name"=>$field->name, "type"=>$field->type, "max_length"=>$field->max_length, "primary_key"=>$field->primary_key, "foraneas"=> null );
+				$resultado[] = array("name"=>$field->name, "type"=>$field->type, "max_length"=>$field->max_length, "primary_key"=>$field->primary_key, "foraneas"=> null, "default"=> $field->default );
 			
 			}
 		}	
@@ -241,30 +241,102 @@ public function generarRules($sufijo, $tabla, $listaCampos){
 			if($attr != ""){
 				$attr .="|"; 
 			}
-			$attr .= "is_unique[{$tabla}.{$value->Nombre}]"; 
+			$attr .= "trim|callback_validar{$value->Nombre}"; 
 		}
-
 		if($value->max_length != null && $value->Type == "varchar"){
 			if($attr != ""){
 				$attr .="|"; 
 			}
 			$attr .= "max_length[{$value->max_length}]"; 
 		}
-
 		if($value->Type == "int"){
 			if($attr != ""){
 				$attr .="|"; 
 			}
 			$attr .= "integer"; 
 		}		
+$text .= '$this->validation->set_rules("'. $sufijo. '['. $value->Nombre. ']", "' . $value->Nombre . '", "'.    $attr . '"); '. "\n";
+		}		
+	}
+	 return htmlentities( $text); 
+}
 
-$text .= '$this->form_validation->set_rules("'. $sufijo. '['. $value->Nombre. ']", "' . $value->Nombre . '", "'.    $attr . '"); '. "\n";
+public function generarAsignate($sufijo, $tabla, $listaCampos, $pk = false){
 
-		}
+	$text = '$'.$tabla . 'Ent = array('; 
 
+	$attr = ""; 
+
+	foreach ($listaCampos as $key => $value) {
+				
+
+
+		if($pk){
+	// Ajustes que no Añoran conocer a Jesus.
+
+			if( $value["type"] == 'datetime'){
+					if(!isset($value["default"]) && $value["default"] == ""){
+
+						if($attr != ""){
+							$attr .=", "; 
+						} 
+
+						$attr .= " '{$value['name']}'=> date('Y-m-d H:i:s') \n"; 						
+
+					} else {
+
+						if(in_array($value["name"], array('FechaModifica', "UltimaSesion", "FechaModificacion", "fechaModificacion", 'fechaModifica', "ultimaSesion" )) ){
+
+						if($attr != ""){
+							$attr .=", "; 
+						} 
+
+							$attr .= "'{$value['name']}'=> date('Y-m-d H:i:s') \n"; 						
+
+						}						
+					}
+
+			} else {
+
+
+						if($attr != ""){
+							$attr .=", "; 
+						} 
+
+							$attr .= "'{$value['name']}'=> $".$tabla."Obj['{$value['name']}'] \n"; 
+			}
+
+		} else {	
+
+			if($value['primary_key'] == 0 ){
+
+
+				if( $value["type"] == 'datetime'){
+					if(!isset($value["default"]) && $value["default"] == ""){
+
+
+						if($attr != ""){
+							$attr .=", "; 
+						} 
+
+						$attr .= "'{$value['name']}'=> date('Y-m-d H:i:s') \n"; 
+					}
+				} else {
+
+
+						if($attr != ""){
+							$attr .=", "; 
+						} 
+
+					$attr .= "'{$value['name']}'=> $".$tabla."Obj['{$value['name']}'] \n"; 
+
+				}				
+			}
+		}	
 		
 	}
-
+	$text .= $attr;
+	$text .= ");"; 
 	 return htmlentities( $text); 
 
 }

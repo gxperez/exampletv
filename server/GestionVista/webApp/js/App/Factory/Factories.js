@@ -93,6 +93,14 @@
 
         setForm: function( obj ){
             Crud.form = obj; 
+
+            for(var i in Crud.form){
+                if(Crud.form.hasOwnProperty(i)){
+                    if($.isNumeric(Crud.form[i]) ){
+                        Crud.form[i] = parseFloat(Crud.form[i]); 
+                    }
+                }
+            }
         },
 
         getForm: function( nameVar ){
@@ -108,7 +116,7 @@
             } else {
                 rest[nameVar] = Crud.form;                
             }
-            
+
 
             for(var i in Crud.hash) {
                 if(Crud.hash.hasOwnProperty(i)){
@@ -119,8 +127,8 @@
         }, 
 
         setHash: function(name, val){
-            Crud.hash[name.trim()] = val.trim();
-             Crud.form[name.trim()] = val.trim();
+            Crud.hash[name] = val;
+             // Crud.form[name.trim()] = val.trim();
         },
 
 

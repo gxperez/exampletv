@@ -52,7 +52,7 @@
                                           <div class="task-title">
                                               <span class="task-title-sp">{{item.Descripcion}}</span>
                                               <div class="pull-right hidden-phone">                                                  
-                                            <button class="btn btn-primary btn-xs fa fa-pencil" ng-click="Llenar(item); vCrud.Editar(1);"></button>
+                                            <button class="btn btn-primary btn-xs fa fa-pencil" ng-click="Llenar(item, $index ); vCrud.Editar(1);"></button>
                                                   <button class="btn btn-danger btn-xs fa fa-trash-o" ng-click="Eliminar(item, $index)"></button>
                                               </div>
                                           </div>
@@ -111,6 +111,7 @@
                               <label class="col-sm-2 col-sm-2 control-label" >DispositivoTipo</label>
                               <div class="col-sm-10">
                                   <input type="number" ng-model="vCrud.form.DispositivoTipo" class="form-control" required>
+                                  {{vCrud.form.DispositivoTipo}}
                               </div>
                        </div>
 
