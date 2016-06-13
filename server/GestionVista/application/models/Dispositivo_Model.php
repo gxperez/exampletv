@@ -17,14 +17,28 @@
 		return $listaDispositivo;
  	}
 
- 	public function obtenerDispositivoPorCampo($campo, $valor = ""){
+ 	public function obtenerDispositivoPorCampo($campo, $valor = "", $limit = 0, $page = 20){
 		$this->load->database();
+		$list = $this->db->field_data("dispositivo");
 
-		$this->db->like($campo, trim($valor));
+		$fieldList = array();
+		foreach ($list as  $value) {
+			$fieldList[] = $value->name;		
+		}
 
-		$data = $this->db->get("dispositivo");	
-			
-		return $data->result(); 		
+		
+
+		$this->db->select($fieldList,FALSE);
+		$this->db->like($campo, trim($valor));		
+		$data = $this->db->get_compiled_select("dispositivo", $limit, $page);
+
+		$arrFill = array('vQuery'=> $data, 'vLimit' => $limit, 'vPage'=> $page);
+
+		$stored_procedure = "call sp_PaginarResultQuery( ?, ?, ?);";		
+		$query = $this->db->query($stored_procedure, $arrFill);
+
+		$listaDispositivo = $query->result(); 
+ 		return $listaDispositivo;		
  	}
 
  	public function obtenerDispositivoPaginado($limit, $row, $condicion = " 1=1"){

@@ -127,15 +127,11 @@
             {id:"a3", descripcion:"EN Espiritu y en Verdad KASA"}
             ]; 
 
-
         };
 
         $scope.buscarLista = ""; 
-
         $scope.Buscar = function(){
-
             console.log("Buscar para enviar o recibior"); 
-
         }; 
 
         $scope.Llenar = function(obj){
@@ -155,14 +151,13 @@
         $scope.Guardar = function(){            
 
             console.log("GUardar A ver si es Actualizar o Modificar"); 
-
             console.log($scope.CLUBCrud.modo); 
 
 
         }
 }]);
 
-$ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHttp','AppMenuEvent', '$compile', function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile) {
+$ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHttp','AppMenuEvent', '$compile', 'AppSession' function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
 
         function http(url, data, callback) {
             appHttp.Get(url, data, callback)
@@ -184,37 +179,70 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
             "callback": function(res, num){
                 $scope.ObtenerPaginacionRes(res, num);     
                 $scope.$apply();
-            }
-        });
-
+            }, 
+            "searchUrl":  base_url + "Dispositivo/Buscar"
+        });        
         
-        
 
-        $scope.ObtenerPaginacionRes = function(res, num){
+        $scope.ObtenerPaginacionRes = function(res, num){            
             if(res.IsOk){
+
                     $scope.listaDispositivo = res.data; 
                     $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
                 } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
                     console.log("Uno un Error");
                 }
         }
 
         $scope.initt = function () {
-            $scope.Pantalla = {nombre: "Dispositivo"};            
 
-             http(base_url + "Dispositivo/Obtener", {}, function (dt) {
+            $scope.Pantalla = {nombre: "Dispositivo"};            
+             http(base_url + "Dispositivo/Obtener", {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
         };        
 
-        $scope.Buscar = function(){                                
-            $.post(base_url + "Dispositivo/buscar",  function(res){
-                // Ajustes del Json. Respuesta del Formulario
-            }, 'json');
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != "") {
+
+             switch(cEvent.type ){
+                case "keypress":
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + "Dispositivo/Buscar/" + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                                                                                         
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case "click":
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + "Dispositivo/Buscar/" + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                                                                                           
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + "Dispositivo/Obtener", {}, function (dt) {
+
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+        }  
         }; 
 
-        $scope.Llenar = function(obj, index){            
 
+        $scope.Llenar = function(obj, index){            
             var copiObj = JSON.parse(JSON.stringify(obj));   
             $scope.vCrud.setForm(copiObj);            
             $scope.vCrud.selectedIndex = index;             
@@ -223,12 +251,18 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         $scope.Eliminar = function(item, indice){
             console.log("Eliminar: ");
             console.log(indice);
+
+            // Metodos para la Eliminacion de Elementos.
+
+
         }; 
 
         $scope.ListAll = function(){
         }
 
         $scope.Guardar = function(){
+
+            console.log("Quien ha hecho algo"); 
 
             if(!$scope.vCrud.validate()){
                 return false; 
@@ -239,6 +273,9 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
             case 0: // Nuevo Crear
             $.post(base_url + "Dispositivo/Crear", $scope.vCrud.getForm(), function(res){
                     // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(dt);                                         
+
+
                 if (res.IsOk){
                     $scope.listaDispositivo.push(res.data);
                     $scope.vCrud.reset();                    
@@ -256,21 +293,15 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
             case 1: // Actualizar Existe 
 
             $.post(base_url + "Dispositivo/Actualizar", $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(dt);                                         
                 // Ajustes del Json. Respuesta del Formulario
                 if (res.IsOk){
-
-                    console.log($scope.vCrud.selectedIndex);
-                    console.log("Sin Saber Crucifique"); 
-                    console.log($scope.vCrud.modo); 
-                    console.log(res.data);
-
                     $scope.listaDispositivo[$scope.vCrud.selectedIndex]= res.data;
                     $scope.$apply();
-
                     $scope.vCrud.reset();                    
-
                 } else {
-                    // Reasignacion de Tokens.
+                    // Reasignacion de Tokens. Mensaje
+                    // Notifiacion de mensaje de Error.
                     alert(res.Msg);                     
                 }
 

@@ -29,8 +29,8 @@
 
             <div class="pull-right">                                  
 
-                            <input type="text" ng-model="buscarLista" class="round-form">                            
-                            <button type="button" class="btn btn-round btn-default" ng-click="Buscar()"><i class="fa fa-search"></i>  </button>
+                            <input type="text" ng-model="buscarLista"  ng-keypress="Buscar($event)" class="round-form" >                            
+                            <button type="button" class="btn btn-round btn-default" ng-click="Buscar($event)"><i class="fa fa-search"></i>  </button>
                       </div>
                           
                     

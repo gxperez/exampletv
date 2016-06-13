@@ -27,12 +27,16 @@
             $configPagination: { maxRowsPage: 15, maxVisiblePage: 8},
             totalPages: 0,
             pageCallBack : function(){},
-
-            $Search: {},
+            $Search: {send: false, url: "", w: ""},
 
         initt: function(options){
           $("#formulario").hide();          
           $("#ListMantenimiento").show();
+
+        if("searchUrl" in options){
+          Crud.$Search.url = options.searchUrl; 
+        }
+
           Crud.renderPaginate(options);
 
         },
@@ -61,9 +65,16 @@
                    maxVisible: 10
                 }).on('page', function(event, num){
 
-                    $.getJSON( option.url + "?vNumPage=" + (num-1), function(res){
-                        Crud.pageCallBack(res, num); 
-                    } ); 
+                    var innerUrl = option.url;
+                if(Crud.$Search.send === true){
+                    innerUrl = Crud.$Search.url + "/" + Crud.$Search.w; 
+                }
+
+                console.log(innerUrl);
+
+                    $.getJSON( innerUrl + "?vNumPage=" + (num-1), function(res){
+                        Crud.pageCallBack(res, num);
+                    } );
                 });
         },
 
@@ -134,6 +145,7 @@
 
 
         validate: function(){
+
             for (var form in Crud.$Form) {
                 if (Crud.$Form[form].hasOwnProperty("$invalid") && Crud.$Form[form].$invalid) {
 
@@ -166,6 +178,41 @@
 
         return true; 
     }
+}; 
+
+return Crud; 
+       
+    });
+
+$ang.factory('AppSession', function () {
+
+         var miSession = {
+            strict: true,
+            form: {},                       
+            pageCallBack : function(){},
+            $Search: {send: false, url: "", w: ""},
+
+        initt: function(options){
+        },       
+
+        IsSession: function(res){            
+            if("IsSession" in res){
+                if(res.IsSession == false){
+                    miSession.refrescar();
+                    return false;
+                }
+            }
+            if(miSession.strict === true){
+                miSession.refrescar(); 
+                return false;
+            }
+        },
+
+        refrescar: function(){
+            // Windows Reload     
+             document.location.reload(true);       
+            
+        }
 }; 
 
 return Crud; 

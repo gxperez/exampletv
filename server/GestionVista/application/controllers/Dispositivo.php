@@ -40,6 +40,11 @@ class Dispositivo extends MY_Controller {
 
 
 	public function Obtener(){
+		if (!$this->session->userdata('sUsuario')){
+			echo json_encode(array('IsSession' => false)); 
+			return false; 
+		}
+
 		$idRol = 0; 
 		$this->load->model('Dispositivo_model', 'mDispositivo');
 
@@ -56,13 +61,20 @@ class Dispositivo extends MY_Controller {
 
 		
 		$first = current($listaDispositivo); 
-		echo json_encode(array('data' => $listaDispositivo, 'totalResult'=> $first->CountRow, "count"=> count($listaDispositivo), 'IsOk'=> true, 'rowsPerPages'=> $pagConf["RowsPerPages"])); 
+		echo json_encode(array('data' => $listaDispositivo, 'totalResult'=> $first->CountRow, "count"=> count($listaDispositivo), 'IsOk'=> true, 'rowsPerPages'=> $pagConf["RowsPerPages"], 'IsSession' => true)); 
 	}
 
-	public function Crear(){		
+	public function Crear(){
+
+	if (!$this->session->userdata('sUsuario')){
+			echo json_encode(array('IsSession' => false)); 
+			return false; 
+		}		
+
+
+
 		$this->load->model('Dispositivo_model', 'mDispositivo');
-		// Auto Validacion del Formulario.		
-				
+		// Auto Validacion del Formulario.						
 
 	 	$this->validation->set_rules("objeto[Nombre]", "Nombre", "required|max_length[50]"); 
 		$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "max_length[50]"); 
@@ -76,11 +88,10 @@ class Dispositivo extends MY_Controller {
 
 		if ($this->validation->run() == FALSE)
          {
-            echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), "csrf" =>array(
+            echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), 'IsSession' => true, "csrf" =>array(
         'name' => $this->security->get_csrf_token_name(),
         'hash' => $this->security->get_csrf_hash()
         ) )  );
-
            	return false;
          }
 
@@ -101,19 +112,26 @@ class Dispositivo extends MY_Controller {
 			$id = $this->mDispositivo->insertar( $dispositivoEnt ); 
 			$dispositivoEnt['DispositivoID'] = $id; 
 
-			echo json_encode(array('data' => $dispositivoEnt, 'IsOk'=> true, "Msg"=>"Success", "csrf" =>array(
+			echo json_encode(array('data' => $dispositivoEnt, 'IsOk'=> true, "Msg"=>"Success", 'IsSession' => true, "csrf" =>array(
         'name' => $this->security->get_csrf_token_name(),
         'hash' => $this->security->get_csrf_hash()
         ) )); 
 
 		} else {
-			return json_encode(array("IsOk"=> false) );
+			echo  json_encode(array("IsOk"=> false, 'IsSession' => true) );
+			return false;
 		}
 	}
 
 	public function Actualizar(){
-		$this->load->model('Dispositivo_model', 'mDispositivo');
 
+		if (!$this->session->userdata('sUsuario')){
+			echo json_encode(array('IsSession' => false)); 
+			return false; 
+		}		
+
+
+		$this->load->model('Dispositivo_model', 'mDispositivo');
 		$this->validation->set_rules("objeto[Nombre]", "Nombre", "required|max_length[50]"); 
 		$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "max_length[50]"); 
 		$this->validation->set_rules("objeto[DispositivoTipo]", "DispositivoTipo", "integer"); 
@@ -122,11 +140,10 @@ class Dispositivo extends MY_Controller {
 
 			if ($this->validation->run() == FALSE)
          {
-            echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), "csrf" =>array(
+            echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), 'IsSession' => true, "csrf" =>array(
 		        'name' => $this->security->get_csrf_token_name(),
 		        'hash' => $this->security->get_csrf_hash()
 		        ) )  );
-
            	return false;
          }
 
@@ -138,12 +155,11 @@ class Dispositivo extends MY_Controller {
 				echo json_encode(array("IsOk"=> false, "Msg"=> "Error DB al actualizar". print_r($dispositivoEnt, true), "csrf" =>array(
 		        'name' => $this->security->get_csrf_token_name(),
 		        'hash' => $this->security->get_csrf_hash()
-		        ) )  );
+		        ), 'IsSession' => true )  );
 		        return false; 
 			} 
 
-
-			echo json_encode(array('data' => $dispositivoObj, 'IsOk'=> true, "Msg"=>"Success", "csrf" =>array(
+			echo json_encode(array('data' => $dispositivoObj, 'IsOk'=> true, "Msg"=>"Success", 'IsSession' => true, "csrf" =>array(
 	        'name' => $this->security->get_csrf_token_name(),
 	        'hash' => $this->security->get_csrf_hash()
 	        ) )); 
@@ -154,23 +170,47 @@ class Dispositivo extends MY_Controller {
 	public function validarMac($str){
 		$this->load->model('Dispositivo_model', 'mDispositivo');
 		$this->form_validation->set_message('validarMac', 'La {field} ya existe en el sistema.');
-		return $this->mDispositivo->existeValorCampo("dispositivo.Mac", $str);
-		 
-                    
+		return $this->mDispositivo->existeValorCampo("dispositivo.Mac", $str);		                     
 	}
 
 	public function Buscar($str = null){
+
+		if (!$this->session->userdata('sUsuario')){
+			echo json_encode(array('IsSession' => false)); 
+			return false; 
+		}		
 
 		if(!isset($str)) {		
 			return false; 
 		}
 
+
 		$this->load->model('Dispositivo_model', 'mDispositivo');
-		$res = $this->mDispositivo->obtenerDispositivoPorCampo("Descripcion", $str);
-		print_r($res);
+		$pagConf =  $this->config->item("client_pagination");
+		if($this->input->get('vNumPage')){
+			$pagina = $this->input->get('vNumPage'); 
+			$listaDispositivo = $this->mDispositivo->obtenerDispositivoPorCampo("Descripcion", $str, $pagConf["RowsPerPages"], Text::calcularOffset($pagConf["RowsPerPages"],  $pagina) );
+		} else {
+			$listaDispositivo = $this->mDispositivo->obtenerDispositivoPorCampo("Descripcion", $str, $pagConf["RowsPerPages"], 0);
+		}
+		$totalResult = 0; 
+		if(count($listaDispositivo)> 0){
+			$first = current($listaDispositivo); 	
+			$totalResult = $first->CountRow;
+		}
+		echo json_encode(array('data' => $listaDispositivo, 'totalResult'=> $totalResult, "count"=> count($listaDispositivo), 'IsOk'=> true, 'rowsPerPages'=> $pagConf["RowsPerPages"])); 
 	}
 
 	public function Eliminar(){
+		// Eliminar a travez del post y del Get y validar la Session.
+		if (!$this->session->userdata('sUsuario')){
+			echo json_encode(array('IsSession' => false)); 
+			
+			return false; 
+		}		
+
+
+
 
 	}
 }
