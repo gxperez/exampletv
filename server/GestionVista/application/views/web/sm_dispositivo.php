@@ -10,16 +10,14 @@
       
               <div class="row mt mb">
 
-<div id="header-crudTools" class="crudTools col-md-12">     
+    <div id="header-crudTools" class="crudTools col-md-12">     
                   <div>
                     <div class="btn-group">                      
 
                     <button id="btnGuardar" type="submit" class="btn btn-default" ng-click="vCrud.Editar(0)"><span class="fa fa-plus"></span> Agregar </button>
-                                  
-                      
                   </div>
                   </div>
-              </div>  
+    </div>  
 
                   <div class="col-md-12">
                       <section class="task-panel tasks-widget">
@@ -126,7 +124,7 @@
                        <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label" >Estatus</label>
                               <div class="col-sm-10">
-                                  <input type="text" ng-model="vCrud.form.Estatus" class="form-control" required>
+                                  <input type="text" ng-model="vCrud.form.Estado" class="form-control" required>
                               </div>                              
                        </div>
 

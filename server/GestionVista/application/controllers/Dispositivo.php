@@ -25,14 +25,11 @@ class Dispositivo extends MY_Controller {
 			redirect('/portal/login', 'refresh');			
 			return false; 
 		}
-
 		$data = array("csrf" =>array(
         'name' => $this->security->get_csrf_token_name(),
         'hash' => $this->security->get_csrf_hash()
         ) );
-
-		// Carga de planilla web en general.		
-
+		// Carga de planilla web en general.
 		$this->load->view("web/sm_dispositivo", $data); 
 
 	}
@@ -58,29 +55,30 @@ class Dispositivo extends MY_Controller {
 		} else {
 			$listaDispositivo = $this->mDispositivo->obtenerDispositivoPaginado($pagConf["RowsPerPages"], 0);
 		}
-
+		
+		$totalResult = 0; 
+		if(count($listaDispositivo)> 0){
+			$first = current($listaDispositivo); 	
+			$totalResult = $first->CountRow;
+		}
 		
 		$first = current($listaDispositivo); 
-		echo json_encode(array('data' => $listaDispositivo, 'totalResult'=> $first->CountRow, "count"=> count($listaDispositivo), 'IsOk'=> true, 'rowsPerPages'=> $pagConf["RowsPerPages"], 'IsSession' => true)); 
+		echo json_encode(array('data' => $listaDispositivo, 'totalResult'=> $totalResult, "count"=> count($listaDispositivo), 'IsOk'=> true, 'rowsPerPages'=> $pagConf["RowsPerPages"], 'IsSession' => true)); 
 	}
 
 	public function Crear(){
-
 	if (!$this->session->userdata('sUsuario')){
 			echo json_encode(array('IsSession' => false)); 
 			return false; 
 		}		
 
-
-
 		$this->load->model('Dispositivo_model', 'mDispositivo');
 		// Auto Validacion del Formulario.						
-
 	 	$this->validation->set_rules("objeto[Nombre]", "Nombre", "required|max_length[50]"); 
 		$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "max_length[50]"); 
 		$this->validation->set_rules("objeto[DispositivoTipo]", "DispositivoTipo", "integer"); 
 		$this->validation->set_rules("objeto[Marca]", "Marca", "max_length[45]"); 
-		$this->validation->set_rules("objeto[Estatus]", "Estatus", "integer"); 
+		$this->validation->set_rules("objeto[Estado]", "Estado", "integer"); 
 		$this->validation->set_rules("objeto[Mac]", "Mac", "required|trim|callback_validarMac|max_length[45]"); 
 		$this->validation->set_rules("objeto[IP]", "IP", "max_length[45]");
 
@@ -95,17 +93,14 @@ class Dispositivo extends MY_Controller {
            	return false;
          }
 
-
 		if($this->input->post("objeto")){
-
 		$dispositivoObj = $this->security->xss_clean($this->input->post("objeto"));
-
 		
 		 $dispositivoEnt = array('Nombre'=> $dispositivoObj['Nombre'] 
 								, 'Descripcion'=> $dispositivoObj['Descripcion'] 
 								, 'DispositivoTipo'=> $dispositivoObj['DispositivoTipo'] 
 								, 'Marca'=> $dispositivoObj['Marca'] 
-								, 'Estatus'=> $dispositivoObj['Estatus'] 
+								, 'Estado'=> $dispositivoObj['Estado'] 
 								, 'Mac'=> $dispositivoObj['Mac'] 								
 								);
 
@@ -136,9 +131,9 @@ class Dispositivo extends MY_Controller {
 		$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "max_length[50]"); 
 		$this->validation->set_rules("objeto[DispositivoTipo]", "DispositivoTipo", "integer"); 
 		$this->validation->set_rules("objeto[Marca]", "Marca", "max_length[45]"); 
-		$this->validation->set_rules("objeto[Estatus]", "Estatus", "integer"); 
+		$this->validation->set_rules("objeto[Estado]", "Estado", "integer"); 
 
-			if ($this->validation->run() == FALSE)
+		if ($this->validation->run() == FALSE)
          {
             echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), 'IsSession' => true, "csrf" =>array(
 		        'name' => $this->security->get_csrf_token_name(),
@@ -168,11 +163,12 @@ class Dispositivo extends MY_Controller {
 
 
 	public function validarMac($str){
+		$this->validation->set_message('validarMac', 'La {field} ya existe en el sistema.');
 		$this->load->model('Dispositivo_model', 'mDispositivo');
-		$this->form_validation->set_message('validarMac', 'La {field} ya existe en el sistema.');
 		return $this->mDispositivo->existeValorCampo("dispositivo.Mac", $str);		                     
 	}
 
+	
 	public function Buscar($str = null){
 
 		if (!$this->session->userdata('sUsuario')){
@@ -198,19 +194,36 @@ class Dispositivo extends MY_Controller {
 			$first = current($listaDispositivo); 	
 			$totalResult = $first->CountRow;
 		}
-		echo json_encode(array('data' => $listaDispositivo, 'totalResult'=> $totalResult, "count"=> count($listaDispositivo), 'IsOk'=> true, 'rowsPerPages'=> $pagConf["RowsPerPages"])); 
+		echo json_encode(array('data' => $listaDispositivo, 'totalResult'=> $totalResult, "count"=> count($listaDispositivo), 'IsOk'=> true, 'rowsPerPages'=> $pagConf["RowsPerPages"], 'IsSession' => true)); 
 	}
 
 	public function Eliminar(){
 		// Eliminar a travez del post y del Get y validar la Session.
 		if (!$this->session->userdata('sUsuario')){
 			echo json_encode(array('IsSession' => false)); 
-			
 			return false; 
-		}		
+		}
 
+		if($this->input->post("objeto")){			
+			$this->load->model('Dispositivo_model', 'mDispositivo');
 
+			// Padre en tus manos pongo.
+			$dispositivoObj = $this->security->xss_clean($this->input->post("objeto"));  
+			$result = $this->mDispositivo->cambiarEstado($dispositivoObj, -1); 
 
+			if(! $result ){
+				echo json_encode(array("IsOk"=> false, "Msg"=> "Error al Tratar de Eliminar", "csrf" =>array(
+		        'name' => $this->security->get_csrf_token_name(),
+		        'hash' => $this->security->get_csrf_hash()
+		        ), 'IsSession' => true )  );		        		        
+		        return false; 
+			} 
 
+			echo json_encode(array( 'IsOk'=> true, "Msg"=>"Success", 'IsSession' => true, "csrf" =>array(
+	        'name' => $this->security->get_csrf_token_name(),
+	        'hash' => $this->security->get_csrf_hash()
+	        ) ));
+	        return true; 
+		} 
 	}
 }

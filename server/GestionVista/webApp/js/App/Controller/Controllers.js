@@ -157,7 +157,7 @@
         }
 }]);
 
-$ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHttp','AppMenuEvent', '$compile', 'AppSession' function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+$ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHttp','AppMenuEvent', '$compile', 'AppSession', function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
 
         function http(url, data, callback) {
             appHttp.Get(url, data, callback)
@@ -252,6 +252,32 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
             console.log("Eliminar: ");
             console.log(indice);
 
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + "Dispositivo/Eliminar", iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaDispositivo.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert("Error en el POST SERVER");
+
+            });  
+
+
+
             // Metodos para la Eliminacion de Elementos.
 
 
@@ -261,19 +287,15 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         }
 
         $scope.Guardar = function(){
-
-            console.log("Quien ha hecho algo"); 
-
             if(!$scope.vCrud.validate()){
                 return false; 
             }
-                      
 
         switch($scope.vCrud.modo) {
             case 0: // Nuevo Crear
             $.post(base_url + "Dispositivo/Crear", $scope.vCrud.getForm(), function(res){
                     // Ajustes del Json. Respuesta del Formulario.
-                    $appSession.IsSession(dt);                                         
+                    $appSession.IsSession(res);                                      
 
 
                 if (res.IsOk){
@@ -293,7 +315,7 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
             case 1: // Actualizar Existe 
 
             $.post(base_url + "Dispositivo/Actualizar", $scope.vCrud.getForm(), function(res){
-                $appSession.IsSession(dt);                                         
+                $appSession.IsSession(res);                                                         
                 // Ajustes del Json. Respuesta del Formulario
                 if (res.IsOk){
                     $scope.listaDispositivo[$scope.vCrud.selectedIndex]= res.data;

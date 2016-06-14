@@ -100,8 +100,7 @@ margin-left: 11px;
               <ul class="sidebar-menu" id="nav-accordion">
               
               	  <p class="centered"><a href="#"><img src="<?php echo base_url(). "webApp/";?>img/user.jpg" class="img-circle" width="60"></a></p>
-              	  <h5 class="centered"><?php echo "Administrador";  ?></h5>             	  	
-                  
+              	  <h5 class="centered"><?php echo "Administrador";  ?></h5>
 
       
 

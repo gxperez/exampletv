@@ -149,8 +149,7 @@ class Portal extends MY_Controller {
 		$vv = $this->Gen->obtenerTablas("bis_gestionvista"); 
 
 		switch ($modo) {
-			case 'modelo':
-			
+			case 'modelo':			
 			$htmlT = ""; 
 			foreach ($vv as $key => $value) {
 				$htmlT .= "<hr> // Siguiente..  <br>". $this->Gen->formarModel("", $key, $value); 
@@ -161,7 +160,20 @@ class Portal extends MY_Controller {
 			echo "</pre> <hr> <br>"; 
 				break;
 
-			case 'Controlador':				
+			case 'controlador':
+
+			$htmlT = " <pre> "; 
+			foreach ($vv as $key => $value) {
+					echo "<hr> <pre> "; 
+					$htmlT .= $this->Gen->formarController("", $key, $value);
+
+					echo $htmlT;
+
+					echo "</pre> <hr> <br>"; 
+					exit();
+				}
+
+			
 				break;
 
 			case 'Entidad':
@@ -197,6 +209,22 @@ class Portal extends MY_Controller {
 					echo $htmlT;
 					// exit();
 				}
+				break;
+
+			case 'vista':
+
+			$htmlT = " <pre> "; 
+			foreach ($vv as $key => $value) {
+					echo "<hr> <pre> "; 
+					$htmlT .= $this->Gen->formarVista("", $key, $value);
+					
+					echo $htmlT;
+
+					echo "</pre> <hr> <br>"; 
+					exit();
+				}
+
+			
 				break;
 
 			

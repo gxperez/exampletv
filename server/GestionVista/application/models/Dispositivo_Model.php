@@ -24,15 +24,19 @@
 		$fieldList = array();
 		foreach ($list as  $value) {
 			$fieldList[] = $value->name;		
-		}
+		}		
 
-		
+		$this->db->select($fieldList,FALSE);		
+		$this->db->where(" Estado != " ,'-1' );
+		$this->db->like($campo, trim($valor));	
 
-		$this->db->select($fieldList,FALSE);
-		$this->db->like($campo, trim($valor));		
 		$data = $this->db->get_compiled_select("dispositivo", $limit, $page);
 
 		$arrFill = array('vQuery'=> $data, 'vLimit' => $limit, 'vPage'=> $page);
+
+	//	echo $data; 
+
+	//	exit(); 
 
 		$stored_procedure = "call sp_PaginarResultQuery( ?, ?, ?);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
@@ -41,7 +45,7 @@
  		return $listaDispositivo;		
  	}
 
- 	public function obtenerDispositivoPaginado($limit, $row, $condicion = " 1=1"){
+ 	public function obtenerDispositivoPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 
 		$arrFill = array('vLimit' => $limit, 'vPage'=> $row, 'vCondicion'=> $condicion);
@@ -65,28 +69,38 @@
   }	
 
 	public function insertar($obj){
-
 		$this->load->database();
-
 		$listaCampos = $this->db->field_data("dispositivo");
-		
-		
-		
-		
 // Filtrar y Validar LA EXISTENCIA DE LOS Campos en la Entidad.
 		$this->db->insert("dispositivo", $obj);
 		return $this->db->insert_id();
+	}
+
+	public function cambiarEstado($obj, $estado){
+		$this->load->database();
+		$dispositivoEnt = $this->ObtenerPorID($obj['DispositivoID']);
+
+		if($dispositivoEnt == null){ 
+		        return false; 
+        }        
+        $update['UltimaSesion'] = date('Y-m-d H:i:s');
+        $update['Estado'] = $estado; 
+        $this->db->where('DispositivoID', $obj['DispositivoID']);
+		$rs = $this->db->update('dispositivo', $update);	
+
+		if($rs){
+			return $dispositivoEnt; 
+		}
+			return $rs; 
 	}
 
 	public function actualizar($obj){
 		$this->load->database();
 
 		$dispositivoEnt = $this->ObtenerPorID($obj['DispositivoID']);
-
         	if($dispositivoEnt == null){ 
 		        return false; 
         	}
-
         	$update = array();
         	foreach ($dispositivoEnt as $key => $value) {
         		if($key != "DispositivoID"){
@@ -95,17 +109,13 @@
 	        		}           			
         		}    		
         	}
-
         	$update['UltimaSesion'] = date('Y-m-d H:i:s');
         	$this->db->where('DispositivoID', $obj['DispositivoID']);
-			$rs = $this->db->update('dispositivo', $update);	
-
+			$rs = $this->db->update('dispositivo', $update);
 			if($rs){
 				return $dispositivoEnt; 
 			}
-
-			return $rs; 
-		
+			return $rs; 		
 	}
 
 	public function existeValorCampo($tabla_campo, $val){

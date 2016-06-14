@@ -1,6 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
 
- class SeccionTemplate_Model extends CI_Model {
+ class Grupo_Model extends CI_Model {
  
  
   function __construct()
@@ -9,17 +9,17 @@
 	}
  
  
-	public function obtenerSeccionTemplate(){
+	public function obtenerGrupo(){
 		$this->load->database();
-		$query = $this->db->get(seccion_template);			
+		$query = $this->db->get(grupo);			
 			
-		$listaSeccionTemplate = $query->result(); 
-		return $listaSeccionTemplate;
+		$listaGrupo = $query->result(); 
+		return $listaGrupo;
  	}
 
- 	public function obtenerSeccionTemplatePorCampo($campo, $valor = "", $limit = 0, $page = 20){
+ 	public function obtenerGrupoPorCampo($campo, $valor = "", $limit = 0, $page = 20){
 		$this->load->database();
-		$list = $this->db->field_data("seccion_template");
+		$list = $this->db->field_data("grupo");
 		$fieldList = array();
 		foreach ($list as  $value) {
 			$fieldList[] = $value->name;		
@@ -28,34 +28,34 @@
 		$this->db->select($fieldList,FALSE);
 		$this->db->where(" Estado !=" , "-1" );
 		$this->db->like($campo, trim($valor));
-		$data = $this->db->get_compiled_select("seccion_template", $limit, $page);
+		$data = $this->db->get_compiled_select("grupo", $limit, $page);
 
 		$arrFill = array("vQuery"=> $data, "vLimit" => $limit, "vPage"=> $page);
 		$stored_procedure = "call sp_PaginarResultQuery( ?, ?, ?);";
 		$query = $this->db->query($stored_procedure, $arrFill);
-		$listaSeccionTemplate = $query->result();
+		$listaGrupo = $query->result();
  		return $listaDispositivo;
  	}
 
- 	public function obtenerSeccionTemplatePaginado($limit, $row, $condicion = " Estado != -1"){
+ 	public function obtenerGrupoPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla("seccion_template", ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla("grupo", ?, ?, ?);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;
  	}
 	
-	public function obtenerSeccionTemplateJson(){
+	public function obtenerGrupoJson(){
 		$this->load->database();
-		$query = $this->db->get(seccion_template);	
+		$query = $this->db->get(grupo);	
 			
 		$usuario = array();
 		foreach ($query->result() as $row)
 		{
-			$listaSeccionTemplate[] = $row; 
+			$listaGrupo[] = $row; 
 		}
-			return json_encode($listaSeccionTemplate);
+			return json_encode($listaGrupo);
   }	
 
 	public function existeValorCampo($tabla_campo, $val){
@@ -73,56 +73,56 @@
 
 	public function insertar($obj){
 		$this->load->database();
-		$listaCampos = $this->db->field_data("seccion_template");
-		$this->db->insert("seccion_template", $obj);
+		$listaCampos = $this->db->field_data("grupo");
+		$this->db->insert("grupo", $obj);
 		return $this->db->insert_id();
 	}
 
 	public function actualizar($obj){
 		$this->load->database();
 
-		$SeccionTemplateEnt = $this->ObtenerPorID($obj["SeccionTemplateID"]);
-        	if($SeccionTemplateEnt == null){ 
+		$GrupoEnt = $this->ObtenerPorID($obj["GrupoID"]);
+        	if($GrupoEnt == null){ 
 		        return false; 
         	}
         	$update = array();
-        	foreach ($SeccionTemplateEnt as $key => $value) {
-        		if($key != "SeccionTemplateID"){
+        	foreach ($GrupoEnt as $key => $value) {
+        		if($key != "GrupoID"){
 	        		if(array_key_exists($key, $obj) && $value != $obj[$key]){
 	        			$update[$key] = $obj[$key];        			
 	        		}           			
         		}    		
         	}
         	$update["FechaModifica"] = date("Y-m-d H:i:s");
-        	$this->db->where("SeccionTemplateID", $obj["SeccionTemplateID"]);
-			$rs = $this->db->update("seccion_template", $update);
+        	$this->db->where("GrupoID", $obj["GrupoID"]);
+			$rs = $this->db->update("grupo", $update);
 			if($rs){
-				return $SeccionTemplateEnt; 
+				return $GrupoEnt; 
 			}
 			return $rs; 		
 	}
 
 	public function cambiarEstado($obj, $estado){
 		$this->load->database();
-		$seccion_templateEnt = $this->ObtenerPorID($obj["seccion_template"]);
+		$grupoEnt = $this->ObtenerPorID($obj["grupo"]);
 
 		if($dispositivoEnt == null){ 
 		        return false; 
         }        
         $update["FechaModifica"] = date("Y-m-d H:i:s");
         $update["Estado"] = $estado; 
-        $this->db->where("SeccionTemplateID", $obj["SeccionTemplateID"]);
-		$rs = $this->db->update("seccion_template", $update);	
+        $this->db->where("GrupoID", $obj["GrupoID"]);
+		$rs = $this->db->update("grupo", $update);	
 
 		if($rs){
-			return $seccion_templateEnt; 
+			return $grupoEnt; 
 		}
 			return $rs; 
 	}
 
 	public function ObtenerPorID($id){
-		$this->db->where("SeccionTemplateID", $id); 
-		$result = $this->db->get("seccion_template");		
+		$this->db->where("GrupoID", $id); 
+		$result = $this->db->get("grupo");		
 
 		if ($result->num_rows() == 0)
 		{

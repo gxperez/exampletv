@@ -16,6 +16,35 @@
 		$listaFuentes = $query->result(); 
 		return $listaFuentes;
  	}
+
+ 	public function obtenerFuentesPorCampo($campo, $valor = "", $limit = 0, $page = 20){
+		$this->load->database();
+		$list = $this->db->field_data("fuentes");
+		$fieldList = array();
+		foreach ($list as  $value) {
+			$fieldList[] = $value->name;		
+		}
+
+		$this->db->select($fieldList,FALSE);
+		$this->db->where(" Estado !=" , "-1" );
+		$this->db->like($campo, trim($valor));
+		$data = $this->db->get_compiled_select("fuentes", $limit, $page);
+
+		$arrFill = array("vQuery"=> $data, "vLimit" => $limit, "vPage"=> $page);
+		$stored_procedure = "call sp_PaginarResultQuery( ?, ?, ?);";
+		$query = $this->db->query($stored_procedure, $arrFill);
+		$listaFuentes = $query->result();
+ 		return $listaDispositivo;
+ 	}
+
+ 	public function obtenerFuentesPaginado($limit, $row, $condicion = " Estado != -1"){
+		$this->load->database();
+		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
+		$stored_procedure = "call sp_PaginarResultTabla("fuentes", ?, ?, ?);";		
+		$query = $this->db->query($stored_procedure, $arrFill);
+		$listaDispositivo = $query->result(); 
+		return $listaDispositivo;
+ 	}
 	
 	public function obtenerFuentesJson(){
 		$this->load->database();
@@ -29,33 +58,66 @@
 			return json_encode($listaFuentes);
   }	
 
+	public function existeValorCampo($tabla_campo, $val){
+		$this->load->database();
+		$dbStr = explode(".", $tabla_campo); 
+		$this->db->where($dbStr[1], trim($val) ); 
+		$result = $this->db->get($dbStr[0]);
+		if ($result->num_rows() > 0)
+		{		
+			return false;
+		}		
+		return true; 
+	}
+
+
 	public function insertar($obj){
 		$this->load->database();
+		$listaCampos = $this->db->field_data("fuentes");
 		$this->db->insert("fuentes", $obj);
+		return $this->db->insert_id();
 	}
 
 	public function actualizar($obj){
-
 		$this->load->database();
-		$this->db->where("FuenteID", $obj["FuenteID"]); 
-		$result = $this->db->get("fuentes");
-		if ($result->num_rows() == 1)
-		{
-			$Fuentes =  current($result->result()); 
-			foreach ($Fuentes as $key => $value) {
-				if($key == "FuenteID"){ continue; }							
 
-				if( array_key_exists($key, $obj)){					
-					$Fuentes->$key = $obj[$key];
-				}
+		$FuentesEnt = $this->ObtenerPorID($obj["FuenteID"]);
+        	if($FuentesEnt == null){ 
+		        return false; 
+        	}
+        	$update = array();
+        	foreach ($FuentesEnt as $key => $value) {
+        		if($key != "FuenteID"){
+	        		if(array_key_exists($key, $obj) && $value != $obj[$key]){
+	        			$update[$key] = $obj[$key];        			
+	        		}           			
+        		}    		
+        	}
+        	$update["FechaModifica"] = date("Y-m-d H:i:s");
+        	$this->db->where("FuenteID", $obj["FuenteID"]);
+			$rs = $this->db->update("fuentes", $update);
+			if($rs){
+				return $FuentesEnt; 
 			}
-			
-			$this->db->where("BloqueContenidoID", $BloqueContenido->BloqueContenidoID);
-			$rs = $this->db->update("bloque_contenido", $BloqueContenido); 			
-			return $rs; 
-		} else {
-			return false;
+			return $rs; 		
+	}
+
+	public function cambiarEstado($obj, $estado){
+		$this->load->database();
+		$fuentesEnt = $this->ObtenerPorID($obj["fuentes"]);
+
+		if($dispositivoEnt == null){ 
+		        return false; 
+        }        
+        $update["FechaModifica"] = date("Y-m-d H:i:s");
+        $update["Estado"] = $estado; 
+        $this->db->where("FuenteID", $obj["FuenteID"]);
+		$rs = $this->db->update("fuentes", $update);	
+
+		if($rs){
+			return $fuentesEnt; 
 		}
+			return $rs; 
 	}
 
 	public function ObtenerPorID($id){

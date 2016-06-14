@@ -50,10 +50,16 @@
 
         pageCalculate: function(opt){  
         // Calculador a de variavbles          
-            if("totalResult" in opt){                
-                Crud.totalPages = parseInt(opt.totalResult/Crud.$configPagination.maxRowsPage);                                
+            if("totalResult" in opt){      
+                var valPag =opt.totalResult/Crud.$configPagination.maxRowsPage          
+                if(valPag < 1 && valPag > 0){
+                    Crud.totalPages = parseInt(1);  
+                } else {                    
+                    Crud.totalPages = parseInt(valPag + 1);  
+                }
                 
-                Crud.$Pagination.bootpag( {total: (Crud.totalPages+ 1), maxVisible: 10 } ); 
+                
+                Crud.$Pagination.bootpag( {total: (Crud.totalPages), maxVisible: 10 } ); 
             }
         }, 
 
@@ -68,10 +74,7 @@
                     var innerUrl = option.url;
                 if(Crud.$Search.send === true){
                     innerUrl = Crud.$Search.url + "/" + Crud.$Search.w; 
-                }
-
-                console.log(innerUrl);
-
+                }                
                     $.getJSON( innerUrl + "?vNumPage=" + (num-1), function(res){
                         Crud.pageCallBack(res, num);
                     } );
@@ -114,12 +117,27 @@
             }
         },
 
+        formatObjForm: function(item, nameVar){
+             var rest = {}; 
+             if (typeof nameVar === 'undefined' || nameVar === null ){
+                rest['objeto'] = item;                 
+             // return {objeto: form }
+            } else {
+                rest[nameVar] = item;                
+            }
+
+            for(var i in Crud.hash) {
+                if(Crud.hash.hasOwnProperty(i)){
+                    rest[i] = Crud.hash[i]; 
+                }
+            }
+
+            return rest; 
+
+        }, 
+
         getForm: function( nameVar ){
-
             // Sus manos martille.
-            console.log(nameVar);
-            console.log("Esperes Hasta el Final");
-
             var rest = {}; 
             if (typeof nameVar === 'undefined' || nameVar === null ){
                 rest['objeto'] = Crud.form;                 
@@ -145,10 +163,8 @@
 
 
         validate: function(){
-
             for (var form in Crud.$Form) {
                 if (Crud.$Form[form].hasOwnProperty("$invalid") && Crud.$Form[form].$invalid) {
-
                        $.blockUI({ 
             message: $('<div style="size: font-size: 20px;"> <span>Campos incompletos </span>  <p>hay campos obligatorios que debes completar </p></div>'),
             fadeIn: 700, 
@@ -184,6 +200,7 @@ return Crud;
        
     });
 
+
 $ang.factory('AppSession', function () {
 
          var miSession = {
@@ -201,83 +218,22 @@ $ang.factory('AppSession', function () {
                     miSession.refrescar();
                     return false;
                 }
-            }
-            if(miSession.strict === true){
-                miSession.refrescar(); 
-                return false;
-            }
+            } else {
+                if(miSession.strict === true){
+                    miSession.refrescar(); 
+                    return false;
+                }
+            }            
         },
-
         refrescar: function(){
             // Windows Reload     
-             document.location.reload(true);       
-            
+             document.location.reload(true);
         }
 }; 
-
-return Crud; 
+return miSession;
        
     });
-
-    /*Pagination*/
-    $ang.factory('AppPagination', function () {
-        var paginacion = function () {
-            var _paginacion = {
-                ArrayPag: [],
-                TotalAmount: 0,
-                Max: 0,
-                Filtro: "",
-                Init: function () {
-                    var array = [];
-                    var value = Math.round(this.TotalAmount / this.Max) - 1;
-
-                    for (var i = 0 ; i <= value; i++) {
-                        array[i] = i
-                    }
-
-                    this.ArrayPag = array;
-                },
-                ShowSearcher: true,
-                LoadInit: true,
-                ActivedPagIndex: 0,
-                ActivePag: function (index) {
-                    this.ActivedPagIndex = index;
-                },
-                ActivePagClass: function (index) {
-                    return this.ActivedPagIndex == index ? 'active' : "";
-                },
-                RangoVisible: [0, 10],
-                RangoIsvisible: function (index) {
-                    return (index >= this.RangoVisible[0] && index <= this.RangoVisible[1]) ? true : false;
-                },
-                RangoBack: function () {
-                    if (this.RangoVisible[0] > 0)
-                    {
-                        this.RangoVisible[0] = this.RangoVisible[0] - 1;
-                        this.RangoVisible[1] = this.RangoVisible[1] - 1;
-                    }
-                },
-                RangoNext: function () {
-                    var arr = this.ArrayPag.length - 1;
-
-                    if (this.RangoVisible[1] < arr)
-                    {
-                        this.RangoVisible[0] = this.RangoVisible[0] + 1;
-                        this.RangoVisible[1] = this.RangoVisible[1] + 1;
-                    }
-                },
-                RangoFirst: function () { this.RangoVisible = [0, 10] },
-                RangoLast: function () { var arr = this.ArrayPag.length - 1; this.RangoVisible = [(arr - 10) < 0 ? 0 : arr - 11, arr] },
-                $List: function () { }
-            };
-
-            prueba = _paginacion;
-
-            return _paginacion;
-        }
-
-        return paginacion;
-    });
+ 
 
     /*Http*/
     $ang.factory('AppHttp', function ($http) {

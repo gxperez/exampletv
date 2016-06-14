@@ -1,7 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
 
- class SeccionTemplate_Model extends CI_Model {
- 
+ class GrupoTv_Model extends CI_Model { 
  
   function __construct()
 	{
@@ -9,17 +8,17 @@
 	}
  
  
-	public function obtenerSeccionTemplate(){
+	public function obtenerGrupoTv(){
 		$this->load->database();
-		$query = $this->db->get(seccion_template);			
+		$query = $this->db->get(grupo_tv);			
 			
-		$listaSeccionTemplate = $query->result(); 
-		return $listaSeccionTemplate;
+		$listaGrupoTv = $query->result(); 
+		return $listaGrupoTv;
  	}
 
- 	public function obtenerSeccionTemplatePorCampo($campo, $valor = "", $limit = 0, $page = 20){
+ 	public function obtenerGrupoTvPorCampo($campo, $valor = "", $limit = 0, $page = 20){
 		$this->load->database();
-		$list = $this->db->field_data("seccion_template");
+		$list = $this->db->field_data("grupo_tv");
 		$fieldList = array();
 		foreach ($list as  $value) {
 			$fieldList[] = $value->name;		
@@ -28,34 +27,34 @@
 		$this->db->select($fieldList,FALSE);
 		$this->db->where(" Estado !=" , "-1" );
 		$this->db->like($campo, trim($valor));
-		$data = $this->db->get_compiled_select("seccion_template", $limit, $page);
+		$data = $this->db->get_compiled_select("grupo_tv", $limit, $page);
 
 		$arrFill = array("vQuery"=> $data, "vLimit" => $limit, "vPage"=> $page);
 		$stored_procedure = "call sp_PaginarResultQuery( ?, ?, ?);";
 		$query = $this->db->query($stored_procedure, $arrFill);
-		$listaSeccionTemplate = $query->result();
+		$listaGrupoTv = $query->result();
  		return $listaDispositivo;
  	}
 
- 	public function obtenerSeccionTemplatePaginado($limit, $row, $condicion = " Estado != -1"){
+ 	public function obtenerGrupoTvPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla("seccion_template", ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla("grupo_tv", ?, ?, ?);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;
  	}
 	
-	public function obtenerSeccionTemplateJson(){
+	public function obtenerGrupoTvJson(){
 		$this->load->database();
-		$query = $this->db->get(seccion_template);	
+		$query = $this->db->get(grupo_tv);	
 			
 		$usuario = array();
 		foreach ($query->result() as $row)
 		{
-			$listaSeccionTemplate[] = $row; 
+			$listaGrupoTv[] = $row; 
 		}
-			return json_encode($listaSeccionTemplate);
+			return json_encode($listaGrupoTv);
   }	
 
 	public function existeValorCampo($tabla_campo, $val){
@@ -73,56 +72,56 @@
 
 	public function insertar($obj){
 		$this->load->database();
-		$listaCampos = $this->db->field_data("seccion_template");
-		$this->db->insert("seccion_template", $obj);
+		$listaCampos = $this->db->field_data("grupo_tv");
+		$this->db->insert("grupo_tv", $obj);
 		return $this->db->insert_id();
 	}
 
 	public function actualizar($obj){
 		$this->load->database();
 
-		$SeccionTemplateEnt = $this->ObtenerPorID($obj["SeccionTemplateID"]);
-        	if($SeccionTemplateEnt == null){ 
+		$GrupoTvEnt = $this->ObtenerPorID($obj["GrupoTvID"]);
+        	if($GrupoTvEnt == null){ 
 		        return false; 
         	}
         	$update = array();
-        	foreach ($SeccionTemplateEnt as $key => $value) {
-        		if($key != "SeccionTemplateID"){
+        	foreach ($GrupoTvEnt as $key => $value) {
+        		if($key != "GrupoTvID"){
 	        		if(array_key_exists($key, $obj) && $value != $obj[$key]){
 	        			$update[$key] = $obj[$key];        			
 	        		}           			
         		}    		
         	}
         	$update["FechaModifica"] = date("Y-m-d H:i:s");
-        	$this->db->where("SeccionTemplateID", $obj["SeccionTemplateID"]);
-			$rs = $this->db->update("seccion_template", $update);
+        	$this->db->where("GrupoTvID", $obj["GrupoTvID"]);
+			$rs = $this->db->update("grupo_tv", $update);
 			if($rs){
-				return $SeccionTemplateEnt; 
+				return $GrupoTvEnt; 
 			}
 			return $rs; 		
 	}
 
 	public function cambiarEstado($obj, $estado){
 		$this->load->database();
-		$seccion_templateEnt = $this->ObtenerPorID($obj["seccion_template"]);
+		$grupo_tvEnt = $this->ObtenerPorID($obj["grupo_tv"]);
 
 		if($dispositivoEnt == null){ 
 		        return false; 
         }        
         $update["FechaModifica"] = date("Y-m-d H:i:s");
         $update["Estado"] = $estado; 
-        $this->db->where("SeccionTemplateID", $obj["SeccionTemplateID"]);
-		$rs = $this->db->update("seccion_template", $update);	
+        $this->db->where("GrupoTvID", $obj["GrupoTvID"]);
+		$rs = $this->db->update("grupo_tv", $update);	
 
 		if($rs){
-			return $seccion_templateEnt; 
+			return $grupo_tvEnt; 
 		}
 			return $rs; 
 	}
 
 	public function ObtenerPorID($id){
-		$this->db->where("SeccionTemplateID", $id); 
-		$result = $this->db->get("seccion_template");		
+		$this->db->where("GrupoTvID", $id); 
+		$result = $this->db->get("grupo_tv");		
 
 		if ($result->num_rows() == 0)
 		{
