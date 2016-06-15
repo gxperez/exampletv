@@ -29,6 +29,13 @@ class Dispositivo extends MY_Controller {
         'name' => $this->security->get_csrf_token_name(),
         'hash' => $this->security->get_csrf_hash()
         ) );
+
+        	$this->load->model('EmunsViews_model', 'mEnum');
+
+        	$estados = $this->mEnum->getEnumsEstado(); 
+        	$data['listEstadoForm'] = $estados; 
+        	$data['dispositivoTipos'] = $this->mEnum->getEnum("dispositivotipo"); 
+
 		// Carga de planilla web en general.
 		$this->load->view("web/sm_dispositivo", $data); 
 

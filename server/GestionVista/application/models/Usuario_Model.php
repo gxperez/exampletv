@@ -28,14 +28,14 @@ function __construct()
 			}
 			// Actualizamos el Token y los secciones
 			$usuario->ultimaSesion = date("Y-m-d H:i:s");
-			$usuario->estatus = 1;
+			$usuario->Estado = 1;
 			$usuario->GUID = $keyS;			
 			$this->db->where('usuario_log_sesionID', $usuario->usuario_log_sesionID);
 			$this->db->update('usuario_log_sesion', $usuario); 
 			 return array("resultado"=> true, "registro"=>$usuario);
 		} else {
 			// Crear Usuario Nuevo.
-			$registro = array("nombreUsuario"=> $usuario, "clave"=> $clave, "ultimaSesion"=> date("Y-m-d H:i:s"), "estatus"=> 1, "GUID"=> $keyS); 
+			$registro = array("nombreUsuario"=> $usuario, "clave"=> $clave, "ultimaSesion"=> date("Y-m-d H:i:s"), "Estado"=> 1, "GUID"=> $keyS); 
 
 			$this->db->insert("usuario_log_sesion", $registro); 
 			return array("resultado"=> true, "registro"=>$registro); 

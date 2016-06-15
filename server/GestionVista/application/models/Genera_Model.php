@@ -202,7 +202,7 @@ class {$entidadIns} extends MY_Controller {
 			$id = $this->m'.$claseNombre.'->insertar( $'.$tabla.'Ent ); 
 			$'. $tabla .'Ent["'. $primary_key. '"] = $id; 
 
-			echo json_encode(array("data" => $dispositivoEnt, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
+			echo json_encode(array("data" => $'. $tabla .'Ent, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
         "name" => $this->security->get_csrf_token_name(),
         "hash" => $this->security->get_csrf_hash()
         ) ));
@@ -241,7 +241,7 @@ public function Actualizar(){
 		        return false; 
 			}
 
-			echo json_encode(array("data" => $dispositivoObj, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
+			echo json_encode(array("data" => $'.$tabla .'Obj, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
 	        "name" => $this->security->get_csrf_token_name(),
 	        "hash" => $this->security->get_csrf_hash()
 	        ) )); 
@@ -265,7 +265,7 @@ public function Actualizar(){
 			$pagina = $this->input->get("vNumPage"); 
 			$lista'.$claseNombre .' = $this->m'.$claseNombre .'->obtener'.$claseNombre .'PorCampo("Descripcion", $str, $pagConf["RowsPerPages"], Text::calcularOffset($pagConf["RowsPerPages"],  $pagina) );
 		} else {
-			$lista'.$claseNombre .' = $this->mDispositivo->obtenerDispositivoPorCampo("Descripcion", $str, $pagConf["RowsPerPages"], 0);
+			$lista'.$claseNombre .' = $this->m'.$claseNombre .'->obtener'.$claseNombre .'PorCampo("Descripcion", $str, $pagConf["RowsPerPages"], 0);
 		}
 		$totalResult = 0; 
 		if(count($lista'.$claseNombre .')> 0){
@@ -286,7 +286,7 @@ public function Actualizar(){
 			$this->load->model("'.$claseNombre .'_Model", "m'.$claseNombre .'");
 			
 			$'.$tabla.'Obj = $this->security->xss_clean($this->input->post("objeto"));  
-			$result = $this->mDispositivo->cambiarEstado($dispositivoObj, -1); 
+			$result = $this->m'.$claseNombre .'->cambiarEstado($'.$tabla .'Obj, -1); 
 
 			if(! $result ){
 				echo json_encode(array("IsOk"=> false, "Msg"=> "Error al Tratar de Eliminar", "csrf" =>array(
@@ -362,7 +362,7 @@ echo htmlentities($encabezado);
                           <div class="panel-body">
                               <div class="task-content">
                                   <ul id="sortable" class="task-list">
-                                      <li ng-repeat="item in listaDispositivo|filter:buscarLista:strict" class="list-primary">
+                                      <li ng-repeat="item in lista'.$entidadIns.'|filter:buscarLista:strict" class="list-primary">
                                           <i class=" fa fa-ellipsis-v"></i>
                                           <div class="task-checkbox">
                                               <input type="checkbox" class="list-child" value=""  />
@@ -385,12 +385,258 @@ echo htmlentities($encabezado);
                               </div>
                           </div>
                       </section>
-                  </div><!--/col-md-12 -->'; 
+                  </div><!--/col-md-12 -->
+             </div><!-- /row -->
+             </div>	
+
+           <div id="formulario" >        
+			 <form id="vform" class="form-horizontal style-form" method="get" data-toggle="validator"  >
+          	<!-- BASIC FORM ELELEMNTS -->
+          	<div class="row mt">
+              <div id="header-crudTools" class="crudTools col-md-12">     
+                  <div>
+                    <div class="btn-group">                      
+                      <button id="btnGuardar" type="submit" class="btn btn-default" ng-click="Guardar()" ><span class="fa fa-floppy-o"> </span> Guardar</button>
+                      <button type="reset" class="btn btn-default" ng-click="vCrud.reset();"> <span class="fa fa-arrow-left" > </span> Cancelar</button>
+                      <button type="reset" class="btn btn-default" ng-click="vCrud.reset()"> <span class="fa fa-times"> </span> Salir</button>
+                  </div>
+                  </div>
+              </div>              
+
+
+          		<div class="col-lg-12">
+                  <div class="form-panel" ng-form="vCrud.$Form.Main" >
+                  	  <h4 class="mb"><i class="fa fa-angle-right"></i> {{Pantalla.nombre}}</h4>
+
+                  	  ' . $this->generarForm($tabla, $listaCampos) . '                     
+                        
+                  </div>
+          		</div><!-- col-lg-12-->      	
+          	</div><!-- /row -->         	
+          	  </form>
+			</div>
+    </div>
+                  '; 
                   echo htmlentities($htmlEncabezado);
 	 }
 
-	public function formarJSController(){
+	 public function generarForm($tabla, $listaCampos){
+	 	$tabs = ""; 
+	 	$listado = $this->obtenerDetalleTabla($tabla, 'bis_gestionvista'); 
+	foreach ($listado as $key => $value) {
+		if($value->Key != "PRI"){				
+		$attr = ""; 
+		$type = ""; 
+			if($value->Type == "int"){				
+					$type ="int"; 
+			} else {
+					$type ="text"; 
+			}
 
+			if ($value->IsNullable == "NO") {
+			$attr = "required"; 
+			} else {				
+			}	
+
+			$input = '<input type="'. $type. '" ng-model="vCrud.form.'. $value->Nombre .'" class="form-control" '.$attr.'>'; 
+
+
+			if( strpos($value->Nombre, 'Tipo') !== FALSE){
+
+				$input = '<?php  Text::renderOptions('."'<select ng-model=". '"vCrud.form.'.$value->Nombre.'" class="form-control" required>'."'". ', $list'.$value->Nombre.'); ?>';
+			}			
+
+			$tabs .= '<div class="form-group">
+			<label class="col-sm-2 col-sm-2 control-label">' . $value->Nombre .'</label>
+			<div class="col-sm-10">
+            	'. $input  .'
+           </div>
+</div>
+';
+		}		
+	}
+
+		// Ajustes en General. 
+		return $tabs; 
+
+	 }
+
+	public function formarJSController($sufijo, $tabla, $listaCampos, $login = false, $campos = null){	
+
+	$entidadTemp = strtolower($tabla);
+	$entidadIns = $this->limpiarCampo(trim($entidadTemp));
+	$claseNombre = $this->limpiarCampo($sufijo). $entidadIns;
+	$primary_key = "";
+
+	foreach ($listaCampos as $key => $value) {
+			if($value['primary_key']){
+						$primary_key = $value["name"]; 
+			}		
+	}
+
+		$js = '$ang.controller("'.$claseNombre.'Controller", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {'; 
+
+		$js .= "
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+        var form = {            
+        };
+        $". "scope.lista{$claseNombre} =[]; 
+        $". "scope.pantallaNombre = 'Registro $claseNombre';
+        $". "scope.buscarLista = '';
+        $". "scope.vCrud = appCrud;
+        $". "scope.vCrud.setForm(form); 
+
+        $". "scope.vCrud.initt({url: base_url + '{$claseNombre}/Obtener', 
+            'callback': function(res, num){
+                $". "scope.ObtenerPaginacionRes(res, num);     
+                $". "scope.$"."apply();
+            }, 
+            'searchUrl':  base_url + '{$claseNombre}/Buscar'
+        });
+
+        $". "scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $". "scope.lista{$claseNombre} = res.data; 
+                    $". "scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $". "scope.initt = function () {
+
+            $". "scope.Pantalla = {nombre: '$claseNombre'};            
+             http(base_url + '{$claseNombre}/Obtener', {}, function (dt) {                
+                    $"."appSession.IsSession(dt);                                         
+                    $". "scope.ObtenerPaginacionRes(dt); 
+             });
+        };        
+
+        $". "scope.Buscar = function(cEvent){ 
+        if($". "scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $". "scope.vCrud.$". "Search.send = true; 
+                        $". "scope.vCrud.$". "Search.w = $". "scope.buscarLista; 
+                    http(base_url + '{$claseNombre}/Buscar/' + $". "scope.buscarLista , {}, function (dt) {   
+                            $". "appSession.IsSession(dt);                            
+                           $". "scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $". "scope.vCrud.$". "Search.send = true;
+                http(base_url + '{$claseNombre}/Buscar/' + $". "scope.buscarLista, {},
+                 function (dt) { 
+                        $"."appSession.IsSession(dt);                          
+                           $". "scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $". "scope.vCrud.$". "Search.send = false;                                                        
+                $". "scope.vCrud.$". "Search.w= \"\"; 
+                http(base_url + '$claseNombre/Obtener', {}, function (dt) {
+                    $". "appSession.IsSession(dt);                                         
+                    $". "scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $". "scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $". "scope.vCrud.setForm(copiObj);            
+            $". "scope.vCrud.selectedIndex = index;             
+        }; 
+
+        $". "scope.Eliminar = function(item, indice){            
+
+            var iObj =  $". "scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + '{$claseNombre}/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $" ."appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $". "scope.lista{$claseNombre}.splice(indice, 1); 
+                    $". "scope.$"."apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $". "scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $". "scope.ListAll = function(){
+        }
+
+        $". "scope.Guardar = function(){
+            if(!$". "scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($". "scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + '{$claseNombre}/Crear', $". "scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $". "appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $". "scope.lista{$claseNombre}.push(res.data);
+                    $". "scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $". "scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + '$claseNombre/Actualizar', $". "scope.vCrud.getForm(), function(res){
+                $". "appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $". "scope.lista{$claseNombre}[$". "scope.vCrud.selectedIndex]= res.data;
+                    $". "scope.$"."apply();
+                    $". "scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $". "scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);";
+	return $js; 
 	}
 	
 	public function formarModel($sufijo, $tabla, $listaCampos, $login = false, $campos = null){	
@@ -440,7 +686,7 @@ echo htmlentities($encabezado);
 		$stored_procedure = "call sp_PaginarResultQuery( ?, ?, ?);";
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$lista'.$entidadIns.' = $query->result();
- 		return $listaDispositivo;
+ 		return $lista'.$claseNombre .';
  	}
 
  	public function obtener'.$entidadIns.'Paginado($limit, $row, $condicion = " Estado != -1"){
@@ -448,8 +694,8 @@ echo htmlentities($encabezado);
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
 		$stored_procedure = "call sp_PaginarResultTabla("'.$tabla.'", ?, ?, ?);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
-		$listaDispositivo = $query->result(); 
-		return $listaDispositivo;
+		$lista'.$claseNombre .' = $query->result(); 
+		return $lista'.$claseNombre .';
  	}
 	
 	public function obtener'.$entidadIns.'Json(){
@@ -515,7 +761,7 @@ $metodosBasicos .= '
 		$this->load->database();
 		$'.$tabla.'Ent = $this->ObtenerPorID($obj["' .$tabla.'"]);
 
-		if($dispositivoEnt == null){ 
+		if($'.$tabla .'Ent == null){ 
 		        return false; 
         }        
         $update["FechaModifica"] = date("Y-m-d H:i:s");
@@ -618,8 +864,6 @@ public function generarAsignate($sufijo, $tabla, $listaCampos, $pk = false, $ent
 	$attr = ""; 
 
 	foreach ($listaCampos as $key => $value) {
-				
-
 
 		if($pk){
 	// Ajustes que no Añoran conocer a Jesus.

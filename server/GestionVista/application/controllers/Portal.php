@@ -165,37 +165,28 @@ class Portal extends MY_Controller {
 			$htmlT = " <pre> "; 
 			foreach ($vv as $key => $value) {
 					echo "<hr> <pre> "; 
-					$htmlT .= $this->Gen->formarController("", $key, $value);
+					$htmlT = $this->Gen->formarController("", $key, $value);
 
 					echo $htmlT;
+					echo "</pre> <hr> <br>"; 					
 
-					echo "</pre> <hr> <br>"; 
-					exit();
 				}
-
-			
 				break;
 
 			case 'Entidad':
-
 			$htmlT= ""; 
-
 				foreach ($vv as $key => $value) {
 					$htmlT .= "<hr> <pre> ". $this->Gen->generarEntidad("", $key, $value); 
-
 					echo $htmlT;
-
 					exit();
 				}
-				
 				break;
 
 			case 'Rule':
 			$htmlT= ""; 		
 				foreach ($vv as $key => $value) {
-					$htmlT .= "<br> $key <hr>  <pre> ". $this->Gen->generarRules("objeto", $key, $value); 
-					echo $htmlT;
-					// exit();
+					$htmlT = "<br> $key <hr>  <pre> ". $this->Gen->generarRules("objeto", $key, $value); 
+					echo $htmlT;					
 				}
 				break;
 /*
@@ -205,9 +196,8 @@ class Portal extends MY_Controller {
               case 'asignateArray':
 			$htmlT= ""; 		
 				foreach ($vv as $key => $value) {
-					$htmlT .= "<br><hr>  <pre> ". $this->Gen->generarAsignate("objeto", $key, $value, $fal); 
-					echo $htmlT;
-					// exit();
+					$htmlT = "<br><hr>  <pre> ". $this->Gen->generarAsignate("objeto", $key, $value, $fal); 
+					echo $htmlT;					
 				}
 				break;
 
@@ -216,17 +206,25 @@ class Portal extends MY_Controller {
 			$htmlT = " <pre> "; 
 			foreach ($vv as $key => $value) {
 					echo "<hr> <pre> "; 
-					$htmlT .= $this->Gen->formarVista("", $key, $value);
+					$htmlT = $this->Gen->formarVista("", $key, $value);
 					
 					echo $htmlT;
-
-					echo "</pre> <hr> <br>"; 
-					exit();
+					echo "</pre> <hr> <br>"; 					
 				}
 
 			
 				break;
 
+				case "js":
+
+				$htmlT = " <pre> "; 
+			foreach ($vv as $key => $value) {
+					echo "<hr> <pre> "; 
+					$htmlT = $this->Gen->formarJSController("", $key, $value);					
+					echo $htmlT;
+					echo "</pre> <hr> <br>"; 					
+				}			
+				break;		
 			
 			default:
 			// Vista
@@ -239,9 +237,7 @@ class Portal extends MY_Controller {
 	public function CrearQuerys(){
 		for ($i=161; $i < 310 ; $i++) { 
 
-
 		$query = "INSERT INTO `bis_gestionvista`.`dispositivo` (`Nombre`, `Descripcion`, `DispositivoTipo`, `Marca`, `Estatus`, `Mac`, `IP`, `FechaCrea`, `UltimaSesion`) VALUES ('TV-SONY-smart-gen{$i}', 'smartTV00-{$i}', '1', 'SONY', '1', '52:camre:25:tu:85no:am:{$i}', '22.35.0.{$i}', '2016-06-05', '2016-06-05');"; 
-
 		echo "<br> -- tt <br> ". $query; 
 
 		}

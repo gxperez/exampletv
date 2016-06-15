@@ -108,7 +108,12 @@ margin-left: 11px;
                       <a href="javascript:;" >
                           <i class="fa fa-cogs"></i>
                           <span>Seguridad</span>
-                      </a>                     
+                      </a> 
+
+                      <ul class="sub">
+                          <li><a  ng-click="SetMain('usuariologsesion/sm')">Usuario lOg</a></li>
+                      </ul>
+
                   </li>
                   <li class="sub-menu">
                       <a href="javascript:;" >
@@ -126,7 +131,15 @@ margin-left: 11px;
                       </a>
                       <ul class="sub">
                           <li><a  ng-click="SetMain('dispositivo/sm')">Dispositivos</a></li>
-                           
+                          <li><a  ng-click="SetMain('bloques/sm')">Bloques</a></li>
+                          <li><a  ng-click="SetMain('contenido/sm')">Contenido</a></li>
+                          <li><a  ng-click="SetMain('fuentes/sm')">Fuentes</a></li>
+                          <li><a  ng-click="SetMain('programacion/sm')">Programacion</a></li>
+                          <li><a  ng-click="SetMain('grupo/sm')">Grupo</a></li>
+                          <li><a  ng-click="SetMain('secciontemplate/sm')">Seccion Template</a></li>
+                          <li><a  ng-click="SetMain('fuerzaventa/sm')">Fuerza de Venta</a></li>
+                          <li><a  ng-click="SetMain('fuerzaventa/master')">Master FV </a></li>
+
                       </ul>
                   </li>
                 

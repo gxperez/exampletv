@@ -49,6 +49,27 @@ class Text
 		 
 		return $params;
 	}
+
+
+	public static function renderOptions($select, $lisObj, $print = true){	
+
+		$selectRs = $select; 
+		$vOption = '<option value=""> --- </option>'; 
+		
+			foreach ($lisObj as $key => $value) {
+				$vOption .= '
+				<option value="'. $value. '">
+                                '. $key. '
+                            </option>'; 			
+			}
+
+		$selectRs .= $vOption . "</select>"; 
+
+		if($print){
+			echo $selectRs; 
+		}
+		return $selectRs;
+	}
 	
 	public static function leerIdioma($file, $force=false){		
 		$file = strtolower($file);	

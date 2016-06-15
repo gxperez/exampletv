@@ -34,16 +34,16 @@
 		$stored_procedure = "call sp_PaginarResultQuery( ?, ?, ?);";
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaUsuarioLogSesion = $query->result();
- 		return $listaDispositivo;
+ 		return $listaUsuarioLogSesion;
  	}
 
  	public function obtenerUsuarioLogSesionPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla("usuario_log_sesion", ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla('usuario_log_sesion', ?, ?, ?);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
-		$listaDispositivo = $query->result(); 
-		return $listaDispositivo;
+		$listaUsuarioLogSesion = $query->result(); 
+		return $listaUsuarioLogSesion;
  	}
 	
 	public function obtenerUsuarioLogSesionJson(){
@@ -106,7 +106,7 @@
 		$this->load->database();
 		$usuario_log_sesionEnt = $this->ObtenerPorID($obj["usuario_log_sesion"]);
 
-		if($dispositivoEnt == null){ 
+		if($usuario_log_sesionEnt == null){ 
 		        return false; 
         }        
         $update["FechaModifica"] = date("Y-m-d H:i:s");

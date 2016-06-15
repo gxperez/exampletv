@@ -37,10 +37,30 @@
  		return $listaDispositivo;
  	}
 
+ 	public function obtenerFuerzaVentaResumenActivo(){
+ 		// Query para La Fuerza de Venta
+ 		$this->load->database();
+
+ 		$CQuery = "SELECT  FechaCrea, now() as FechaFin  FROM bis_gestionvista.fuerza_venta where Estado = 1 group by FechaCrea;";
+ 		$query = $this->db->query($CQuery);
+ 		$res = $query->result();  		
+ 		return current($res); 
+ 	}
+
+ 	public function obtenerFuerzaVentaResumenBack(){
+ 		// Query para La Fuerza de Venta
+ 		$this->load->database();
+
+ 		$CQuery = "SELECT  FechaCrea, now() as FechaFin  FROM bis_gestionvista.fuerza_venta where Estado != 1 group by FechaCrea;";
+ 		$query = $this->db->query($CQuery);
+ 		$res = $query->result();  		
+ 		return $res; 
+ 	}
+
  	public function obtenerFuerzaVentaPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla("fuerza_venta", ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla('fuerza_venta', ?, ?, ?);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;

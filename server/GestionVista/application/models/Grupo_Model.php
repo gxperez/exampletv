@@ -40,7 +40,7 @@
  	public function obtenerGrupoPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla("grupo", ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla('grupo', ?, ?, ?);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;

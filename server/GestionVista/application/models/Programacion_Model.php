@@ -34,21 +34,21 @@
 		$stored_procedure = "call sp_PaginarResultQuery( ?, ?, ?);";
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaProgramacion = $query->result();
- 		return $listaDispositivo;
+ 		return $listaProgramacion;
  	}
 
  	public function obtenerProgramacionPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla("programacion", ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla('programacion', ?, ?, ?);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
-		$listaDispositivo = $query->result(); 
-		return $listaDispositivo;
+		$listaProgramacion = $query->result(); 
+		return $listaProgramacion;
  	}
 	
 	public function obtenerProgramacionJson(){
 		$this->load->database();
-		$query = $this->db->get(programacion);	
+		$query = $this->db->get("programacion");	
 			
 		$usuario = array();
 		foreach ($query->result() as $row)
@@ -106,7 +106,7 @@
 		$this->load->database();
 		$programacionEnt = $this->ObtenerPorID($obj["programacion"]);
 
-		if($dispositivoEnt == null){ 
+		if($programacionEnt == null){ 
 		        return false; 
         }        
         $update["FechaModifica"] = date("Y-m-d H:i:s");

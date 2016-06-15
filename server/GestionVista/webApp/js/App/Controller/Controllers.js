@@ -340,7 +340,1347 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         }
 }]);
 
-  
+// TODO: BLOQUE
+$ang.controller("BloquesController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+        var form = {            
+        };
+        $scope.listaBloques =[]; 
+        $scope.pantallaNombre = 'Registro Bloques';
+        $scope.buscarLista = '';
+        $scope.vCrud = appCrud;
+        $scope.vCrud.setForm(form); 
+
+        $scope.vCrud.initt({url: base_url + 'Bloques/Obtener', 
+            'callback': function(res, num){
+                $scope.ObtenerPaginacionRes(res, num);     
+                $scope.$apply();
+            }, 
+            'searchUrl':  base_url + 'Bloques/Buscar'
+        });
+
+        $scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $scope.listaBloques = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $scope.initt = function () {
+
+            $scope.Pantalla = {nombre: 'Bloques'};            
+             http(base_url + 'Bloques/Obtener', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+        };        
+
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + 'Bloques/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                            
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + 'Bloques/Buscar/' + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                          
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + 'Bloques/Obtener', {}, function (dt) {
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $scope.vCrud.setForm(copiObj);            
+            $scope.vCrud.selectedIndex = index;             
+        }; 
+
+        $scope.Eliminar = function(item, indice){            
+
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + 'Bloques/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaBloques.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.Guardar = function(){
+            if(!$scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + 'Bloques/Crear', $scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $scope.listaBloques.push(res.data);
+                    $scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + 'Bloques/Actualizar', $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $scope.listaBloques[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+                    $scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);
+
+
+// TODO: CONTENIDO
+
+$ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+        var form = {            
+        };
+        $scope.listaContenido =[]; 
+        $scope.pantallaNombre = 'Registro Contenido';
+        $scope.buscarLista = '';
+        $scope.vCrud = appCrud;
+        $scope.vCrud.setForm(form); 
+
+        $scope.vCrud.initt({url: base_url + 'Contenido/Obtener', 
+            'callback': function(res, num){
+                $scope.ObtenerPaginacionRes(res, num);     
+                $scope.$apply();
+            }, 
+            'searchUrl':  base_url + 'Contenido/Buscar'
+        });
+
+        $scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $scope.listaContenido = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $scope.initt = function () {
+
+            $scope.Pantalla = {nombre: 'Contenido'};            
+             http(base_url + 'Contenido/Obtener', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+        };        
+
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + 'Contenido/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                            
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + 'Contenido/Buscar/' + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                          
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + 'Contenido/Obtener', {}, function (dt) {
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $scope.vCrud.setForm(copiObj);            
+            $scope.vCrud.selectedIndex = index;             
+        }; 
+
+        $scope.Eliminar = function(item, indice){            
+
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + 'Contenido/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaContenido.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.Guardar = function(){
+            if(!$scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + 'Contenido/Crear', $scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $scope.listaContenido.push(res.data);
+                    $scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + 'Contenido/Actualizar', $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $scope.listaContenido[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+                    $scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);
+
+
+$ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+        var form = {            
+        };
+        $scope.listaFuentes =[]; 
+        $scope.pantallaNombre = 'Registro Fuentes';
+        $scope.buscarLista = '';
+        $scope.vCrud = appCrud;
+        $scope.vCrud.setForm(form); 
+
+        $scope.vCrud.initt({url: base_url + 'Fuentes/Obtener', 
+            'callback': function(res, num){
+                $scope.ObtenerPaginacionRes(res, num);     
+                $scope.$apply();
+            }, 
+            'searchUrl':  base_url + 'Fuentes/Buscar'
+        });
+
+        $scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $scope.listaFuentes = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $scope.initt = function () {
+
+            $scope.Pantalla = {nombre: 'Fuentes'};            
+             http(base_url + 'Fuentes/Obtener', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+        };        
+
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + 'Fuentes/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                            
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + 'Fuentes/Buscar/' + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                          
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + 'Fuentes/Obtener', {}, function (dt) {
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $scope.vCrud.setForm(copiObj);            
+            $scope.vCrud.selectedIndex = index;             
+        }; 
+
+        $scope.Eliminar = function(item, indice){            
+
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + 'Fuentes/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaFuentes.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.Guardar = function(){
+            if(!$scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + 'Fuentes/Crear', $scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $scope.listaFuentes.push(res.data);
+                    $scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + 'Fuentes/Actualizar', $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $scope.listaFuentes[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+                    $scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);
+
+
+// TODO: FUERZA VENTA
+
+ $ang.controller("FuerzaVentaController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+        var form = {            
+        };
+        $scope.listaFuerzaVenta =[]; 
+        $scope.pantallaNombre = 'Registro FuerzaVenta';
+        $scope.buscarLista = '';
+        $scope.vCrud = appCrud;
+        $scope.vCrud.setForm(form); 
+
+
+        $scope.inittCrud = function(){
+
+            $scope.vCrud.initt({url: base_url + 'FuerzaVenta/Obtener', 
+            'callback': function(res, num){
+                $scope.ObtenerPaginacionRes(res, num);     
+                $scope.$apply();
+            }, 
+            'searchUrl':  base_url + 'FuerzaVenta/Buscar'
+            });
+
+
+            http(base_url + 'FuerzaVenta/Obtener', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+            });
+
+
+        }; 
+
+$scope.ActualizarHoja = function(){
+
+    // confirmacion 
+    confirm("Seguro Desea Actualizar"); 
+
+
+}
+
+
+        $scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $scope.listaFuerzaVenta = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $scope.master = function(){
+
+            $scope.Pantalla = {nombre: 'FuerzaVenta'}; 
+
+            http(base_url + 'FuerzaVenta/ObtenerMaestro', {}, function (dt) {                                                    
+                    $appSession.IsSession(dt);                               
+                    if(dt.IsOk){
+                        $scope.resumenFuerzaVenta = dt.data; 
+                    } else {
+                        alert("Error en la Data"); 
+                    }
+                    
+             });
+
+
+        }
+
+
+        $scope.initt = function () {
+
+            $scope.inittCrud(); 
+
+            $scope.Pantalla = {nombre: 'FuerzaVenta'};            
+             http(base_url + 'FuerzaVenta/Obtener', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+        };        
+
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + 'FuerzaVenta/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                            
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + 'FuerzaVenta/Buscar/' + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                          
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + 'FuerzaVenta/Obtener', {}, function (dt) {
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $scope.vCrud.setForm(copiObj);            
+            $scope.vCrud.selectedIndex = index;             
+        }; 
+
+        $scope.Eliminar = function(item, indice){            
+
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + 'FuerzaVenta/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaFuerzaVenta.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.Guardar = function(){
+            if(!$scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + 'FuerzaVenta/Crear', $scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $scope.listaFuerzaVenta.push(res.data);
+                    $scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + 'FuerzaVenta/Actualizar', $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $scope.listaFuerzaVenta[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+                    $scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);
+
+
+// Grupo Controlador.
+ $ang.controller("GrupoController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+        var form = {            
+        };
+        $scope.listaGrupo =[]; 
+        $scope.pantallaNombre = 'Registro Grupo';
+        $scope.buscarLista = '';
+        $scope.vCrud = appCrud;
+        $scope.vCrud.setForm(form); 
+
+        $scope.vCrud.initt({url: base_url + 'Grupo/Obtener', 
+            'callback': function(res, num){
+                $scope.ObtenerPaginacionRes(res, num);     
+                $scope.$apply();
+            }, 
+            'searchUrl':  base_url + 'Grupo/Buscar'
+        });
+
+        $scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $scope.listaGrupo = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $scope.initt = function () {
+
+            $scope.Pantalla = {nombre: 'Grupo'};            
+             http(base_url + 'Grupo/Obtener', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+        };        
+
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + 'Grupo/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                            
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + 'Grupo/Buscar/' + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                          
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + 'Grupo/Obtener', {}, function (dt) {
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $scope.vCrud.setForm(copiObj);            
+            $scope.vCrud.selectedIndex = index;             
+        }; 
+
+        $scope.Eliminar = function(item, indice){            
+
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + 'Grupo/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaGrupo.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.Guardar = function(){
+            if(!$scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + 'Grupo/Crear', $scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $scope.listaGrupo.push(res.data);
+                    $scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + 'Grupo/Actualizar', $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $scope.listaGrupo[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+                    $scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);
+
+// -- TODO: Progrmacion -----------------
+
+ $ang.controller("ProgramacionController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+        var form = {            
+        };
+        $scope.listaProgramacion =[]; 
+        $scope.pantallaNombre = 'Registro Programacion';
+        $scope.buscarLista = '';
+        $scope.vCrud = appCrud;
+        $scope.vCrud.setForm(form); 
+
+        $scope.vCrud.initt({url: base_url + 'Programacion/Obtener', 
+            'callback': function(res, num){
+                $scope.ObtenerPaginacionRes(res, num);     
+                $scope.$apply();
+            }, 
+            'searchUrl':  base_url + 'Programacion/Buscar'
+        });
+
+        $scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $scope.listaProgramacion = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $scope.initt = function () {
+
+            $scope.Pantalla = {nombre: 'Programacion'};            
+             http(base_url + 'Programacion/Obtener', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+        };        
+
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + 'Programacion/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                            
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + 'Programacion/Buscar/' + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                          
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + 'Programacion/Obtener', {}, function (dt) {
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $scope.vCrud.setForm(copiObj);            
+            $scope.vCrud.selectedIndex = index;             
+        }; 
+
+        $scope.Eliminar = function(item, indice){            
+
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + 'Programacion/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaProgramacion.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.Guardar = function(){
+            if(!$scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + 'Programacion/Crear', $scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $scope.listaProgramacion.push(res.data);
+                    $scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + 'Programacion/Actualizar', $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $scope.listaProgramacion[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+                    $scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);
+
+
+ $ang.controller("SeccionTemplateController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+        var form = {            
+        };
+        $scope.listaSeccionTemplate =[]; 
+        $scope.pantallaNombre = 'Registro SeccionTemplate';
+        $scope.buscarLista = '';
+        $scope.vCrud = appCrud;
+        $scope.vCrud.setForm(form); 
+
+        $scope.vCrud.initt({url: base_url + 'SeccionTemplate/Obtener', 
+            'callback': function(res, num){
+                $scope.ObtenerPaginacionRes(res, num);     
+                $scope.$apply();
+            }, 
+            'searchUrl':  base_url + 'SeccionTemplate/Buscar'
+        });
+
+        $scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $scope.listaSeccionTemplate = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $scope.initt = function () {
+
+            $scope.Pantalla = {nombre: 'SeccionTemplate'};            
+             http(base_url + 'SeccionTemplate/Obtener', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+        };        
+
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + 'SeccionTemplate/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                            
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + 'SeccionTemplate/Buscar/' + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                          
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + 'SeccionTemplate/Obtener', {}, function (dt) {
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $scope.vCrud.setForm(copiObj);            
+            $scope.vCrud.selectedIndex = index;             
+        }; 
+
+        $scope.Eliminar = function(item, indice){            
+
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + 'SeccionTemplate/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaSeccionTemplate.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.Guardar = function(){
+            if(!$scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + 'SeccionTemplate/Crear', $scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $scope.listaSeccionTemplate.push(res.data);
+                    $scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + 'SeccionTemplate/Actualizar', $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $scope.listaSeccionTemplate[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+                    $scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);
+
+ $ang.controller("UsuarioLogSesionController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+        var form = {            
+        };
+        $scope.listaUsuarioLogSesion =[]; 
+        $scope.pantallaNombre = 'Registro UsuarioLogSesion';
+        $scope.buscarLista = '';
+        $scope.vCrud = appCrud;
+        $scope.vCrud.setForm(form); 
+
+        $scope.vCrud.initt({url: base_url + 'UsuarioLogSesion/Obtener', 
+            'callback': function(res, num){
+                $scope.ObtenerPaginacionRes(res, num);     
+                $scope.$apply();
+            }, 
+            'searchUrl':  base_url + 'UsuarioLogSesion/Buscar'
+        });
+
+        $scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $scope.listaUsuarioLogSesion = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $scope.initt = function () {
+
+            $scope.Pantalla = {nombre: 'UsuarioLogSesion'};            
+             http(base_url + 'UsuarioLogSesion/Obtener', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+        };        
+
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + 'UsuarioLogSesion/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                            
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + 'UsuarioLogSesion/Buscar/' + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                          
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + 'UsuarioLogSesion/Obtener', {}, function (dt) {
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $scope.vCrud.setForm(copiObj);            
+            $scope.vCrud.selectedIndex = index;             
+        }; 
+
+        $scope.Eliminar = function(item, indice){            
+
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + 'UsuarioLogSesion/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaUsuarioLogSesion.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.Guardar = function(){
+            if(!$scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + 'UsuarioLogSesion/Crear', $scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $scope.listaUsuarioLogSesion.push(res.data);
+                    $scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + 'UsuarioLogSesion/Actualizar', $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $scope.listaUsuarioLogSesion[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+                    $scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);
 
 })();
 
