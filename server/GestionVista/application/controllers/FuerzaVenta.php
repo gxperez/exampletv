@@ -38,6 +38,37 @@ class FuerzaVenta extends MY_Controller {
 
 	}
 
+	public function SincronizarWebServices(){
+		if (!$this->session->userdata("sUsuario")){
+				echo json_encode(array("IsSession" => false)); 
+				return false; 
+		}
+
+		// Sincronizar.
+		if($this->input->post("sincronizar")){			
+			// Obtencion del JSON.			
+			$json_file = file_get_contents('http://cnddosdobis:8090/WebServices/api.asmx/ObtenerFuerzaVenta');
+			$jFV = json_decode($json_file);
+
+			$this->load->model("FuerzaVenta_Model", "mFuerzaVenta");
+			// Actualizar La Base de datos.. Eliminar todas las Fuerzas de Ventas.
+			if ($this->mFuerzaVenta->desactivarFuerzaVenta()){
+				$this->mFuerzaVenta->activarNuevaFuerzaVenta($jFV); 
+				// Maxima cantidad de String  Validar la Maxima Cantidad de String.
+
+			}
+
+
+
+
+
+
+		}
+
+
+
+	}
+
 
 	public function master(){
 

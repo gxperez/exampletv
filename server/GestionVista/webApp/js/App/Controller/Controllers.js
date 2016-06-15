@@ -853,12 +853,13 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
             }, 
             'searchUrl':  base_url + 'FuerzaVenta/Buscar'
             });
-
-
+    
             http(base_url + 'FuerzaVenta/Obtener', {}, function (dt) {                
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
             });
+
+            $('#fvOculto').show(); 
 
 
         }; 
@@ -866,7 +867,36 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
 $scope.ActualizarHoja = function(){
 
     // confirmacion 
-    confirm("Seguro Desea Actualizar"); 
+    if(confirm("Seguro Desea Actualizar") ){
+
+        var sendObj = $scope.vCrud.getForm(); 
+        sendObj.sincronizar = true; 
+
+        console.log(sendObj); 
+
+        return false; 
+        
+         $.post(base_url + 'FuerzaVenta/SincronizarWebServices', sendObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaFuerzaVenta.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            }); 
+
+    }
 
 
 }
