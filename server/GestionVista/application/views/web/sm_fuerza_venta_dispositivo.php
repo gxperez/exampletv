@@ -69,9 +69,8 @@
                               <tr ng-repeat="item in listaDispositivo| filter:buscarLista:strict">
                                   <td><a href="basic_table.html#">{{item.Mac}}</a></td>
                                   <td class="hidden-phone">{{item.Nombre}}</td>
-                                  <td><span class="label label-info label-mini">Due</span></td>
-                                  <td> {{item.FuerzaVenta}} </td>
-                                  
+                                  <td><span class="label label-default label-mini">Offline</span></td>
+                                  <td> {{item.FuerzaVenta}} </td> 
                                   <td>
                                       <button class="btn btn-success btn-xs"><i class="fa fa-check"></i></button>
                                       <button class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button>
