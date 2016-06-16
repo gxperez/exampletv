@@ -40,7 +40,7 @@
  	public function obtenerUtilFechasActivasPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla("util_fechas_activas", ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla('util_fechas_activas', ?, ?, ?, null);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;

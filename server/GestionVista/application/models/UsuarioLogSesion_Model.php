@@ -40,7 +40,7 @@
  	public function obtenerUsuarioLogSesionPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla('usuario_log_sesion', ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla('usuario_log_sesion', ?, ?, ?, null);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaUsuarioLogSesion = $query->result(); 
 		return $listaUsuarioLogSesion;

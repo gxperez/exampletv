@@ -139,6 +139,7 @@ margin-left: 11px;
                           <li><a  ng-click="SetMain('secciontemplate/sm')">Seccion Template</a></li>
                           <li><a  ng-click="SetMain('fuerzaventa/sm')">Fuerza de Venta</a></li>
                           <li><a  ng-click="SetMain('fuerzaventa/master')">Master FV </a></li>
+                          <li><a  ng-click="SetMain('fuerzaventadispositivo/master')">Master Dispositivo FV</a></li>
 
                       </ul>
                   </li>
@@ -181,7 +182,7 @@ margin-left: 11px;
       <!--footer start-->
       <footer class="site-footer">
           <div class="text-center">
-              2016 - @BIS TEAM
+              <?php echo date('Y') ?> - @BIS TEAM
               <a href="general.html#" class="go-top">
                   <i class="fa fa-angle-up"></i>
               </a>

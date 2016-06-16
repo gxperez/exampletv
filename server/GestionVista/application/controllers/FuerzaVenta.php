@@ -13,14 +13,13 @@ class FuerzaVenta extends MY_Controller {
 			redirect("/portal/login", "refresh");			
 			return false; 
 		}
-
+		$this->load->model("FuerzaVenta_Model", "mFuerzaVenta");
 		// Consume la Fuerza De Venta Por Bloque.		
 		$json_file = file_get_contents('http://cnddosdobis:8090/WebServices/api.asmx/ObtenerFuerzaVenta');
-
 		$jFV = json_decode($json_file);
-		print_r($jFV);
-		exit(); 		
-
+		// $rest = $this->mFuerzaVenta->tabularNodos($jFV, 1, date("y-m-d h:i:s")); 
+		$this->mFuerzaVenta->activarNuevaFuerzaVenta($jFV, 1); 
+		exit();
 	}
 
 	public function ObtenerMaestro() {
@@ -30,30 +29,48 @@ class FuerzaVenta extends MY_Controller {
 			return false; 
 		}				
 		
-		$this->load->model("FuerzaVenta_Model", "mFuerzaVenta");				
-
+		$this->load->model("FuerzaVenta_Model", "mFuerzaVenta");
 		$listaFuerzaVenta = $this->mFuerzaVenta->obtenerFuerzaVentaResumenActivo();
-
 		echo json_encode(array("data" => $listaFuerzaVenta, "IsOk"=> true, "IsSession" => true)); 
 
 	}
 
-	public function SincronizarWebServices(){
-		if (!$this->session->userdata("sUsuario")){
-				echo json_encode(array("IsSession" => false)); 
-				return false; 
-		}
-
+		public function SincronizarWebServices(){
+			if (!$this->session->userdata("sUsuario")){
+					echo json_encode(array("IsSession" => false)); 
+					return false; 
+			}
 		// Sincronizar.
 		if($this->input->post("sincronizar")){			
 			// Obtencion del JSON.			
 			$json_file = file_get_contents('http://cnddosdobis:8090/WebServices/api.asmx/ObtenerFuerzaVenta');
 			$jFV = json_decode($json_file);
-
 			$this->load->model("FuerzaVenta_Model", "mFuerzaVenta");
 			// Actualizar La Base de datos.. Eliminar todas las Fuerzas de Ventas.
-			if ($this->mFuerzaVenta->desactivarFuerzaVenta()){
-				$this->mFuerzaVenta->activarNuevaFuerzaVenta($jFV); 
+			if ($this->mFuerzaVenta->desactivarFuerzaVenta()){				
+				$usuario = $this->session->userdata("sUsuario");				
+				if($this->mFuerzaVenta->activarNuevaFuerzaVenta($jFV, $usuario['IDusuario']))
+				{
+					
+				echo json_encode(array("data"=> $this->mFuerzaVenta->obtenerFuerzaVentaResumenActivo(), "IsOk"=> true, "IsSession" => true, "csrf" =>array(
+	        "name" => $this->security->get_csrf_token_name(),
+	        "hash" => $this->security->get_csrf_hash()
+        	)
+         )); 
+				return true; 
+
+				} else {
+
+								echo json_encode(array("IsOk"=> false, "IsSession" => true, "csrf" =>array(
+			        "name" => $this->security->get_csrf_token_name(),
+			        "hash" => $this->security->get_csrf_hash()
+			        )
+			         )); 
+
+								return flase; 
+
+				}
+
 				// Maxima cantidad de String  Validar la Maxima Cantidad de String.
 
 			}
@@ -144,13 +161,13 @@ class FuerzaVenta extends MY_Controller {
 		$this->load->model("FuerzaVenta_Model", "mFuerzaVenta");
 		// Auto Validacion del Formulario.
 
-	$this->validation->set_rules("objeto[GUIDDependencia]", "GUIDDependencia", "max_length[50]"); 
-$this->validation->set_rules("objeto[Nombre]", "Nombre", "required|max_length[50]"); 
-$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "max_length[100]"); 
-$this->validation->set_rules("objeto[Nivel]", "Nivel", "integer"); 
-$this->validation->set_rules("objeto[Estado]", "Estado", "integer"); 
-$this->validation->set_rules("objeto[FechaCrea]", "FechaCrea", ""); 
-$this->validation->set_rules("objeto[FechaFin]", "FechaFin", ""); 
+		$this->validation->set_rules("objeto[GUIDDependencia]", "GUIDDependencia", "max_length[50]"); 
+		$this->validation->set_rules("objeto[Nombre]", "Nombre", "required|max_length[50]"); 
+		$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "max_length[100]"); 
+		$this->validation->set_rules("objeto[Nivel]", "Nivel", "integer"); 
+		$this->validation->set_rules("objeto[Estado]", "Estado", "integer"); 
+		$this->validation->set_rules("objeto[FechaCrea]", "FechaCrea", ""); 
+		$this->validation->set_rules("objeto[FechaFin]", "FechaFin", ""); 
 
 
 	if ($this->validation->run() == FALSE)

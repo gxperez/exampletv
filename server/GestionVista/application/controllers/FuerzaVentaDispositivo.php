@@ -9,6 +9,28 @@ class FuerzaVentaDispositivo extends MY_Controller {
 	public function index()
 	{	
 	}
+
+	public function master(){
+		// Carga del Template Especial.
+		// AGrupado en JS
+
+		$data = array("csrf" =>array(
+        "name" => $this->security->get_csrf_token_name(),
+        "hash" => $this->security->get_csrf_hash()
+        ) );
+
+        $this->load->model('EmunsViews_model', 'mEnum');        	       	
+        $data['nivelTipos'] = $this->mEnum->getEnum("niveltipo");
+
+        $this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
+		$listaFuerzaVentaDispositivo = $this->mFuerzaVentaDispositivo->obtenerDispositivoRelacion(); 
+
+		$data['dispositivosData'] = json_encode($listaFuerzaVentaDispositivo); 		
+
+		$this->load->view("web/sm_fuerza_venta_dispositivo", $data); 
+
+
+	}
 	
 	public function sm()
 	{

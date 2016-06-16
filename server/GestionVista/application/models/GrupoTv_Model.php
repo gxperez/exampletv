@@ -39,7 +39,7 @@
  	public function obtenerGrupoTvPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla("grupo_tv", ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla('grupo_tv', ?, ?, ?, null);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;

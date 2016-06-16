@@ -40,7 +40,7 @@
  	public function obtenerBloquesPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla('bloques', ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla('bloques', ?, ?, ?, null);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;

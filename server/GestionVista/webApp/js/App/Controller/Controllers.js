@@ -868,32 +868,29 @@ $scope.ActualizarHoja = function(){
 
     // confirmacion 
     if(confirm("Seguro Desea Actualizar") ){
-
         var sendObj = $scope.vCrud.getForm(); 
-        sendObj.sincronizar = true; 
-
-        console.log(sendObj); 
-
-        return false; 
+        sendObj.sincronizar = true;                 
         
          $.post(base_url + 'FuerzaVenta/SincronizarWebServices', sendObj, function(res){
                 // Validacion de Sessiones.
-                $appSession.IsSession(res);                                                                         
-                if (res.IsOk){
-                    $scope.listaFuerzaVenta.splice(indice, 1); 
-                    $scope.$apply();
-                    // TODO: @MensajeEliminacion;
-                } else {
-                    // TODO: @MensajeEliminacion;
-                    // Notifiacion de mensaje de Error.
-                    alert(res.Msg);
-                }
+
+                $appSession.IsSession(res);      
+
+                 if(res.IsOk){
+                        $scope.resumenFuerzaVenta = res.data; 
+                        $scope.$apply();
+
+                    } else {
+                        alert("Error en la Data"); 
+                    }
 
                 if('csrf' in res){
                         $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
                 }
             }, 'json').fail(function() {                
+
                 alert('Error en el POST SERVER');
+
             }); 
 
     }
@@ -1711,6 +1708,185 @@ $scope.ActualizarHoja = function(){
         }
         }
 }]);
+
+
+$ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+        var form = {            
+        };
+        $scope.listaFuerzaVentaDispositivo =[]; 
+        $scope.pantallaNombre = 'Registro FuerzaVentaDispositivo';
+        $scope.buscarLista = '';
+        $scope.vCrud = appCrud;
+        $scope.vCrud.setForm(form); 
+
+        $scope.vCrud.initt({url: base_url + 'FuerzaVentaDispositivo/Obtener', 
+            'callback': function(res, num){
+                $scope.ObtenerPaginacionRes(res, num);     
+                $scope.$apply();
+            }, 
+            'searchUrl':  base_url + 'FuerzaVentaDispositivo/Buscar'
+        });
+
+        $scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $scope.listaFuerzaVentaDispositivo = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $scope.listaDispositivo = {}; 
+
+        $scope.panel = function(){
+
+            $(function(){                
+
+                $scope.listaDispositivo = JSONData; 
+                console.log("Se inicializo. LA esperanza"); 
+                console.log($scope.listaDispositivo);                 
+            }); 
+            
+
+
+        }
+
+
+        $scope.initt = function () {
+
+            $scope.Pantalla = {nombre: 'FuerzaVentaDispositivo'};            
+             http(base_url + 'FuerzaVentaDispositivo/Obtener', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+        };        
+
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + 'FuerzaVentaDispositivo/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                            
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + 'FuerzaVentaDispositivo/Buscar/' + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                          
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + 'FuerzaVentaDispositivo/Obtener', {}, function (dt) {
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $scope.vCrud.setForm(copiObj);            
+            $scope.vCrud.selectedIndex = index;             
+        }; 
+
+        $scope.Eliminar = function(item, indice){            
+
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + 'FuerzaVentaDispositivo/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaFuerzaVentaDispositivo.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.Guardar = function(){
+            if(!$scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + 'FuerzaVentaDispositivo/Crear', $scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $scope.listaFuerzaVentaDispositivo.push(res.data);
+                    $scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + 'FuerzaVentaDispositivo/Actualizar', $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $scope.listaFuerzaVentaDispositivo[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+                    $scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);
+
 
 })();
 

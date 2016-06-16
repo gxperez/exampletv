@@ -17,6 +17,26 @@
 		return $listaFuerzaVentaDispositivo;
  	}
 
+ 	public function obtenerDispositivoRelacion(){
+ 		$this->load->database(); 
+
+ 		$query = "select D.DispositivoID,  D.Mac, D.Nombre,
+        D.Descripcion, D.Estado,  F.Nombre as FuerzaVenta, true as Dis_Register,          
+        ifnull(F.Descripcion, 'N/A') as Descripcion  from dispositivo as D left join 
+ fuerza_venta_dispositivo as FD 
+ on D.DispositivoID = FD.DispositivoID 
+ and FD.Estado = 1
+ left join fuerza_venta as F on
+ F.GUID_FV = FD.GUID_FV
+ and F.Estado = 1
+ where D.Estado = 1"; 
+ 		$rest = $this->db->query($query);
+
+		$listaFuerzaVentaDispositivo = $rest->result();
+
+		return $listaFuerzaVentaDispositivo; 
+ 	}
+
  	public function obtenerFuerzaVentaDispositivoPorCampo($campo, $valor = "", $limit = 0, $page = 20){
 		$this->load->database();
 		$list = $this->db->field_data("fuerza_venta_dispositivo");
@@ -40,7 +60,7 @@
  	public function obtenerFuerzaVentaDispositivoPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla("fuerza_venta_dispositivo", ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla('fuerza_venta_dispositivo', ?, ?, ?);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;

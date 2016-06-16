@@ -39,7 +39,7 @@
  	public function obtenerDispositivoLogPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);
-		$stored_procedure = "call sp_PaginarResultTabla("dispositivo_log", ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla('dispositivo_log', ?, ?, ?, null);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;

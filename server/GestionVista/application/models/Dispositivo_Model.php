@@ -50,7 +50,7 @@
 
 		$arrFill = array('vLimit' => $limit, 'vPage'=> $row, 'vCondicion'=> $condicion);
 
-		$stored_procedure = "call sp_PaginarResultTabla('dispositivo', ?, ?, ?);";		
+		$stored_procedure = "call sp_PaginarResultTabla('dispositivo', ?, ?, ?, null);";		
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;

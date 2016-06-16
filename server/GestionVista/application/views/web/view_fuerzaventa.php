@@ -49,46 +49,41 @@
 
      <div class="panel-heading">
 
-
             <div class="pull-right">                                  
 
                             <input type="text" ng-model="buscarLista"  ng-keypress="Buscar($event)" class="round-form" >                            
                             <button type="button" class="btn btn-round btn-default" ng-click="Buscar($event)"><i class="fa fa-search"></i>  </button>
                       </div>
-                          
-                    
-
-                          <div class="pull-left"> 
-                            <h5><i class="fa fa-tasks"></i> {{Pantalla.nombre}}</h5>
-                           </div>
-                          <br>
                     </div>
 
 
 
                           <div class="panel-body">
-                              <div class="task-content">
-                                  <ul id="sortable" class="task-list">
-                                      <li ng-repeat="item in listaFuerzaVenta|filter:buscarLista:strict" class="list-primary">
-                                          <i class=" fa fa-ellipsis-v"></i>
-                                          <div class="task-checkbox">
-                                              <input type="checkbox" class="list-child" value=""  />
-                                          </div>
-                                          <div class="task-title">
-                                              <span class="task-title-sp">{{item.Descripcion}}</span>
-                                              <div class="pull-right hidden-phone">                                                  
-                                            <button class="btn btn-primary btn-xs fa fa-pencil" ng-click="Llenar(item, $index ); vCrud.Editar(1);"></button>
-                                                  <button class="btn btn-danger btn-xs fa fa-trash-o" ng-click="Eliminar(item, $index)"></button>
-                                              </div>
-                                          </div>
-                                      </li>
 
-                                  </ul>
-                              </div>
+                          <div class="content-panel">
+                            <h4> <i class="fa fa-tasks"></i> {{Pantalla.nombre}}</h4><hr>
+
+                            <table class="table table-hover">
+                            
+                                <thead>
+                                <tr>                                    
+                                    <th>Nivel</th>
+                                    <th>Nombre</th>
+                                    <th>Descripcion</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="item in listaFuerzaVenta|filter:buscarLista:strict">
+                                    
+                                    <td>{{item.Nivel}}</td>
+                                    <td>{{item.Nombre}}</td>
+                                    <td>{{item.Descripcion}}</td>
+                                </tr>                                
+                                </tbody>
+                            </table>
+                        </div>
                               <div class=" add-task-row">   
-                               <div id="page-selection-APP"></div> 
-
-                                  <a class="btn btn-default btn-sm pull-right" ng-click="ListAll()">Ver Todo</a>
+                               <div id="page-selection-APP"></div>                                   
                               </div>
                           </div>                          
 
