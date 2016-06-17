@@ -13,7 +13,7 @@ var app = function () {
     return instance;
 };
 
-appAngularDependecies.push('ngSanitize', 'jcs-autoValidate');
+appAngularDependecies.push('ngSanitize', 'jcs-autoValidate', 'ui.sortable');
 
 var appAng = angular.module("App", appAngularDependecies, function ($compileProvider) {
     $compileProvider.directive('compile', function ($compile) {

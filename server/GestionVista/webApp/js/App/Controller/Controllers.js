@@ -1716,7 +1716,60 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
         }
         var form = {            
         };
+
+         $scope.dropzone = {};
+
+         $scope.dropzoneFields = []; 
+
+
+        $scope.sorti ={1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []}; 
+
+         $scope.sortableOptions =
+          {
+    connectWith: ".sortable1-cont",
+    start: function (e, ui) {  
+
+  //    $('.sortable1-cont').sortable('refresh');
+      
+    },
+    
+    update: function (e, ui) {
+
+    console.log("Movio Correcto");     
+    console.log(ui.item.sortable.droptarget[0].classList[0]); 
+
+      if (ui.item.sortable.droptarget[0].classList[0] !== "sortable1-cont")
+        ui.item.sortable.cancel();
+
+
+    },
+    stop: function (e, ui) {
+
+      if (ui.item.sortable.droptarget == undefined) {
+        //$scope.$apply($scope.dragging = false);
+        return;
+      }else if (ui.item.sortable.droptarget[0].classList[0] == "sortable1-cont") {
+        // run code when item is dropped in the dropzone
+        // $scope.$apply($scope.dragging = false);
+      }else{
+        // $scope.$apply($scope.dragging = false);
+      }
+    }
+  };
+  /*
+   {
+            placeholder: "app",
+            
+            update: function(event, ui) {      
+                    if (event.target.id !== 'screen-1' && ui.item.sortable.droptarget.attr('id') === 'screen-1' && $scope.rawScreens[1].length >= 10) {
+                        // Ajustes en General
+                        ui.item.sortable.cancel();
+                    }
+                }
+            };
+*/
         $scope.listaFuerzaVentaDispositivo =[]; 
+        $scope.copyFuerzaVentaDispositivo =[]; 
         $scope.pantallaNombre = 'Registro FuerzaVentaDispositivo';
         $scope.buscarLista = '';
         $scope.vCrud = appCrud;
@@ -1734,12 +1787,27 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
             if(res.IsOk){
 
                     $scope.listaFuerzaVentaDispositivo = res.data; 
+                    $scope.copyFuerzaVentaDispositivo = res.data;
                     $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
 
                 } else {
                 // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
                     console.log('Uno un Error');
                 }
+        }
+
+        $scope.selectedClassNivel = function(obj){
+
+
+
+            if(obj.DispositivoID !== null){
+
+                return "label-success"; 
+            }
+
+            return "label-default"; 
+
+
         }
 
         $scope.listaDispositivo = {}; 
@@ -1749,8 +1817,13 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
             $(function(){                
 
                 $scope.listaDispositivo = JSONData; 
-                console.log("Se inicializo. LA esperanza"); 
-                console.log($scope.listaDispositivo);                 
+                $scope.listaFuerzaVenta = JFData;
+                 $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));
+
+                
+
+
+                
             }); 
             
 

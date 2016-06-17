@@ -37,6 +37,43 @@
 		return $listaFuerzaVentaDispositivo; 
  	}
 
+ 	public function obtenerFuerzaVentaRelacion(){
+ 		$this->load->database(); 
+
+ 		$query = " select f.GUID_FV, f.GUIDDependencia, f.Nombre as FuerzaVenta, f.Estado, 
+ f.Nivel,
+ D.DispositivoID, 
+ D.Mac,
+ D.Nombre        	
+from fuerza_venta  as f left join 
+ fuerza_venta_dispositivo as FD 
+ on f.GUID_FV = FD.GUID_FV 
+ and FD.Estado = 1
+ left join dispositivo as d on
+ d.DispositivoID = FD.DispositivoID
+ and d.Estado = 1
+ where f.Estado = 1
+ order by f.Nivel, f.Nombre"; 
+			 		$rest = $this->db->query($query);
+					$listaFuerzaVentaDispositivo = $rest->result();
+		return $listaFuerzaVentaDispositivo; 
+ 	}
+
+ 	public function formatNivelObject($list){
+
+ 		$arr = array();
+
+ 		foreach ($list as $key => $value) { 			
+			if(! array_key_exists($value->Nivel , $arr) ){
+				$arr[$value->Nivel] = array();				
+			}
+			$arr[$value->Nivel][] = $value;  			
+ 		}
+		return $arr; 
+ 	}
+
+
+
  	public function obtenerFuerzaVentaDispositivoPorCampo($campo, $valor = "", $limit = 0, $page = 20){
 		$this->load->database();
 		$list = $this->db->field_data("fuerza_venta_dispositivo");

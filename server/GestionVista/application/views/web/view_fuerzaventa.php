@@ -57,7 +57,6 @@
                     </div>
 
 
-
                           <div class="panel-body">
 
                           <div class="content-panel">

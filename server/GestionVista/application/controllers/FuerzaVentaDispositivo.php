@@ -24,8 +24,15 @@ class FuerzaVentaDispositivo extends MY_Controller {
 
         $this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
 		$listaFuerzaVentaDispositivo = $this->mFuerzaVentaDispositivo->obtenerDispositivoRelacion(); 
+		$listaFuerzaVenta = $this->mFuerzaVentaDispositivo->formatNivelObject($this->mFuerzaVentaDispositivo->obtenerFuerzaVentaRelacion() ); 
 
+
+		// Darle formato de Nodos. Siempre Ordenados.
 		$data['dispositivosData'] = json_encode($listaFuerzaVentaDispositivo); 		
+		$data['fuerzaVentaData'] = json_encode($listaFuerzaVenta); 		
+		
+
+
 
 		$this->load->view("web/sm_fuerza_venta_dispositivo", $data); 
 

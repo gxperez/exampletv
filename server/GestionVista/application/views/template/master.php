@@ -19,6 +19,8 @@
     <link href="<?php echo base_url(). "webApp/"; ?>assets/css/main-style.css" rel="stylesheet">
     <link href="<?php echo base_url(). "webApp/"; ?>assets/css/style-responsive.css" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo base_url(). "webApp/"; ?>assets/css/to-do.css">
+    <link rel="stylesheet" href="<?php echo base_url(). "webApp/"; ?>css/jquery-ui.css">
+    
 
     <script type="text/javascript">
     var base_url = "<?php echo base_url(); ?>";
@@ -209,6 +211,8 @@ margin-left: 11px;
     <script type="text/javascript" src="<?php echo base_url(). "webApp/"; ?>js/angular-1.2.26.js"></script>    
     <script type="text/javascript" src="<?php echo base_url(). "webApp/"; ?>js/Jcs-auto-validate/jcs-auto-validate.js"></script>
     <script type="text/javascript" src="<?php echo base_url(). "webApp/"; ?>js/Oi.multiselect/multiselect-tpls.min.js"></script><!--angular-oi.multiselect-->
+
+    <script type="text/javascript" src="<?php echo base_url(). "webApp/"; ?>js/sortable.js"></script>
 
     <script type="text/javascript">
         var appAngularDependecies = [ "oi.multiselect"];
