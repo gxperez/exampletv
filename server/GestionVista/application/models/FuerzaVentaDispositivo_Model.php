@@ -17,6 +17,23 @@
 		return $listaFuerzaVentaDispositivo;
  	}
 
+
+ 	public function validarExistencia( $objeto ){
+		$this->load->database(); 
+ 		// Validar por Query.
+
+ 		$this->db->where("GUID_FV", trim($objeto["GUID_FV"]) ); 
+ 		$this->db->where("DispositivoID", $objeto["DispositivoID"] ); 
+ 		$this->db->where("Estado", 1);  		
+		$result = $this->db->get("fuerza_venta_dispositivo");
+
+		if ($result->num_rows() > 0){
+			return true; 
+		}
+
+		return false; 
+ 	}
+
  	public function obtenerDispositivoRelacion(){
  		$this->load->database(); 
 
@@ -40,7 +57,7 @@
  	public function obtenerFuerzaVentaRelacion(){
  		$this->load->database(); 
 
- 		$query = " select f.GUID_FV, f.GUIDDependencia, f.Nombre as FuerzaVenta, f.Estado, 
+ 		$query = "select f.GUID_FV, f.GUIDDependencia, f.Nombre as FuerzaVenta, f.Estado, 
  f.Nivel,
  D.DispositivoID, 
  D.Mac,
@@ -176,6 +193,15 @@ from fuerza_venta  as f left join
 		}
 			return $rs; 
 	}
+
+	public function eliminar($obj){
+
+		$this->db->where("DispositivoID", $obj["DispositivoID"]);
+		$this->db->where("GUID_FV", $obj["GUID_FV"]);
+		// Esta fue tu mejor temporada.
+		return $this->db->delete("fuerza_venta_dispositivo"); 
+	}
+
 
 	public function ObtenerPorID($id){
 		$this->db->where("FuerzaVentaDispositivoID", $id); 

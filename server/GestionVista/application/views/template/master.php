@@ -152,6 +152,8 @@ margin-left: 11px;
                           <span>Reportes</span>
                       </a>
                       <ul class="sub">
+
+                         <li><a  ng-click="SetMain('planconfig/sm')">Plan config</a></li>                          
                           <li><a  href="morris.html">Morris</a></li>
                           <li><a  href="chartjs.html">Chartjs</a></li>
                       </ul>

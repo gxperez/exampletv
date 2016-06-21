@@ -85,11 +85,23 @@ angular.module('ui.sortable', [])
                 var siblings = ui.item.siblings();
                 angular.element(e.target).data('ui-sortable').floating = isFloating(siblings);
               }
+              
+              var inID =ui.item.context.id; 
+              var model =ngModel.$modelValue[ui.item.index()]; 
+              var indice =ui.item.index(); 
+
+
+              if(inID != "" && (inID.indexOf(";") !== -1 ) ) {   
+                var  arrKVal = inID.split(";"); 
+                model = ngModel.$modelValue.filter(function(x){ return x[arrKVal[0]] === arrKVal[1];  })[0];
+                indice = ngModel.$modelValue.indexOf(model);
+              }
+              
 
               // Save the starting position of dragged item
               ui.item.sortable = {
-                model: ngModel.$modelValue[ui.item.index()],
-                index: ui.item.index(),
+                model: model,
+                index: indice, // ui.item.index(),
                 source: ui.item.parent(),
                 sourceModel: ngModel.$modelValue,
                 cancel: function () {

@@ -1717,44 +1717,73 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
         var form = {            
         };
 
-         $scope.dropzone = {};
 
-         $scope.dropzoneFields = []; 
+         $scope.dropzone = {};         
+         $scope.dropzoneFields = {}; 
 
+         $scope.liveDisp = JResentDis; 
 
-        $scope.sorti ={1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []}; 
+         $scope.isOnline = function(mac){
+            if(mac in $scope.liveDisp){
+                return true; 
+            }
+            return false;
+         }; 
+
+         $scope.validateOnline = function(mac){
+
+            if($scope.isOnline(mac)){
+                return "til-online"; 
+            }
+            return "til-offline"; 
+         };
+
 
          $scope.sortableOptions =
           {
-    connectWith: ".sortable1-cont",
-    start: function (e, ui) {  
-
-  //    $('.sortable1-cont').sortable('refresh');
-      
-    },
+            connectWith: ".sortable1-cont",
+            start: function (e, ui) {  
+                $('.sortable1-cont').sortable('refresh');
+            },
     
-    update: function (e, ui) {
+            update: function (e, ui) {
+                  if (ui.item.sortable.droptarget[0].classList[0] !== "sortable1-cont"){
+                    ui.item.sortable.cancel();
+                    return false; 
+                  }                    
 
-    console.log("Movio Correcto");     
-    console.log(ui.item.sortable.droptarget[0].classList[0]); 
+                var contID = ui.item.sortable.droptarget[0].id.split("-"); 
+                if(contID.length > 0){
+                    if($scope.dropzoneFields[contID[1]].length == 1){
+                    ui.item.sortable.cancel();                        
+                    return false;
+                    } 
+                }
 
-      if (ui.item.sortable.droptarget[0].classList[0] !== "sortable1-cont")
-        ui.item.sortable.cancel();
+                // Envio de los Datos para Registrar Vinculo.
+              http(base_url + 'FuerzaVentaDispositivo/registraRelacion', {"dispositivoID": contID, "GUID_FV": ui.item.sortable.model.GUID_FV }, function (dt) {                
+                    res = JSON.parse(dt); 
+                   // $appSession.IsSession(dt);                                         
+                  //   $scope.ObtenerPaginacionRes(dt); 
+                  if(res.IsOk){
+                    console.log("Todo Ok"); 
+                  } else {
+                    console.log("Entrada de Pantajo No Ok"); 
+                  }                  
+             });
+            },
 
-
-    },
-    stop: function (e, ui) {
-
-      if (ui.item.sortable.droptarget == undefined) {
-        //$scope.$apply($scope.dragging = false);
-        return;
-      }else if (ui.item.sortable.droptarget[0].classList[0] == "sortable1-cont") {
-        // run code when item is dropped in the dropzone
-        // $scope.$apply($scope.dragging = false);
-      }else{
-        // $scope.$apply($scope.dragging = false);
-      }
-    }
+            stop: function (e, ui) {
+              if (ui.item.sortable.droptarget == undefined) {
+                //$scope.$apply($scope.dragging = false);
+                return;
+              }else if (ui.item.sortable.droptarget[0].classList[0] == "sortable1-cont") {
+                // run code when item is dropped in the dropzone
+                // $scope.$apply($scope.dragging = false);
+              }else{
+                // $scope.$apply($scope.dragging = false);
+              }
+            }
   };
   /*
    {
@@ -1783,6 +1812,34 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
             'searchUrl':  base_url + 'FuerzaVentaDispositivo/Buscar'
         });
 
+
+        $scope.formatZoneField = function(){
+            // Set Key  (DispositivoID) asignate val(obj(FuerzaVenta)) 
+            for(ky in JSONData){
+                if(JSONData.hasOwnProperty(ky)){
+                    if(!(JSONData[ky].DispositivoID in $scope.dropzoneFields)){
+                        $scope.dropzoneFields[JSONData[ky].DispositivoID] = []; 
+                    }                    
+                }
+            }
+        }; 
+
+
+
+        $scope.formatZoneField(); 
+
+        $scope.eliminarVinculoFV = function(dispositivo, FV){
+
+            // Eliminar los dispositivo.
+            console.log("Aquie va el envio de la informacion para elimninar el vinculo en las tablas."); 
+
+            $scope.dropzoneFields[dispositivo.DispositivoID] = []; 
+            $scope.listaFuerzaVentaCopy[FV.Nivel].push(FV);           
+
+
+
+        }
+
         $scope.ObtenerPaginacionRes = function(res, num){            
             if(res.IsOk){
 
@@ -1796,9 +1853,28 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
                 }
         }
 
+        $scope.validarFvSelected = function(obj){
+
+            for (var i = obj.length - 1; i >= 0; i--) {
+                if(obj[i].Nivel == $scope.vCrud.form.Nivel){
+                    return true; 
+                }                
+            }
+            return false; 
+        }; 
+
+
+        $scope.clickAutoSearch = function(dispositivoID){
+            $aaa = JSONData.filter(function(x){ return x.DispositivoID == dispositivoID})[0];
+
+            if("Nombre" in $aaa){
+                $scope.buscarLista = $aaa.Nombre.toString();              
+            }
+
+        }; 
+
+
         $scope.selectedClassNivel = function(obj){
-
-
 
             if(obj.DispositivoID !== null){
 
@@ -1960,6 +2036,211 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
         }
 }]);
 
+
+$ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+        var form = {            
+        };
+        $scope.listaPlanConfig =[]; 
+        $scope.pantallaNombre = 'Registro PlanConfig';
+        $scope.buscarLista = '';
+        $scope.vCrud = appCrud;
+        $scope.vCrud.setForm(form); 
+
+        $scope.vCrud.initt({url: base_url + 'PlanConfig/Obtener', 
+            'callback': function(res, num){
+                $scope.ObtenerPaginacionRes(res, num);     
+                $scope.$apply();
+            }, 
+            'searchUrl':  base_url + 'PlanConfig/Buscar'
+        });
+
+        $scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $scope.listaPlanConfig = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $scope.initt = function () {
+
+            $scope.Pantalla = {nombre: 'PlanConfig'};            
+             http(base_url + 'PlanConfig/Obtener', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+        };        
+
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + 'PlanConfig/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                            
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + 'PlanConfig/Buscar/' + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                          
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + 'PlanConfig/Obtener', {}, function (dt) {
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $scope.vCrud.setForm(copiObj);            
+            $scope.vCrud.selectedIndex = index;             
+        };        
+
+        $scope.objetivos = {}; 
+
+        $scope.BuscarPendiente = function(){
+            // El cambio de los objetivos.
+            switch($scope.objetivos.Tipo){
+                case "1": 
+                // General.
+                $("#content-objs").hide();                 
+
+                break; 
+
+                case "2": 
+                //  Especiicos.
+                $("#content-objs").show(); 
+                
+                break; 
+
+            }
+
+        }; 
+
+        $scope.Eliminar = function(item, indice){            
+
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + 'PlanConfig/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaPlanConfig.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.guardarObjetivo = function(){
+            // Envio del Objetivo           
+
+        }; 
+
+        $scope.cerrarDialog = function(){
+            $('#objetivoFormulario').dialog('close');
+
+        }
+
+        $scope.agregarobjetvo = function(){
+
+            // Colocarn en DIalog BOX. (el evento)
+            $("#objetivoFormulario").dialog({
+                width: "716", 
+                title: "Agregar Objetivo"
+            }); 
+
+
+
+
+        }
+
+        $scope.Guardar = function(){
+            if(!$scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + 'PlanConfig/Crear', $scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $scope.listaPlanConfig.push(res.data);
+                    $scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + 'PlanConfig/Actualizar', $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $scope.listaPlanConfig[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+                    $scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);
 
 })();
 

@@ -31,7 +31,6 @@ class Dispositivo extends MY_Controller {
         ) );
 
         	$this->load->model('EmunsViews_model', 'mEnum');
-
         	$estados = $this->mEnum->getEnumsEstado(); 
         	$data['listEstadoForm'] = $estados; 
         	$data['dispositivoTipos'] = $this->mEnum->getEnum("dispositivotipo"); 

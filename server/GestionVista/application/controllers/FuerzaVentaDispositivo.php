@@ -23,20 +23,23 @@ class FuerzaVentaDispositivo extends MY_Controller {
         $data['nivelTipos'] = $this->mEnum->getEnum("niveltipo");
 
         $this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
+        $this->load->model("SessionDispositivoLog_Model", "mSessionDisp");
+
 		$listaFuerzaVentaDispositivo = $this->mFuerzaVentaDispositivo->obtenerDispositivoRelacion(); 
 		$listaFuerzaVenta = $this->mFuerzaVentaDispositivo->formatNivelObject($this->mFuerzaVentaDispositivo->obtenerFuerzaVentaRelacion() ); 
+		
+		$arregloResult = array();
 
+		foreach ($this->mSessionDisp->obtenerSessionDispositivoLog() as $key => $value) {
+			$arregloResult[$value->Mac] = $value; 
+		 } 
 
 		// Darle formato de Nodos. Siempre Ordenados.
 		$data['dispositivosData'] = json_encode($listaFuerzaVentaDispositivo); 		
-		$data['fuerzaVentaData'] = json_encode($listaFuerzaVenta); 		
-		
-
-
+		$data['fuerzaVentaData'] = json_encode($listaFuerzaVenta); 
+		$data['resentDispositivo'] = json_encode($arregloResult); 
 
 		$this->load->view("web/sm_fuerza_venta_dispositivo", $data); 
-
-
 	}
 	
 	public function sm()
@@ -53,6 +56,84 @@ class FuerzaVentaDispositivo extends MY_Controller {
 
 		// Carga de planilla web en general.
 		$this->load->view("web/sm_fuerza_venta_dispositivo", $data); 
+	}
+
+	public function registraRelacion(){
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}
+		// Metodos Get para el Regitro.
+		$this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
+
+
+		$dispositivoID = $this->input->get("dispositivoID");
+		$FV = $this->input->get("GUID_FV");			
+
+		if($dispositivoID !== null && $FV !== null){
+			// Vamos a Registrar el Objeto.
+			$fuerza_venta_dispositivoEnt = array('DispositivoID'=> $dispositivoID
+			, 'GUID_FV'=> $FV 
+			, 'UsuarioCreaID'=> 1
+			, 'FechaCrea'=> date('Y-m-d H:i:s') 
+			, 'Estado'=> 1 
+);
+
+
+			if($this->mFuerzaVentaDispositivo->validarExistencia($fuerza_venta_dispositivoEnt)){
+				// Ya existe no h
+				$id = -1; 
+
+			} else {
+				$id = $this->mFuerzaVentaDispositivo->insertar( $fuerza_venta_dispositivoEnt ); 				
+			}
+
+
+			
+			echo json_encode(array("data" => 1, "IsOk"=> true, "id"=> $id, "Msg"=>"Success", "IsSession" => true ) );
+			return true; 
+		}
+
+
+echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), "IsSession" => true  ) );
+           	return false;
+
+	}
+
+	public function eliminarRelacion(){
+
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}
+		// Metodos Get para el Regitro.
+			$dispositivoID = $this->input->get("dispositivoID");
+			$FV = $this->input->get("GUID_FV");
+
+			if($dispositivoID !== null && $FV !== null){
+			// Vamos a Registrar el Objeto.
+			$fuerza_venta_dispositivoEnt = array('DispositivoID'=> $dispositivoID
+			, 'GUID_FV'=> $FV 
+			, 'UsuarioCreaID'=> 1
+			, 'FechaCrea'=> date('Y-m-d H:i:s') 
+			, 'Estado'=> 1 
+);
+
+			$id = 0; 
+
+			if($this->mFuerzaVentaDispositivo->validarExistencia($fuerza_venta_dispositivoEnt)){
+				
+				$this->mFuerzaVentaDispositivo->eliminar($fuerza_venta_dispositivoEnt); 
+				$id = -1; 
+			} 
+
+
+			
+			echo json_encode(array("data" => 1, "IsOk"=> true, "id"=> $id, "Msg"=>"Success", "IsSession" => true ) );
+			return true; 
+		}
+
+
 	}
 
 

@@ -32,6 +32,20 @@ width: 120px;
 min-height: 50px;
 }
 
+.sortable1 li {
+margin: 2px;
+padding: 2px;
+font-size: 12px;
+width: 112px;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+border: 1px solid #d3d3d3;
+background: #e6e6e6 url("../webApp/img/jqueryui/ui-bg_glass_75_e6e6e6_1x400.png") 50% 50% repeat-x !important;
+font-weight: normal;
+color: #555555;
+}
+
    </style>
 
   <div class="row mt mb">
@@ -60,40 +74,47 @@ min-height: 50px;
 	           		</div>
 	</div>
 
-<div class="row" ng-repeat="item in listaDispositivo| filter:buscarLista:strict">
+  <div  style="height: 500px; overflow: scroll; width: 100%;">
+
+  <div class="row" ng-repeat="item in listaDispositivo| filter:buscarLista:strict">
 <div class="col-lg-12 ds">
 
 <div class="desc">
-<div class="col-sm-8">	
+<div class="col-sm-8">  
 
 
-                      	<div class="thumb">
-                      		<span class="badge bg-theme til-offline"><i class="fa fa-clock-o"></i></span>
-                      	</div>
+                        <div class="thumb">
+                          <span id="fa-clock-o" class="badge bg-theme {{validateOnline(item.Mac)}}"><i class="fa fa-desktop"></i></span>
+                        </div>
 
-                      	<div class="details">
-                      		<p><muted>2 Minutes Ago</muted><br>
-                      		<strong>Mac: </strong> <span> {{item.Mac}} </span> <br>
-                      		<strong>Nombre: </strong>
-                      	{{item.Nombre}}	    
-                      		</p>
-                      	</div>
+                        <div class="details">
+                          <p> <br>
+                          <strong>Mac: </strong> <span> {{item.Mac}} </span> <br>
+                          <strong>Nombre: </strong>
+                        {{item.Nombre}}     
+                          </p>
+                        </div>
 
    </div>
 
    <div class="col-sm-4">
-    	<ul id="sortable-1" class="sortable1-cont droptrue sortable1 " ui-sortable="dropzone" ng-model="dropzoneFields">   
-    	<li ng-repeat="t in dropzoneFields" id="ruta_83" class="ui-state-default ng-binding ng-scope ui-sortable-handle"> {{t.FuerzaVenta}}</li>       	
+      <ul id="sortable-{{item.DispositivoID}}" class="sortable1-cont droptrue sortable1 " ui-sortable="dropzone" ng-model="dropzoneFields[item.DispositivoID]">   
+      <li ng-repeat="t in dropzoneFields[item.DispositivoID]" id="ruta_{{item.DispositivoID}}" class="ui-state-default ng-binding ng-scope ui-sortable-handle"> <div class="fa fa-times-circle" style="
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-size: 14px;    
+" ng-click="eliminarVinculoFV(item, t);"></div>  {{t.FuerzaVenta}}</li>         
                                             
     </ul>
-		<strong>{{item.FuerzaVenta}}</strong>
-		  
-	</div>
+    <strong>{{item.FuerzaVenta}}</strong>
+      
+  </div>
 </div>
 </div>
-</div>	
+</div>  
 
-
+  </div>
 
 </div>
 
@@ -110,7 +131,7 @@ min-height: 50px;
       			</div>
  </div> 
 
-<div ng-repeat="(k, val) in listaFuerzaVenta| filter:buscarFV:strict"  ng-if="(vCrud.form.Nivel.toString() == k.toString() )">
+<div ng-repeat="(k, val) in listaFuerzaVentaCopy| filter:buscarFV:strict"  ng-if="(vCrud.form.Nivel.toString() == k.toString() )">
 
 <aside class="col-lg-12 mt">
 <div class="row">
@@ -123,11 +144,14 @@ min-height: 50px;
 	
 </div>
                       
+                      <div id="taken-events">                          
+                          <div ng-repeat="(kis, item2) in dropzoneFields| filter:buscarFV:strict" class="external-event label label-success" style="position: relative; z-index: auto; left: 0px; top: 0px;" ng-if="validarFvSelected(item2)" ng-click='clickAutoSearch(kis);'>{{item2[0].FuerzaVenta}}</div>
+                          
+                      </div>
                       
 
                       <div ui-sortable="sortableOptions" ng-model="listaFuerzaVentaCopy[k]" id="external-events">                          
-                          <div ng-repeat="item in val| filter:buscarFV:strict" class="external-event label {{selectedClassNivel(item)}} ui-draggable" style="position: relative; z-index: auto; left: 0px; top: 0px;">{{item.FuerzaVenta}}</div>
-                         
+                          <div ng-repeat="item in val| filter:buscarFV:strict" class="external-event label {{selectedClassNivel(item)}} ui-draggable" style="position: relative; z-index: auto; left: 0px; top: 0px;" id='GUID_FV;{{item.GUID_FV}}'  >{{item.FuerzaVenta}}</div>
                           <p class="drop-after">
                           </p>
                       </div>
@@ -176,6 +200,8 @@ min-height: 50px;
 var JSONData = <?php echo $dispositivosData; ?>; 
 
 var JFData = <?php echo $fuerzaVentaData;  ?>
+
+var JResentDis = <?php echo $resentDispositivo; ?>
 
 $(function() {
 
