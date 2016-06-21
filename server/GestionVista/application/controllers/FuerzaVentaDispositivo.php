@@ -106,6 +106,9 @@ echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), "IsSession" 
 			echo json_encode(array("IsSession" => false)); 
 			return false; 
 		}
+
+		$this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
+		
 		// Metodos Get para el Regitro.
 			$dispositivoID = $this->input->get("dispositivoID");
 			$FV = $this->input->get("GUID_FV");

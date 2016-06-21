@@ -1762,7 +1762,10 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
 
                 // Envio de los Datos para Registrar Vinculo.
               http(base_url + 'FuerzaVentaDispositivo/registraRelacion', {"dispositivoID": contID, "GUID_FV": ui.item.sortable.model.GUID_FV }, function (dt) {                
-                    res = JSON.parse(dt); 
+
+                console.log(dt); 
+
+                    res = dt; 
                    // $appSession.IsSession(dt);                                         
                   //   $scope.ObtenerPaginacionRes(dt); 
                   if(res.IsOk){
@@ -1818,10 +1821,28 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
             for(ky in JSONData){
                 if(JSONData.hasOwnProperty(ky)){
                     if(!(JSONData[ky].DispositivoID in $scope.dropzoneFields)){
-                        $scope.dropzoneFields[JSONData[ky].DispositivoID] = []; 
+                        $scope.dropzoneFields[JSONData[ky].DispositivoID] = [];                         
+
                     }                    
                 }
             }
+
+
+
+                 for (var i = JFData.length - 1; i >= 0; i--) {
+
+                     if(JFData[i].DispositivoID !== null){
+
+                        if(!(JFData[i].Nivel in $scope.dropzoneFields )){
+                            $scope.dropzoneFields[JFData[i].Nivel] = []; 
+                        }
+                        $scope.dropzoneFields[JFData[i].Nivel].push(JFData[i]); 
+                        JFData.splice(i, 1); 
+                     } 
+                 }
+
+                 console.log($scope.dropzoneFields); 
+
         }; 
 
 
@@ -1831,13 +1852,20 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
         $scope.eliminarVinculoFV = function(dispositivo, FV){
 
             // Eliminar los dispositivo.
-            console.log("Aquie va el envio de la informacion para elimninar el vinculo en las tablas."); 
+            
 
             $scope.dropzoneFields[dispositivo.DispositivoID] = []; 
             $scope.listaFuerzaVentaCopy[FV.Nivel].push(FV);           
 
+             http(base_url + 'FuerzaVentaDispositivo/eliminarRelacion', {"dispositivoID": dispositivo.DispositivoID, "GUID_FV": FV.GUID_FV }, function (dt) {                
 
-
+                    res = dt; 
+                  if(res.IsOk){
+                    console.log("Se elimino OK"); 
+                  } else {
+                    console.log("Entrada de Pantajo No Ok"); 
+                  }                  
+             });
         }
 
         $scope.ObtenerPaginacionRes = function(res, num){            
@@ -1895,9 +1923,6 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
                 $scope.listaDispositivo = JSONData; 
                 $scope.listaFuerzaVenta = JFData;
                  $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));
-
-                
-
 
                 
             }); 
