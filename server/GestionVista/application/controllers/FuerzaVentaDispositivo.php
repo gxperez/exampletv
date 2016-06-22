@@ -100,6 +100,23 @@ echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), "IsSession" 
 
 	}
 
+	public function obtenerDispositivoOnline(){
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false, "IsOk"=> false)); 
+			return false; 
+		}
+
+		 $this->load->model("SessionDispositivoLog_Model", "mSessionDisp");
+		$arregloResult = array();
+		foreach ($this->mSessionDisp->obtenerSessionDispositivoLog() as $key => $value) {
+			$arregloResult[$value->Mac] = $value; 
+		 } 
+
+		 echo json_encode(array("IsSession" => true, "IsOk"=> true, "data"=> $arregloResult)); 
+			return true; 
+
+	}
+
 	public function eliminarRelacion(){
 
 		if (!$this->session->userdata("sUsuario")){
@@ -108,7 +125,7 @@ echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), "IsSession" 
 		}
 
 		$this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
-		
+
 		// Metodos Get para el Regitro.
 			$dispositivoID = $this->input->get("dispositivoID");
 			$FV = $this->input->get("GUID_FV");

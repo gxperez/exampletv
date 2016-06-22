@@ -41,11 +41,16 @@
 
         $scope.SetMain = function (link) {
 
-        var link = base_url + link;         
+        var link = base_url + link;  
+
+        for (var i = gbl_Master_setInvervalLog.length - 1; i >= 0; i--) {
+            console.log("Se eliminaron los Set time out # " + gbl_Master_setInvervalLog[i] ); 
+                    clearInterval(gbl_Master_setInvervalLog[i]); 
+                   
+               }       
 
         appHttp.Get(link, null, (function (res, status) {
                 $scope.AppHtml = res;
-
             }));        
         }
 
@@ -1261,8 +1266,10 @@ $scope.ActualizarHoja = function(){
 
             $scope.Pantalla = {nombre: 'Programacion'};            
              http(base_url + 'Programacion/Obtener', {}, function (dt) {                
+
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
+
              });
         };        
 
@@ -1300,8 +1307,19 @@ $scope.ActualizarHoja = function(){
          }  
         }; 
 
+
         $scope.Llenar = function(obj, index){            
-            var copiObj = JSON.parse(JSON.stringify(obj));   
+            var copiObj = JSON.parse(JSON.stringify(obj)); 
+
+            if("EsRegular" in copiObj){
+                if(copiObj.EsRegular == 1){
+                    copiObj.EsRegular = true;
+                } else {
+                    copiObj.EsRegular = false;
+                }
+            }
+
+
             $scope.vCrud.setForm(copiObj);            
             $scope.vCrud.selectedIndex = index;             
         }; 
@@ -1731,12 +1749,19 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
          }; 
 
          $scope.validateOnline = function(mac){
-
             if($scope.isOnline(mac)){
                 return "til-online"; 
             }
             return "til-offline"; 
          };
+
+         $scope.SendDobleTocken = function(obj){
+             if($scope.isOnline(obj.Mac)){
+                // 
+                console.log("Enviar Mensaje al Web-Socket");                 
+
+             }
+         }
 
 
          $scope.sortableOptions =
@@ -1762,16 +1787,12 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
 
                 // Envio de los Datos para Registrar Vinculo.
               http(base_url + 'FuerzaVentaDispositivo/registraRelacion', {"dispositivoID": contID, "GUID_FV": ui.item.sortable.model.GUID_FV }, function (dt) {                
+                     res = dt; 
 
-                console.log(dt); 
-
-                    res = dt; 
-                   // $appSession.IsSession(dt);                                         
-                  //   $scope.ObtenerPaginacionRes(dt); 
                   if(res.IsOk){
-                    console.log("Todo Ok"); 
+                   // console.log("Todo Ok"); 
                   } else {
-                    console.log("Entrada de Pantajo No Ok"); 
+                   // console.log("Entrada de Pantajo. No Ok"); 
                   }                  
              });
             },
@@ -1816,6 +1837,43 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
         });
 
 
+        $scope.ordenarDispositivoPorEstatusLine = function(){
+            //  $scope.liveDisp.            
+            for(var mc in $scope.liveDisp){
+                if( $scope.liveDisp.hasOwnProperty(mc)){
+
+                   var $disp = $scope.listaDispositivo.filter(function(d){                    
+                        return d.Mac.toString() === mc; 
+                    });
+
+                    var $ind =  $scope.listaDispositivo.indexOf($disp[0]);
+                    // Indice en General.                     
+                    if($ind !== -1){
+                        $scope.listaDispositivo.splice($ind, 1); 
+                        $scope.listaDispositivo.unshift($disp[0]);                         
+                    } else {
+                            console.log("Aqui hay que Agregar un Nuevo Dispositivo que no Exite.");
+                            console.log($scope.liveDisp[mc]);                                        
+                            $scope.listaDispositivo.unshift({DispositivoID: $scope.liveDisp[mc].DispositivoID, Mac: mc, Nombre: "Nuevo Dispositivo #" + $scope.listaDispositivo.length , Descripcion: "Dispositivo sin Registrar", Estado: "1"});
+                            $scope.dropzoneFields[$scope.liveDisp[mc].DispositivoID] = []; 
+                    }
+                }
+            }
+        }; 
+
+        $scope.consultarDispositivoOnline = function(){
+            http(base_url + 'FuerzaVentaDispositivo/obtenerDispositivoOnline', {}, function (res) {                                    
+                  if(res.IsOk){
+                  //  console.log("Se elimino OK"); 
+                  $scope.liveDisp = res.data; 
+                  $scope.ordenarDispositivoPorEstatusLine(); 
+                  } else {                    
+                  }                  
+             });
+
+        }; 
+
+
         $scope.formatZoneField = function(){
             // Set Key  (DispositivoID) asignate val(obj(FuerzaVenta)) 
             for(ky in JSONData){
@@ -1826,22 +1884,26 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
                     }                    
                 }
             }
+                 
 
+             for(var k in JFData){
+                if(JFData.hasOwnProperty(k)){
+                   var tmpArr = JFData[k]; 
 
+                    for (var i = tmpArr.length - 1; i >= 0; i--) {
 
-                 for (var i = JFData.length - 1; i >= 0; i--) {
+                         if(tmpArr[i].DispositivoID !== null){
 
-                     if(JFData[i].DispositivoID !== null){
-
-                        if(!(JFData[i].Nivel in $scope.dropzoneFields )){
-                            $scope.dropzoneFields[JFData[i].Nivel] = []; 
+                        if(!(tmpArr[i].DispositivoID in $scope.dropzoneFields )){
+                            $scope.dropzoneFields[tmpArr[i].Nivel] = []; 
                         }
-                        $scope.dropzoneFields[JFData[i].Nivel].push(JFData[i]); 
-                        JFData.splice(i, 1); 
-                     } 
-                 }
 
-                 console.log($scope.dropzoneFields); 
+                        $scope.dropzoneFields[tmpArr[i].DispositivoID].push(tmpArr[i]); 
+                        tmpArr.splice( i, 1 );                         
+                     } 
+                    }
+                }
+             }   
 
         }; 
 
@@ -1861,7 +1923,7 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
 
                     res = dt; 
                   if(res.IsOk){
-                    console.log("Se elimino OK"); 
+                  //  console.log("Se elimino OK"); 
                   } else {
                     console.log("Entrada de Pantajo No Ok"); 
                   }                  
@@ -1916,15 +1978,15 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
 
         $scope.listaDispositivo = {}; 
 
+
         $scope.panel = function(){
-
-            $(function(){                
-
+            $(function(){ 
                 $scope.listaDispositivo = JSONData; 
                 $scope.listaFuerzaVenta = JFData;
-                 $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));
-
-                
+                 $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));                                  
+                 var refreshIntervalId = setInterval(function(){$scope.consultarDispositivoOnline(); }, 90000);
+                 $scope.consultarDispositivoOnline();
+                 gbl_Master_setInvervalLog.push(refreshIntervalId); 
             }); 
             
 

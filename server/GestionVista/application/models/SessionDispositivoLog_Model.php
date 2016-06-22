@@ -11,6 +11,7 @@
  
 	public function obtenerSessionDispositivoLog(){
 		$this->load->database();
+		$this->db->where("Estado", 1); 
 		$query = $this->db->get('session_dispositivo_log');						
 
 		$listaSessionDispositivoLog = $query->result(); 

@@ -28,15 +28,15 @@ padding: 0;
 margin-right: 0px;
 background: #eee;
 padding: 5px;
-width: 120px;
+width: 135px;
 min-height: 50px;
 }
 
 .sortable1 li {
-margin: 2px;
-padding: 2px;
-font-size: 12px;
-width: 112px;
+margin: 0px;
+padding: 0px;
+font-size: 11px;
+width: 120px;
 }
 
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
@@ -61,8 +61,10 @@ color: #555555;
 
 
 <fieldset>
-<legend>Dispositivos | Fuerza Venta</legend>
+<legend>Dispositivos | Fuerza Venta  <span class="fa fa-refresh" ng-click="consultarDispositivoOnline()"></span></legend>
 </fieldset>
+
+
 <div class="col-sm-6">
 
 
@@ -84,7 +86,7 @@ color: #555555;
 
 
                         <div class="thumb">
-                          <span id="fa-clock-o" class="badge bg-theme {{validateOnline(item.Mac)}}"><i class="fa fa-desktop"></i></span>
+                          <span id="fa-clock-o" ng-dblclick="SendDobleTocken(item); " class="badge bg-theme {{validateOnline(item.Mac)}}"><i class="fa fa-desktop"></i></span>
                         </div>
 
                         <div class="details">
@@ -105,9 +107,7 @@ color: #555555;
     left: 4px;
     font-size: 14px;    
 " ng-click="eliminarVinculoFV(item, t);"></div>  {{t.FuerzaVenta}}</li>         
-                                            
-    </ul>
-    <strong>{{item.FuerzaVenta}}</strong>
+    </ul>    
       
   </div>
 </div>
@@ -187,6 +187,25 @@ color: #555555;
 	</section>
 
 
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the modal.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
 
 
 

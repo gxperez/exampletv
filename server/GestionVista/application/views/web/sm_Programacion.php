@@ -91,7 +91,7 @@
 <div class="form-group">
 			<label class="col-sm-2 col-sm-2 control-label">EsRegular</label>
 			<div class="col-sm-10">
-            	<input type="text" ng-model="vCrud.form.EsRegular" class="form-control" required>
+            	<input type="checkbox" ng-model="vCrud.form.EsRegular" class="form-control" >              
            </div>
 </div>
 <div class="form-group">
@@ -110,24 +110,6 @@
 			<label class="col-sm-2 col-sm-2 control-label">Estado</label>
 			<div class="col-sm-10">
            <?php  Text::renderOptions('<select ng-model="vCrud.form.Estado" class="form-control" required>', $listEstadoForm); ?>  
-           </div>
-</div>
-<div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">Guid</label>
-			<div class="col-sm-10">
-            	<input type="text" ng-model="vCrud.form.Guid" class="form-control" required>
-           </div>
-</div>
-<div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">UsuarioModificaID</label>
-			<div class="col-sm-10">
-            	<input type="int" ng-model="vCrud.form.UsuarioModificaID" class="form-control" required>
-           </div>
-</div>
-<div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">FechaModifica</label>
-			<div class="col-sm-10">
-            	<input type="text" ng-model="vCrud.form.FechaModifica" class="form-control" required>
            </div>
 </div>
                      

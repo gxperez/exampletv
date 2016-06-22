@@ -67,14 +67,14 @@ class Programacion extends MY_Controller {
 		$this->load->model("Programacion_Model", "mProgramacion");
 		// Auto Validacion del Formulario.
 
-	$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "required|max_length[50]"); 
-$this->validation->set_rules("objeto[EsRegular]", "EsRegular", "required"); 
-$this->validation->set_rules("objeto[FechaEjecutaInicio]", "FechaEjecutaInicio", "required"); 
-$this->validation->set_rules("objeto[FechaEjecutaFin]", "FechaEjecutaFin", "required"); 
-$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
-$this->validation->set_rules("objeto[Guid]", "Guid", "required|max_length[50]"); 
-$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "required|integer"); 
-$this->validation->set_rules("objeto[FechaModifica]", "FechaModifica", "required"); 
+		$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "required|max_length[50]"); 
+		$this->validation->set_rules("objeto[EsRegular]", "EsRegular", "required"); 
+		$this->validation->set_rules("objeto[FechaEjecutaInicio]", "FechaEjecutaInicio", "required"); 
+		$this->validation->set_rules("objeto[FechaEjecutaFin]", "FechaEjecutaFin", "required"); 
+		$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
+		$this->validation->set_rules("objeto[Guid]", "Guid", "required|max_length[50]"); 
+		$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "required|integer"); 
+		$this->validation->set_rules("objeto[FechaModifica]", "FechaModifica", "required"); 
 
 
 	if ($this->validation->run() == FALSE)
@@ -139,6 +139,16 @@ $this->validation->set_rules("objeto[FechaModifica]", "FechaModifica", "required
 
      if($this->input->post("objeto")){
 		$programacionObj = $this->security->xss_clean($this->input->post("objeto"));
+
+		
+
+		if($programacionObj["EsRegular"] == "true" || $programacionObj["EsRegular"] == 1){
+			$programacionObj["EsRegular"] = 1; 
+		} else {
+
+			$programacionObj["EsRegular"] = 0; 
+		}
+
 		$programacionEnt = $this->mProgramacion->actualizar( $programacionObj );
 
 				if( ! $programacionEnt ){
