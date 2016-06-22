@@ -1230,6 +1230,27 @@ $scope.ActualizarHoja = function(){
 
 // -- TODO: Progrmacion -----------------
 
+$ang.controller("MasterBloquesController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+
+        // Ajustes en General de contenidos.
+
+        $scope.initt = function(){            
+
+        }; 
+
+        $scope.master = function(){
+
+        }; 
+
+
+
+}]);
+
+
+
  $ang.controller("ProgramacionController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
         function http(url, data, callback) {
             appHttp.Get(url, data, callback); 

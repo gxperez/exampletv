@@ -97,13 +97,13 @@
 <div class="form-group">
 			<label class="col-sm-2 col-sm-2 control-label">FechaEjecutaInicio</label>
 			<div class="col-sm-10">
-            	<input type="text" ng-model="vCrud.form.FechaEjecutaInicio" class="form-control" required>
+            	<input id="FechaEjecutaInicio" type="text" ng-model="vCrud.form.FechaEjecutaInicio" class="form-control" required>
            </div>
 </div>
 <div class="form-group">
 			<label class="col-sm-2 col-sm-2 control-label">FechaEjecutaFin</label>
 			<div class="col-sm-10">
-            	<input type="text" ng-model="vCrud.form.FechaEjecutaFin" class="form-control" required>
+            	<input type="text" id="FechaEjecutaFin" ng-model="vCrud.form.FechaEjecutaFin" class="form-control" required>
            </div>
 </div>
 <div class="form-group">
@@ -120,3 +120,18 @@
           	  </form>
 			</div>
     </div>
+
+    <script type="text/javascript">
+
+    $(function() {      
+      $( "#FechaEjecutaInicio" ).datetimepicker({
+        format:'Y-m-d H:i',
+        mask:true
+      });        
+      $( "#FechaEjecutaFin" ).datetimepicker({
+        format:'Y-m-d H:i',
+        mask:true
+      });        
+  });
+      
+    </script>

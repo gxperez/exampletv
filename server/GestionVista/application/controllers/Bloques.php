@@ -9,6 +9,32 @@ class Bloques extends MY_Controller {
 	public function index()
 	{	
 	}
+
+
+	public function master(){
+
+		if (!$this->session->userdata("sUsuario")){
+			redirect("/portal/login", "refresh");			
+			return false; 
+		}
+
+
+		$data = array("csrf" =>array(
+        "name" => $this->security->get_csrf_token_name(),
+        "hash" => $this->security->get_csrf_hash()
+        ) );
+
+        $this->load->model('EmunsViews_model', 'mEnum');        	
+        $this->load->model("Programacion_Model", "mProgramacion");
+
+		
+		$data['listaProgramacion'] = $this->mProgramacion->obtenerProgramacionActivas(); 
+        $data['listEstadoForm'] = $this->mEnum->getEnumsEstado();
+        	
+		// Carga de planilla web en general.
+		$this->load->view("web/view_bloques", $data); 
+
+	}
 	
 	public function sm()
 	{

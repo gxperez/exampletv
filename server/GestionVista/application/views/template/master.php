@@ -13,6 +13,8 @@
     <!--external css-->
     <link href="<?php echo base_url(). "webApp/"; ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="<?php echo base_url(). "webApp/"; ?>js/gritter/css/jquery.gritter.css" />
+
+
         
     <!-- Custom styles for this template -->
     <link href="<?php echo base_url(). "webApp/"; ?>assets/css/style.css" rel="stylesheet">
@@ -20,6 +22,8 @@
     <link href="<?php echo base_url(). "webApp/"; ?>assets/css/style-responsive.css" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo base_url(). "webApp/"; ?>assets/css/to-do.css">
     <link rel="stylesheet" href="<?php echo base_url(). "webApp/"; ?>css/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="<?php echo base_url(). "webApp/"; ?>css/jquery.datetimepicker.css" />
+    
     
 
     <script type="text/javascript">
@@ -144,6 +148,7 @@ margin-left: 11px;
                           <li><a  ng-click="SetMain('fuerzaventa/sm')">Fuerza de Venta</a></li>
                           <li><a  ng-click="SetMain('fuerzaventa/master')">Master FV </a></li>
                           <li><a  ng-click="SetMain('fuerzaventadispositivo/master')">Master Dispositivo FV</a></li>
+                          <li><a  ng-click="SetMain('bloques/master')">Master Bloques</a></li>
 
                       </ul>
                   </li>
@@ -208,6 +213,9 @@ margin-left: 11px;
 
 <script src="<?php echo base_url(). "webApp/"; ?>js/jquery-ui.js"></script>    
     <script src="<?php echo base_url(). "webApp/"; ?>js/tasks.js" type="text/javascript"></script>
+
+    <script src="<?php echo base_url(). "webApp/"; ?>js/jquery.datetimepicker.full.js" type="text/javascript"></script>
+
 
     <!--script for this page-->
     <script type="text/javascript" src="<?php echo base_url(). "webApp/"; ?>js/gritter/js/jquery.gritter.js"></script>

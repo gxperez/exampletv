@@ -11,10 +11,20 @@
  
 	public function obtenerProgramacion(){
 		$this->load->database();
-		$query = $this->db->get(programacion);			
+		$query = $this->db->get("programacion");			
 			
 		$listaProgramacion = $query->result(); 
 		return $listaProgramacion;
+ 	}
+
+ 	public function obtenerProgramacionActivas() {
+ 		$this->load->database();
+ 		$this->db->where("Estado", 1); 
+		$query = $this->db->get("programacion");			
+					
+		$listaProgramacion = $query->result(); 
+		return $listaProgramacion;
+
  	}
 
  	public function obtenerProgramacionPorCampo($campo, $valor = "", $limit = 0, $page = 20){
