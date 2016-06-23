@@ -1,4 +1,132 @@
+<link href="<?php echo base_url(). "webApp/"; ?>js/fullcalendar/bootstrap-fullcalendar.css" rel="stylesheet">
+
 <div  ng-controller="MasterBloquesController" ng-init= "master(); vCrud.setHash('<?=$csrf["name"];?>', '<?=$csrf["hash"];?>' );">
+
+
+		
+
+<div id="CanalBloque">        	
+          	<!-- BASIC FORM ELELEMNTS -->
+    <div class="row mt">              
+
+
+    <div class="col-lg-12">
+                  
+                  	  
+
+       <div class="col-sm-3">
+                  	   <div class="showback" >
+                  	   <h4><i class="fa fa-angle-right"></i> Bloques <i ng-click="" class="fa fa-plus"> </i></h4>
+
+                  	  <div class="col-sm-12">
+
+                  	  <span class="fa fa-search" style="
+    position: absolute;
+    right: 21px;
+    top: 11px;
+"></span>
+                  	  <input type="text" ng-model="bBloque" class="form-control"></input>
+                  	   </div>
+
+                  	   
+                  	   <div style="min-height: 500px;">
+                  	   <hr>                  	   
+                  	   <div> &nbsp; </div>
+
+                  	    <div class="btn-group" ng-repeat="item in bloques|filter:bBloque">
+						  <button type="button" class="btn btn-theme dropdown-toggle" data-toggle="dropdown">
+						   <span>blq_{{item.FrecuenciaTipoDesc}}-{{item.BloqueID}}</span>  <span class="caret"></span>
+						  </button>
+						  <ul class="dropdown-menu" role="menu">
+						    <li><a href="#">Editar</a></li>
+						    <li><a href="#">Filtrar</a></li>						    
+						    <li class="divider"></li>
+						    <li><a href="#">Eliminar</a></li>
+						  </ul>
+						</div>	
+
+
+                  	   	
+                  	   </div>
+                  	   </div>                  	   
+                  	   	
+                  	   </div>
+
+                   <div class="col-sm-9">
+                  	   <div class="showback">
+                  	   <div style="min-height: 530px;">
+                  	   <h4><i class="fa fa-angle-right"></i> Bloques Semanal </h4>
+
+                  	   <div class="fc-view fc-view-basicWeek fc-grid" style="position: relative; display: block;" unselectable="on">
+
+                  	  <table class="fc-border-separate" style="width:100%" cellspacing="0">
+                  	   <thead>
+                  	   <tr class="fc-first fc-last">
+                  	   <th class="fc-sun fc-widget-header fc-first" style="width: 104px;">Domingo</th>
+                  	   <th class="fc-mon fc-widget-header" style="width: 104px;">Lunes</th>
+                  	   <th class="fc-tue fc-widget-header" style="width: 104px;">Martes</th>
+                  	   <th class="fc-wed fc-widget-header" style="width: 104px;">Miercoles</th>
+                  	   <th class="fc-thu fc-widget-header" style="width: 104px;">Jueves</th>
+                  	   <th class="fc-fri fc-widget-header" style="width: 104px;">Viernes</th>
+                  	   <th class="fc-sat fc-widget-header fc-last">Sabado</th>
+                  	   </tr>
+                  	   </thead>
+
+                  	   <tbody>
+
+                  	 <tr class="fc-week0 fc-first fc-last">
+                  	 <td class="fc-sun fc-widget-content fc-day0 fc-first">
+
+                  	   <div style="min-height: 528px;"><div class="fc-day-content">
+
+                  	   <div ng-repeat="dia1 in semanal[0]" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia1.Horario}}</div>
+                  	   <div class="fc-day-content">
+                  	   <div style="position: relative; height: 18px;">&nbsp;</div>
+                  	   <div style="position: relative; height: 18px;">&nbsp;</div>
+                  	   <div style="position: relative; height: 18px;">&nbsp;</div>
+                  	   </div>
+                  	   </div>
+                  	   
+                  	   </div>
+                  	   </div>
+
+                  	 </td>
+                  	 <td class="fc-mon fc-widget-content fc-day1"><div><div class="fc-day-content">
+                  	   <div style="position:relative">&nbsp;</div></div></div>
+
+                  	 </td>
+                  	 <td class="fc-tue fc-widget-content fc-day2"><div><div class="fc-day-content"><div style="position:relative">&nbsp;</div></div></div>
+                  	 </td>
+
+                  	 <td class="fc-wed fc-widget-content fc-day3"><div><div class="fc-day-content"><div style="position:relative">&nbsp;</div></div></div>
+                  	 </td>
+
+                  	 <td class="fc-thu fc-widget-content fc-day4 fc-state-highlight fc-today"><div><div class="fc-day-content"><div style="position:relative">&nbsp;</div></div></div>
+                  	 </td>
+
+                  	 <td class="fc-fri fc-widget-content fc-day5"><div><div class="fc-day-content">
+                  	 <div style="position:relative">&nbsp;</div></div></div>
+                  	 </td>
+
+                  	 <td class="fc-sat fc-widget-content fc-day6 fc-last"><div><div class="fc-day-content"><div style="position:relative">&nbsp;</div></div></div>
+                  	 </td>
+
+                  	 </tr>
+
+                  	   </tbody>
+                  	   </table>
+
+                  	   </div>
+
+                  	   
+						
+                  	   </div>                  	   	
+                  	   </div>
+                  	 </div>
+                        
+					</div><!-- col-lg-12-->      	
+          		</div> <!-- /row -->  
+          	</div>
 
 
 <div id="myModal" class="" role="dialog">
@@ -24,11 +152,17 @@
                                   </thead>
 
 <tbody>
+
+<?php
+ if(count($listaProgramacion) == 0) { ?>
+<tr> <td></td> <td colspan="3"> <h4> No hay programaciones Activias </h4> </td> </tr>
+
+<?php } ?>
             <?php foreach ($listaProgramacion as $key => $value) {        	            ?>
             <tr>
 
             <td>
-            <button type="button" class="btn btn-round btn-info"> <span class="fa fa-folder-open-o"></span> Abrir</button>
+            <button type="button" class="btn btn-round btn-info" ng-click="AbrirPrograma(<?php echo $value->ProgramacionID;  ?>); "> <span class="fa fa-folder-open-o"></span> Abrir</button>
             	
             </td>
 
@@ -52,15 +186,8 @@
                </tr>
                 <?php }  ?>
                 </tbody>
-
             </table>
-                              </div>
-
-        
-
-			
-        
-        	
+         </div>
         
       </div>
       <div class="modal-footer">              
@@ -69,6 +196,46 @@
 
   </div>
 </div>
+
+
+</div>
+
+
+
+
+<script type="text/javascript">
+
+
+var vw_listaProgramas = <?php echo json_encode($listaProgramacion);  ?>;
+
+
+
+/*
+jQuery(function(){
+
+ jQuery('#date_timepicker_start').datetimepicker({
+  format:'Y-m-d',  
+  onShow:function( ct ){
+   this.setOptions({
+    maxDate:jQuery('#date_timepicker_end').val()?jQuery('#date_timepicker_end').val():false
+   })
+  },
+  timepicker:false
+ });
+ jQuery('#date_timepicker_end').datetimepicker({
+  format:'Y-m-d',
+  onShow:function( ct ){
+   this.setOptions({
+    minDate:jQuery('#date_timepicker_start').val()?jQuery('#date_timepicker_start').val():false
+   })
+  },  
+  timepicker:false
+ });
+});
+
+*/
+	
+</script>
 
 
 

@@ -17,6 +17,36 @@
 		return $listaBloques;
  	}
 
+ 	public function generarBloques($ProgramacionID){
+ 		$this->load->database();
+
+ 		// Excelente. Dios es BUeno todo el tiempo. Enfocate
+		$this->db->select("*");
+		$this->db->where("ProgramacionID",  $ProgramacionID);
+		$query = $this->db->get("vw_programacion_bloque_semana");	
+		
+		$listaBloques = $query->result();
+
+		return $listaBloques; 
+ 	}
+
+ 	public function obtenerListaBloqueActivos(){
+ 		$this->load->database();
+
+ 		$sql = "select b.BloqueID, b.ProgramacionID, b.FrecuenciaTipo, (select Descripcion from vw_frecuencia_desc where Id = b.FrecuenciaTipo limit 1) FrecuenciaTipoDesc,
+ b.HoraInicio, b.HoraFin, b.Estado from bloques as b
+ where b.Estado = 1;"; 
+
+ 		$query = $this->db->query($sql);
+		$listaBloques = $query->result();
+
+
+		return $listaBloques; 
+
+
+
+ 	}
+
  	public function obtenerBloquesPorCampo($campo, $valor = "", $limit = 0, $page = 20){
 		$this->load->database();
 		$list = $this->db->field_data("bloques");

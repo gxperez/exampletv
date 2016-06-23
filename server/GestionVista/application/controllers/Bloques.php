@@ -29,11 +29,11 @@ class Bloques extends MY_Controller {
 
 		
 		$data['listaProgramacion'] = $this->mProgramacion->obtenerProgramacionActivas(); 
-        $data['listEstadoForm'] = $this->mEnum->getEnumsEstado();
-        	
+        $data['listEstadoForm'] = $this->mEnum->getEnumsEstado();   
+        $data['listFrecuenciaTipo'] = $this->mEnum->getEnum("frecuenciatipo");      	
+
 		// Carga de planilla web en general.
 		$this->load->view("web/view_bloques", $data); 
-
 	}
 	
 	public function sm()
@@ -57,6 +57,36 @@ class Bloques extends MY_Controller {
 		$this->load->view("web/sm_bloques", $data); 
 	}
 
+
+	public function ObtenerBloquesGenerados(){
+
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}
+
+		// Cada dia por ellos.
+		if($this->input->get("ProgramacionID")){
+			$programacionID = $this->input->get("ProgramacionID");
+
+			$this->load->model('Bloques_Model', 'mBloque');
+
+		 $listaBloquesSemana = $this->mBloque->generarBloques($programacionID); 
+		 $listaBloques = $this->mBloque->obtenerListaBloqueActivos(); 
+
+
+
+		echo json_encode(array("data"=> $listaBloquesSemana, "bloques"=> $listaBloques,  "IsOk"=> true, "IsSession" => true)); 
+		return true; 
+
+		}
+
+
+		echo json_encode(array("IsOk"=> false, "IsSession" => true)); 
+		return false; 
+
+
+	}
 
 	public function Obtener(){
 		if (!$this->session->userdata("sUsuario")){

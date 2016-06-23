@@ -1230,23 +1230,63 @@ $scope.ActualizarHoja = function(){
 
 // -- TODO: Progrmacion -----------------
 
-$ang.controller("MasterBloquesController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+$ang.controller("MasterBloquesController", ["$scope", "$http",   "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appHttp,appMenuEvent, $compile, $appSession) {
         function http(url, data, callback) {
             appHttp.Get(url, data, callback); 
         }
 
         // Ajustes en General de contenidos.
+        $scope.listaProgramacion = {}; // vw_listaProgramas; 
 
-        $scope.initt = function(){            
+        $scope.pantallaNombre = 'Administrador de Bloques sss';
+        $scope.listaBloques = []; 
+        $scope.bBloque = ""; 
+        $scope.bloques = []; 
 
-        }; 
+        $scope.panelHeader = []; 
+
+        $scope.pp = function(){
+
+            alert("Con quien"); 
+
+        }
+
 
         $scope.master = function(){
+            $scope.Pantalla = {nombre: 'Administrador de Bloques'};  
 
+            alert("Master"); 
         }; 
 
 
+        $scope.AbrirPrograma = function( id ){
+            // Paso Uno Desaparecer el Dialog
+            console.log("Aqui LLega"); 
+           //  $("#myModal").hide(); 
 
+
+
+            alert("Se serro");
+            // Paso #2 Cargar los Bloques en Orden y Generar el contenido segun configurado
+            http(base_url + 'Bloques/ObtenerBloquesGenerados/' , {ProgramacionID: id}, function (res) {                
+                    $appSession.IsSession(res); 
+
+                    if(res.IsOk){
+                        $scope.listaBloques = res.data; 
+                        $scope.bloques = res.bloques; 
+
+                        // Procesar BLoques
+                        console.log("Esto me Gusta"); 
+                    } else {
+
+                    }
+                    // $scope.ObtenerPaginacionRes(dt); 
+             });
+
+            console.log("AbrirPrograma"); 
+            console.log(id); 
+        };
+        
 }]);
 
 
