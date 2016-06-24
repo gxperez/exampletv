@@ -1,5 +1,43 @@
 <link href="<?php echo base_url(). "webApp/"; ?>js/fullcalendar/bootstrap-fullcalendar.css" rel="stylesheet">
 
+<style type="text/css">
+
+.Diario {
+background-color: rgb(220, 239, 239);
+}
+
+.Lunes {}
+.Martes {}
+.Miercoles {}
+.Jueves {}
+.Viernes {}
+.Sabado {}
+.Domingo {}
+.Lu-Vi {
+background-color: rgb(243, 243, 243);
+}
+
+.L-M-V {
+background-color: rgb(229, 253, 229);
+
+}
+
+.K-J-S {
+background: rgb(255, 238, 238);
+}
+
+.Vi-Sa-Do {
+	background-color: #E8EAE3;
+}
+
+.k-J {
+background-color: rgb(236, 236, 214);
+}
+
+
+	
+</style>
+
 <div  ng-controller="MasterBloquesController" ng-init= "master(); vCrud.setHash('<?=$csrf["name"];?>', '<?=$csrf["hash"];?>' );">
 
 
@@ -16,7 +54,7 @@
 
        <div class="col-sm-3">
                   	   <div class="showback" >
-                  	   <h4><i class="fa fa-angle-right"></i> Bloques <i ng-click="" class="fa fa-plus"> </i></h4>
+                  	   <h4><i class="fa fa-angle-right"></i> Bloques <i ng-click="AgregarBloque()" class="fa fa-plus"> </i></h4>
 
                   	  <div class="col-sm-12">
 
@@ -77,12 +115,11 @@
                   	 <tr class="fc-week0 fc-first fc-last">
                   	 <td class="fc-sun fc-widget-content fc-day0 fc-first">
 
-                  	   <div style="min-height: 528px;"><div class="fc-day-content">
+                  	   <div style="min-height: 528px;">
 
-                  	   <div ng-repeat="dia1 in semanal[0]" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia1.Horario}}</div>
                   	   <div class="fc-day-content">
-                  	   <div style="position: relative; height: 18px;">&nbsp;</div>
-                  	   <div style="position: relative; height: 18px;">&nbsp;</div>
+                  	   <div ng-repeat="dia1 in listaBloques[1]" class="{{dia1.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia1.Horario}}</div>
+                  	   <div class="fc-day-content">
                   	   <div style="position: relative; height: 18px;">&nbsp;</div>
                   	   </div>
                   	   </div>
@@ -91,24 +128,100 @@
                   	   </div>
 
                   	 </td>
-                  	 <td class="fc-mon fc-widget-content fc-day1"><div><div class="fc-day-content">
-                  	   <div style="position:relative">&nbsp;</div></div></div>
+                  	 <td class="fc-mon fc-widget-content fc-first">
+
+                  	 <div style="min-height: 528px;">
+                  	 <div class="fc-day-content">
+
+                  	 <div ng-repeat="dia in listaBloques[2]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia.Horario}}</div>
+                  	   <div class="fc-day-content">
+                  	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
+                  	   </div>
+                  	 </div>
+
+                  	   
+                  	  </div>
+                  	   </div>
 
                   	 </td>
-                  	 <td class="fc-tue fc-widget-content fc-day2"><div><div class="fc-day-content"><div style="position:relative">&nbsp;</div></div></div>
+                  	 <td class="fc-tue fc-widget-content fc-day2">
+
+                  	 <div style="min-height: 528px;">
+                  	 <div class="fc-day-content">
+
+                  	 
+                  	 <div ng-repeat="dia in listaBloques[3]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia.Horario}}</div>
+                  	   <div class="fc-day-content">
+                  	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
+                  	   </div>
+                  	 </div>
+
+                  	 </div>
+                  	 </div>
                   	 </td>
 
-                  	 <td class="fc-wed fc-widget-content fc-day3"><div><div class="fc-day-content"><div style="position:relative">&nbsp;</div></div></div>
+                  	 <td class="fc-wed fc-widget-content fc-day3">
+
+                  	 <div style="min-height: 528px;" ><div class="fc-day-content">
+
+                  	 
+                  	 <div ng-repeat="dia in listaBloques[4]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia.Horario}}</div>
+                  	   <div class="fc-day-content">
+                  	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
+                  	   </div>
+                  	 </div>
+
+
+                  	 </div></div>
                   	 </td>
 
-                  	 <td class="fc-thu fc-widget-content fc-day4 fc-state-highlight fc-today"><div><div class="fc-day-content"><div style="position:relative">&nbsp;</div></div></div>
+                  	 <td class="fc-thu fc-widget-content fc-day4 fc-state-highlight fc-today">
+
+                  	 <div style="min-height: 528px;">
+                  	 <div class="fc-day-content">
+
+                  	 
+                  	 <div ng-repeat="dia in listaBloques[5]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia.Horario}}</div>
+                  	   <div class="fc-day-content">
+                  	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
+                  	   </div>
+                  	 </div>
+                  	 </div>
+
+                  	 </div>
                   	 </td>
 
-                  	 <td class="fc-fri fc-widget-content fc-day5"><div><div class="fc-day-content">
-                  	 <div style="position:relative">&nbsp;</div></div></div>
+                  	 <td class="fc-fri fc-widget-content fc-day5">
+
+                  	 <div style="min-height: 528px;" >
+                  	 <div class="fc-day-content">
+
+
+                  	 <div ng-repeat="dia in listaBloques[6]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia.Horario}}</div>
+                  	   <div class="fc-day-content">
+                  	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
+                  	   </div>
+                  	 </div>
+
+                  	 
+                  	 </div></div>
                   	 </td>
 
-                  	 <td class="fc-sat fc-widget-content fc-day6 fc-last"><div><div class="fc-day-content"><div style="position:relative">&nbsp;</div></div></div>
+                  	 <td class="fc-sat fc-widget-content fc-day6 fc-last">
+                  	 <div style="min-height: 528px;">
+
+                  	 <div class="fc-day-content">
+
+
+                  	 <div ng-repeat="descanso in listaBloques[7]"  class="{{descanso.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{descanso.Horario}}</div>
+                  	   <div class="fc-day-content">
+                  	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
+                  	   </div>
+                  	 </div>
+
+                  	 
+                  	 </div>
+                  	 </div>
                   	 </td>
 
                   	 </tr>
@@ -198,6 +311,53 @@
 </div>
 
 
+<div id="bloqueform" title="Crear Bloque">
+<div>        
+			 <form id="vform" class="form-horizontal style-form" method="get" data-toggle="validator"  >
+          	<!-- BASIC FORM ELELEMNTS -->
+          		<div class="col-lg-12">
+                  
+                  	  <h4 class="mb"><i class="fa fa-angle-right"></i> {{Pantalla.nombre}}</h4>
+                  	 
+<div class="form-group">
+			<label class="col-sm-2 col-sm-2 control-label">FrecuenciaTipo</label>
+			<div class="col-sm-10">
+            	<?php  Text::renderOptions('<select ng-model="frmBloque.form.FrecuenciaTipo" class="form-control" required>', $listFrecuenciaTipo); ?>
+           </div>
+</div>
+
+<div class="form-group">
+			<label class="col-sm-2 col-sm-2 control-label">Estado</label>
+			<div class="col-sm-10">
+			<?php  Text::renderOptions('<select ng-model="frmBloque.form.Estado" class="form-control" required>', $listEstadoForm); ?>              	
+           </div>
+</div>
+
+<div class="form-group">
+			<label class="col-sm-2 col-sm-2 control-label">HoraInicio</label>
+			<div class="col-sm-10">
+            	<input id="HoraInicio" type="text" ng-model="frmBloque.form.HoraInicio" class="form-control" required>
+           </div>
+</div>
+<div class="form-group">
+			<label  class="col-sm-2 col-sm-2 control-label">HoraFin</label>
+			<div class="col-sm-10">
+            	<input id="HoraFin" type="text" ng-model="frmBloque.form.HoraFin" class="form-control" required>
+           </div>
+</div>   
+
+<div class="modal-footer">              
+<button class="btn btn-success" type="button" ng-click="frmBloque.guardar()"> Guardar </button>
+<button class="btn btn-danger" type="button" ng-click="frmBloque.cancel()"> Cancelar </button>
+      </div>            
+          		</div> <!-- col-lg-12-->      	
+          	      	
+          	  </form>
+			</div>
+ </div>
+
+
+
 </div>
 
 
@@ -209,31 +369,79 @@
 var vw_listaProgramas = <?php echo json_encode($listaProgramacion);  ?>;
 
 
-
 /*
-jQuery(function(){
 
- jQuery('#date_timepicker_start').datetimepicker({
-  format:'Y-m-d',  
-  onShow:function( ct ){
-   this.setOptions({
-    maxDate:jQuery('#date_timepicker_end').val()?jQuery('#date_timepicker_end').val():false
-   })
-  },
-  timepicker:false
- });
- jQuery('#date_timepicker_end').datetimepicker({
-  format:'Y-m-d',
-  onShow:function( ct ){
-   this.setOptions({
-    minDate:jQuery('#date_timepicker_start').val()?jQuery('#date_timepicker_start').val():false
-   })
-  },  
-  timepicker:false
- });
+
+	jQuery('#HoraInicio').datetimepicker({
+		format:'Y-m-d'
+// inputFormat: 'H:m'
+});
+
+	jQuery('#HoraFin').datetimepicker({
+		format:'Y-m-d'
+// inputFormat: 'H:m'
 });
 
 */
+
+
+
+
+
+jQuery(function(){
+
+ jQuery('#HoraInicio').datetimepicker({
+datepicker:false,
+	mask:'29:59:59',
+  format:'H:i:s', 	
+  // format:'Y-m-d',  
+  onShow:function( ct ){
+  },
+
+  onSelectTime: function(){
+  	myDate  = new Date();
+  	myDate2 = new Date();
+  	tim = jQuery('#HoraInicio').val()?jQuery('#HoraInicio').val().split(":"):false;   	
+  	tim2 = jQuery('#HoraFin').val()?jQuery('#HoraFin').val().split(":"):false;
+
+  	if(tim !== false && tim2 !== false){
+  		myDate.setHours(tim[0], tim[1], tim[2]);
+  		myDate2.setHours(tim2[0], tim2[1], tim2[2]);
+  		if(myDate2 <= myDate) {return jQuery('#HoraInicio').val(''); }
+  	}
+  }
+ // timepicker:false
+ });
+ jQuery('#HoraFin').datetimepicker({
+ 	datepicker:false,
+ 	mask:'29:59:59',
+  	format:'H:i:s',  
+  onShow:function( ct ){
+
+   this.setOptions({
+    minTime:jQuery('#HoraInicio').val()?jQuery('#HoraInicio').val():false
+   })
+  },
+
+  onSelectTime: function(){
+  	myDate  = new Date();
+  	myDate2 = new Date();
+  	tim = jQuery('#HoraInicio').val()?jQuery('#HoraInicio').val().split(":"):false;   	
+  	tim2 = jQuery('#HoraFin').val()?jQuery('#HoraFin').val().split(":"):false; 
+
+  	if(tim !== false && tim2 !== false){
+  		myDate.setHours(tim[0], tim[1], tim[2]);
+  		myDate2.setHours(tim2[0], tim2[1], tim2[2]);
+  		if(myDate2 <= myDate) {return jQuery('#HoraFin').val(''); }
+  	}
+  }
+  
+ });
+});
+
+
+// 605 *450
+
 	
 </script>
 

@@ -48,13 +48,43 @@ class Bloques extends MY_Controller {
         "hash" => $this->security->get_csrf_hash()
         ) );
 
-        $this->load->model('EmunsViews_model', 'mEnum');
-        	
+        $this->load->model('EmunsViews_model', 'mEnum');        	
         	$data['listEstadoForm'] = $this->mEnum->getEnumsEstado();
         	$data['listFrecuenciaTipo'] = $this->mEnum->getEnum("frecuenciatipo"); 
 
 		// Carga de planilla web en general.
 		$this->load->view("web/sm_bloques", $data); 
+	}
+
+	public function validarChoqueBloque(){
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}
+
+
+		if($this->input->get("ProgramacionID") && $this->input->get("HoraInicio") && $this->input->get("HoraFin") && $this->input->get("FrecuenciaTipo") ){
+
+			$objeto = array('ProgramacionID' => $this->input->get("ProgramacionID"), "FrecuenciaTipo"=>$this->input->get("FrecuenciaTipo"), 'HoraInicio'=> $this->input->get("HoraInicio"), "HoraFin"=> $this->input->get("HoraFin"));
+
+			// Validar los Bloques de las base de datos
+			$this->load->model('Bloques_Model', 'mBloque');			
+			$res = $this->mBloque->validarHoraBloque($objeto); 			
+
+		echo json_encode(array("IsOk"=> true, "IsSession" => true, 'data'=> $res["res"], "msg"=> $res["msg"])); 		
+
+				return true; 
+		}
+
+		echo json_encode(array("IsOk"=> false, "IsSession" => true)); 
+		return false; 
+	}
+
+
+
+	public function cmp($a, $b)
+	{
+    	return strcmp($a->HoraInicio, $b->HoraInicio);
 	}
 
 
@@ -71,12 +101,24 @@ class Bloques extends MY_Controller {
 
 			$this->load->model('Bloques_Model', 'mBloque');
 
+		 $listaBloques = $this->mBloque->obtenerListaBloqueActivos($programacionID); 
 		 $listaBloquesSemana = $this->mBloque->generarBloques($programacionID); 
-		 $listaBloques = $this->mBloque->obtenerListaBloqueActivos(); 
+		 $semanal = array("1"=> array(), "2"=> array(), "3"=> array(), "4"=> array(), "5"=> array(), "6"=> array(), "7"=> array() );
+
+		 foreach ($listaBloquesSemana as $value) {
+		 	if(!array_key_exists($value->DiaSemana, $semanal)){
+		 		$semanal[$value->DiaSemana] = array();
+		 	}
+		 	$semanal[$value->DiaSemana][] = $value; 		 	
+		 }
+
+		 // Formatear las variables semanal.
+		 foreach ($semanal as $key => $val) {		  	
+		  	usort($semanal[$key], array($this, "cmp"));
+		  } 
 
 
-
-		echo json_encode(array("data"=> $listaBloquesSemana, "bloques"=> $listaBloques,  "IsOk"=> true, "IsSession" => true)); 
+		echo json_encode(array("data"=> $semanal, "bloques"=> $listaBloques,  "IsOk"=> true, "IsSession" => true));
 		return true; 
 
 		}
@@ -125,14 +167,12 @@ class Bloques extends MY_Controller {
 		$this->load->model("Bloques_Model", "mBloques");
 		// Auto Validacion del Formulario.
 
-	$this->validation->set_rules("objeto[ProgramacionID]", "ProgramacionID", "required|integer"); 
-$this->validation->set_rules("objeto[FrecuenciaTipo]", "FrecuenciaTipo", "required|integer"); 
-$this->validation->set_rules("objeto[FrecuenciaNumero]", "FrecuenciaNumero", "required"); 
-$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
-$this->validation->set_rules("objeto[HoraInicio]", "HoraInicio", "required"); 
-$this->validation->set_rules("objeto[HoraFin]", "HoraFin", "required"); 
-$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "integer"); 
-$this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", ""); 
+		$this->validation->set_rules("objeto[ProgramacionID]", "ProgramacionID", "required|integer"); 
+		$this->validation->set_rules("objeto[FrecuenciaTipo]", "FrecuenciaTipo", "required|integer"); 		
+		$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
+		$this->validation->set_rules("objeto[HoraInicio]", "HoraInicio", "required"); 
+		$this->validation->set_rules("objeto[HoraFin]", "HoraFin", "required"); 
+
 
 
 	if ($this->validation->run() == FALSE)
@@ -149,12 +189,12 @@ $this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "
 
 		$bloquesEnt = array('ProgramacionID'=> $bloquesObj['ProgramacionID'] 
 , 'FrecuenciaTipo'=> $bloquesObj['FrecuenciaTipo'] 
-, 'FrecuenciaNumero'=> $bloquesObj['FrecuenciaNumero'] 
+, 'FrecuenciaNumero'=> 1 
 , 'Estado'=> $bloquesObj['Estado'] 
 , 'HoraInicio'=> $bloquesObj['HoraInicio'] 
 , 'HoraFin'=> $bloquesObj['HoraFin'] 
-, 'UsuarioModificaID'=> $bloquesObj['UsuarioModificaID'] 
-, 'FechaModificacion'=> $bloquesObj['FechaModificacion'] 
+, 'UsuarioModificaID'=>  1
+, 'FechaModificacion'=> date("Y-m-d H:i:s") 
 );
 		
 

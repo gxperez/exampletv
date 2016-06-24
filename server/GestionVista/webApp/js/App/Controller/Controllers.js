@@ -1230,7 +1230,7 @@ $scope.ActualizarHoja = function(){
 
 // -- TODO: Progrmacion -----------------
 
-$ang.controller("MasterBloquesController", ["$scope", "$http",   "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appHttp,appMenuEvent, $compile, $appSession) {
+$ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
         function http(url, data, callback) {
             appHttp.Get(url, data, callback); 
         }
@@ -1238,10 +1238,96 @@ $ang.controller("MasterBloquesController", ["$scope", "$http",   "AppHttp","AppM
         // Ajustes en General de contenidos.
         $scope.listaProgramacion = {}; // vw_listaProgramas; 
 
+        $scope.vCrud = appCrud;
+
         $scope.pantallaNombre = 'Administrador de Bloques sss';
         $scope.listaBloques = []; 
         $scope.bBloque = ""; 
         $scope.bloques = []; 
+        $scope.semanal = {}; 
+
+
+        $scope.frmBloque = {
+            selectedID: 0,
+            form: {},
+
+            validarChoqueBloque: function(){ 
+
+                var sendObj = {ProgramacionID: $scope.frmBloque.selectedID, FrecuenciaTipo: $scope.frmBloque.form.FrecuenciaTipo, HoraInicio: $scope.frmBloque.form.HoraInicio, HoraFin: $scope.frmBloque.form.HoraFin, Estado: $scope.frmBloque.form.Estado};
+                 http(base_url + 'Bloques/validarChoqueBloque/' , sendObj , function (res) {                                    
+
+
+                    $appSession.IsSession(res); 
+                    if(res.IsOk){
+                        if(res.data){
+                        // Enviar a Guardar el Formulario.                        
+                          sendObj=  $scope.vCrud.formatObjForm(sendObj); 
+
+                    $.post(base_url + 'Bloques/Crear', sendObj, function(res){
+                       // overlayLoading.remove();
+                       console.log(res);
+                        if (res.IsOk) {
+                            //  $scope.memoriacalculos.push(res.Data);
+                          //   $sysUtil.ShowSuccessMessage(res.Msg);
+                          //  $scope.EnviarFiltro();
+                          alert("Si se Creo uno nuevo"); 
+
+                        }
+                        else {
+                            alert("Fallo"); 
+                            // $sysUtil.ShowDangerMessage(res.Msg);
+                        }
+                    }, "json");
+
+
+                            $("#bloqueform").dialog("close"); 
+                        } else {
+                            console.log("Esto no pudo ser"); 
+                            console.log(res.msg);
+                            alert(res.msg); 
+                        }
+
+                        
+
+                        
+                //        $scope.listaBloques = res.data; 
+                 //       $scope.bloques = res.bloques;                         
+                    } else {
+                    }                    
+             });
+
+
+
+            }, 
+
+            guardar: function(){                
+                var val = true; 
+                for(var i in $scope.frmBloque.form ){
+                if($scope.frmBloque.form.hasOwnProperty(i)){
+                    if($scope.frmBloque.form[i].trim() === ""){
+                        val = false;     
+                    } 
+                }
+              }
+
+              //  Si esta valiado.
+              if(val){
+                $scope.frmBloque.validarChoqueBloque(); 
+              }          
+
+            }, 
+            cancel: function(){
+              for(var i in $scope.frmBloque.form ){
+                if($scope.frmBloque.form.hasOwnProperty(i)){
+                    $scope.frmBloque.form[i] = ""; 
+                }
+              }
+                $("#bloqueform").dialog("close"); 
+            }
+        }
+
+
+
 
         $scope.panelHeader = []; 
 
@@ -1251,22 +1337,33 @@ $ang.controller("MasterBloquesController", ["$scope", "$http",   "AppHttp","AppM
 
         }
 
+        $scope.AgregarBloque = function(){
+            //  En esta Parte se coloca el Div con el formulario de
+
+            $("#bloqueform").dialog({
+                width: 605,
+                 heigth: 450
+             }); 
+
+
+        }; 
+
 
         $scope.master = function(){
             $scope.Pantalla = {nombre: 'Administrador de Bloques'};  
-
-            alert("Master"); 
+            $("#CanalBloque").hide(); 
+            
         }; 
 
 
         $scope.AbrirPrograma = function( id ){
-            // Paso Uno Desaparecer el Dialog
-            console.log("Aqui LLega"); 
-           //  $("#myModal").hide(); 
+            // Paso Uno Desaparecer el Dialog            
+             $("#myModal").hide(); 
+             $("#CanalBloque").show(); 
+
+             $scope.frmBloque.selectedID = id; 
 
 
-
-            alert("Se serro");
             // Paso #2 Cargar los Bloques en Orden y Generar el contenido segun configurado
             http(base_url + 'Bloques/ObtenerBloquesGenerados/' , {ProgramacionID: id}, function (res) {                
                     $appSession.IsSession(res); 
@@ -1274,13 +1371,10 @@ $ang.controller("MasterBloquesController", ["$scope", "$http",   "AppHttp","AppM
                     if(res.IsOk){
                         $scope.listaBloques = res.data; 
                         $scope.bloques = res.bloques; 
-
-                        // Procesar BLoques
-                        console.log("Esto me Gusta"); 
+                        // Procesar BLoques                                               
                     } else {
-
                     }
-                    // $scope.ObtenerPaginacionRes(dt); 
+                    
              });
 
             console.log("AbrirPrograma"); 

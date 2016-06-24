@@ -30,12 +30,56 @@
 		return $listaBloques; 
  	}
 
- 	public function obtenerListaBloqueActivos(){
+ 	public function getDiasPorFrecuenciaTipo($frecuenciaTipo){
+ 			$this->load->database(); 		
+ 			// Ajustes del lado del servidor.
+ 			$this->db->select("DiaSemana"); 
+ 			$this->db->where("id", $frecuenciaTipo);  			
+ 			$query = $this->db->get("vw_frecuencia_desc");						
+			$listaBloques = $query->result(); 
+
+			$array = array(); 
+
+			foreach ($listaBloques as $key => $value) {
+				$array[] = $value->DiaSemana; 
+			}
+
+			return $array;
+ 	}
+
+ 	public function validarHoraBloque($obj){ 		
+ 		$this->load->database();
+ 		// Query de Validacion.
+ 		$diasSemana = $this->getDiasPorFrecuenciaTipo($obj["FrecuenciaTipo"]); 		
+
+ 		$this->db->select("count(BloqueID) as Choques, NombreDia, HoraInicio, HoraFin");
+ 		$this->db->where_in("DiaSemana", $diasSemana);  				
+
+ 		$this->db->where("( ('{$obj["HoraInicio"]}' between `HoraInicio` and HoraFin) or ('{$obj["HoraFin"]}' between `HoraInicio` and HoraFin) or  (`HoraInicio` between '{$obj["HoraInicio"]}' and '{$obj["HoraFin"]}') or (`HoraFin` between '{$obj["HoraInicio"]}' and '{$obj["HoraFin"]}') )");
+ 		$this->db->group_by(array("NombreDia", "HoraInicio", "HoraFin") );  		
+ 		$result = $this->db->get("vw_programacion_bloque_semana"); 
+
+
+		if ($result->num_rows() == 0)
+		{
+			return array('res' => true , 'msg'=> ""); 
+		}
+
+		$arrRes = array('res'=> false, 'msg'=> "Existen choques de hora: ");
+
+		foreach ($result->result() as $key => $value) {
+			$arrRes["msg"] .= " (" . $value->NombreDia . " de ". $value->HoraInicio. "-". $value->HoraFin. " ); "; 
+		}
+		return $arrRes; 
+ 	}
+
+
+ 	public function obtenerListaBloqueActivos($ProgramacionID){
  		$this->load->database();
 
  		$sql = "select b.BloqueID, b.ProgramacionID, b.FrecuenciaTipo, (select Descripcion from vw_frecuencia_desc where Id = b.FrecuenciaTipo limit 1) FrecuenciaTipoDesc,
- b.HoraInicio, b.HoraFin, b.Estado from bloques as b
- where b.Estado = 1;"; 
+ b.HoraInicio, b.HoraFin, concat(TIME_FORMAT(b.HoraInicio, '%H:%i'), '-', TIME_FORMAT(b.HoraFin, '%H:%i') ) as Horario, b.Estado from bloques as b
+ where b.Estado = 1 and b.ProgramacionID = {$ProgramacionID} order by b.horaInicio;"; 
 
  		$query = $this->db->query($sql);
 		$listaBloques = $query->result();
