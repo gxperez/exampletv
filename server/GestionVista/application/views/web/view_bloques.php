@@ -2,17 +2,23 @@
 
 <style type="text/css">
 
+.extbtn {
+	border: 1px solid rgb(215, 212, 212);
+}
+
 .Diario {
 background-color: rgb(220, 239, 239);
 }
 
-.Lunes {}
-.Martes {}
-.Miercoles {}
-.Jueves {}
-.Viernes {}
-.Sabado {}
-.Domingo {}
+.Lunes,  
+.Martes ,
+.Miercoles ,
+.Jueves ,
+.Viernes ,
+.Sabado ,
+.Domingo {
+background-color: rgb(244, 226, 244)
+}
 .Lu-Vi {
 background-color: rgb(243, 243, 243);
 }
@@ -40,12 +46,34 @@ background-color: rgb(236, 236, 214);
 
 <div  ng-controller="MasterBloquesController" ng-init= "master(); vCrud.setHash('<?=$csrf["name"];?>', '<?=$csrf["hash"];?>' );">
 
+ 
+
+
 
 		
 
 <div id="CanalBloque">        	
           	<!-- BASIC FORM ELELEMNTS -->
-    <div class="row mt">              
+    <div class="row mt">   
+
+     <div id="header-crudTools" class="crudTools col-md-12">     
+                  <div>
+
+            <div class="btn-group ">
+				  <div class="btn-group">
+				    <span class="btn btn-default">Bloques</span>
+				  </div>
+				  <div class="btn-group">
+				    <span type="button" class="btn btn-default">Contenidos</span>
+				  </div>
+				 <div class="btn-group">
+				    <span type="button" class="btn btn-default">Itinerario</span>
+		  		</div>
+			</div>
+                  
+                  </div>
+</div>
+
 
 
     <div class="col-lg-12">
@@ -72,14 +100,14 @@ background-color: rgb(236, 236, 214);
                   	   <div> &nbsp; </div>
 
                   	    <div class="btn-group" ng-repeat="item in bloques|filter:bBloque">
-						  <button type="button" class="btn btn-theme dropdown-toggle" data-toggle="dropdown">
-						   <span>blq_{{item.FrecuenciaTipoDesc}}-{{item.BloqueID}}</span>  <span class="caret"></span>
+						  <button type="button" class="btn {{item.FrecuenciaTipoDesc}} extbtn dropdown-toggle"  data-toggle="dropdown">
+						   <span>{{item.Label}}</span>  <span class="caret"></span> <?php // blq_{{item.FrecuenciaTipoDesc}}- ?>
 						  </button>
 						  <ul class="dropdown-menu" role="menu">
-						    <li><a href="#">Editar</a></li>
-						    <li><a href="#">Filtrar</a></li>						    
+						  	<li><a href="#" ng-click="frmBloque.Filtrar(item.BloqueID, item);" > <span class="fa fa-filter" ></span> Agregar Filtro</a></li>						    
+						    <li><a href="#" ng-click="frmBloque.EditarItem(item)"> <span class="fa fa-edit"></span> Editar</a></li>						    
 						    <li class="divider"></li>
-						    <li><a href="#">Eliminar</a></li>
+						    <li><a href="#" ng-click="frmBloque.Eliminar(item.BloqueID)" > <span class="fa fa-trash-o"></span> Eliminar</a></li>
 						  </ul>
 						</div>	
 
@@ -93,7 +121,7 @@ background-color: rgb(236, 236, 214);
                    <div class="col-sm-9">
                   	   <div class="showback">
                   	   <div style="min-height: 530px;">
-                  	   <h4><i class="fa fa-angle-right"></i> Bloques Semanal </h4>
+                  	   <h4><i class="fa fa-angle-right"></i> Bloques Semanal <span ng-if="filtroArr.length >0" class="fa fa-filter" ng-click="clearFilter();"></span> </h4> 
 
                   	   <div class="fc-view fc-view-basicWeek fc-grid" style="position: relative; display: block;" unselectable="on">
 
@@ -118,12 +146,13 @@ background-color: rgb(236, 236, 214);
                   	   <div style="min-height: 528px;">
 
                   	   <div class="fc-day-content">
-                  	   <div ng-repeat="dia1 in listaBloques[1]" class="{{dia1.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia1.Horario}}</div>
+                  	   <div ng-repeat="dia1 in listaBloques[1]" ng-show="inFiltro(dia1);">
+                  	    <div class="{{dia1.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4; cursor: cell;" ng-dblclick="frmBloque.EditarItem(dia1)" ><div class="fc-day-number" >{{dia1.Horario}}</div>
                   	   <div class="fc-day-content">
                   	   <div style="position: relative; height: 18px;">&nbsp;</div>
                   	   </div>
                   	   </div>
-                  	   
+                  	   </div>
                   	   </div>
                   	   </div>
 
@@ -133,7 +162,7 @@ background-color: rgb(236, 236, 214);
                   	 <div style="min-height: 528px;">
                   	 <div class="fc-day-content">
 
-                  	 <div ng-repeat="dia in listaBloques[2]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia.Horario}}</div>
+                  	 <div ng-repeat="dia in listaBloques[2]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4; cursor: cell;" ng-dblclick="frmBloque.EditarItem(dia)" ng-show="inFiltro(dia)"><div class="fc-day-number">{{dia.Horario}}</div>
                   	   <div class="fc-day-content">
                   	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
                   	   </div>
@@ -150,7 +179,7 @@ background-color: rgb(236, 236, 214);
                   	 <div class="fc-day-content">
 
                   	 
-                  	 <div ng-repeat="dia in listaBloques[3]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia.Horario}}</div>
+                  	 <div ng-repeat="dia in listaBloques[3]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4; cursor: cell;" ng-dblclick="frmBloque.EditarItem(dia)" ng-show="inFiltro(dia)"><div class="fc-day-number">{{dia.Horario}}</div>
                   	   <div class="fc-day-content">
                   	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
                   	   </div>
@@ -165,7 +194,7 @@ background-color: rgb(236, 236, 214);
                   	 <div style="min-height: 528px;" ><div class="fc-day-content">
 
                   	 
-                  	 <div ng-repeat="dia in listaBloques[4]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia.Horario}}</div>
+                  	 <div ng-repeat="dia in listaBloques[4]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4; cursor: cell;" ng-dblclick="frmBloque.EditarItem(dia)" ng-show="inFiltro(dia)"><div class="fc-day-number">{{dia.Horario}}</div>
                   	   <div class="fc-day-content">
                   	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
                   	   </div>
@@ -181,8 +210,8 @@ background-color: rgb(236, 236, 214);
                   	 <div class="fc-day-content">
 
                   	 
-                  	 <div ng-repeat="dia in listaBloques[5]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia.Horario}}</div>
-                  	   <div class="fc-day-content">
+                  	 <div ng-repeat="dia in listaBloques[5]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4; cursor: cell;" ng-dblclick="frmBloque.EditarItem(dia)" ng-show="inFiltro(dia)"><div class="fc-day-number">{{dia.Horario}}</div>
+                  	   <div class="fc-day-content" >
                   	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
                   	   </div>
                   	 </div>
@@ -197,7 +226,7 @@ background-color: rgb(236, 236, 214);
                   	 <div class="fc-day-content">
 
 
-                  	 <div ng-repeat="dia in listaBloques[6]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{dia.Horario}}</div>
+                  	 <div ng-repeat="dia in listaBloques[6]"  class="{{dia.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4; cursor: cell;" ng-dblclick="frmBloque.EditarItem(dia)" ng-show="inFiltro(dia)" ><div class="fc-day-number">{{dia.Horario}}</div>
                   	   <div class="fc-day-content">
                   	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
                   	   </div>
@@ -213,7 +242,7 @@ background-color: rgb(236, 236, 214);
                   	 <div class="fc-day-content">
 
 
-                  	 <div ng-repeat="descanso in listaBloques[7]"  class="{{descanso.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4;"><div class="fc-day-number">{{descanso.Horario}}</div>
+                  	 <div ng-repeat="descanso in listaBloques[7]"  class="{{descanso.FrecuenciaTipoDesc}}" style="min-height: 88px; border-bottom: 1px solid #D8DAD4; cursor: cell;" ng-dblclick="frmBloque.EditarItem(descanso)" ng-show="inFiltro(descanso)"><div class="fc-day-number">{{descanso.Horario}}</div>
                   	   <div class="fc-day-content">
                   	   <div style="position: relative; height: 18px;">&nbsp;</div>                  	   
                   	   </div>

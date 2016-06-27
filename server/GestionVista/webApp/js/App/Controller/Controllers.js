@@ -1238,24 +1238,83 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
         // Ajustes en General de contenidos.
         $scope.listaProgramacion = {}; // vw_listaProgramas; 
 
+        $scope.bloque = {
+            ProgramacionID: 0,
+            FrecuenciaTipo: 0,
+            Estado: 0,
+            HoraInicio: "",
+            HoraFin: "",
+            BloqueID: 0
+        }; 
+
         $scope.vCrud = appCrud;
 
-        $scope.pantallaNombre = 'Administrador de Bloques sss';
+        $scope.pantallaNombre = 'Administrador de Bloques';
         $scope.listaBloques = []; 
         $scope.bBloque = ""; 
         $scope.bloques = []; 
         $scope.semanal = {}; 
 
+        $scope.myValue = true; 
 
+// $scope.frmBloque.dialog
         $scope.frmBloque = {
+            dialog: null,
             selectedID: 0,
             form: {},
+            modo: "C",
+            Filtrar: function(BloqueID, obj) { 
+              // Que han ganado el Duelo.
+              $scope.filtroArr.push(BloqueID);
+            },
 
+            EditarItem: function(item){ 
+                $scope.frmBloque.modo = "UPDATE";
+                $scope.frmBloque.form = JSON.parse(JSON.stringify(item)); 
+                $scope.AbrirDialog();
+            },
+
+            validarChoqueBloqueUpdate: function(){
+                
+                sendObj=  $scope.vCrud.formatObjForm($scope.frmBloque.form); 
+
+                $.post(base_url + 'Bloques/ActualizarValidar', sendObj, function(res){
+
+                    // Actualizacion del Boque. 
+                    console.log(res);
+                        if (res.IsOk) {                            
+                          if('csrf' in res){
+                             $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                           }
+
+                           alert("Se actualizo Correctamente"); 
+
+                            $scope.frmBloque.cancel();                           
+                            $scope.AbrirPrograma($scope.frmBloque.selectedID);                          
+                          // $("#bloqueform").dialog("close");  
+                          $scope.frmBloque.dialog.dialog("close");                         
+                        }
+                        else {
+                           if('csrf' in res){
+                             $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                           }
+                            alert(res.Msg); 
+                        }
+
+                        $scope.$apply();
+
+
+                }, "json"); 
+
+
+
+            }, 
             validarChoqueBloque: function(){ 
+
+                console.log("Cpmtr"); 
 
                 var sendObj = {ProgramacionID: $scope.frmBloque.selectedID, FrecuenciaTipo: $scope.frmBloque.form.FrecuenciaTipo, HoraInicio: $scope.frmBloque.form.HoraInicio, HoraFin: $scope.frmBloque.form.HoraFin, Estado: $scope.frmBloque.form.Estado};
                  http(base_url + 'Bloques/validarChoqueBloque/' , sendObj , function (res) {                                    
-
 
                     $appSession.IsSession(res); 
                     if(res.IsOk){
@@ -1268,90 +1327,158 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
                        console.log(res);
                         if (res.IsOk) {
                             //  $scope.memoriacalculos.push(res.Data);
-                          //   $sysUtil.ShowSuccessMessage(res.Msg);
+                            // $sysUtil.ShowSuccessMessage(res.Msg);
                           //  $scope.EnviarFiltro();
-                          alert("Si se Creo uno nuevo"); 
+                          // setHash
+                          if('csrf' in res){
+                             $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                           }
 
-                        }
-                        else {
-                            alert("Fallo"); 
-                            // $sysUtil.ShowDangerMessage(res.Msg);
+                            $scope.frmBloque.cancel();                           
+                            $scope.AbrirPrograma($scope.frmBloque.selectedID);                          
+
+                            $scope.frmBloque.dialog.dialog("close");
+
+
+                          //$("#bloqueform").dialog("close"); 
+                          $scope.$apply();
+
+                        } else {
+                           if('csrf' in res){
+                             $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                           }
+                            console.log("Error en el Envio del Formulario.");                            
                         }
                     }, "json");
 
-
-                            $("#bloqueform").dialog("close"); 
+                    $scope.frmBloque.dialog.dialog("close"); 
+                          // $("#bloqueform").dialog("close"); 
                         } else {
                             console.log("Esto no pudo ser"); 
                             console.log(res.msg);
                             alert(res.msg); 
                         }
-
-                        
-
                         
                 //        $scope.listaBloques = res.data; 
                  //       $scope.bloques = res.bloques;                         
                     } else {
+
                     }                    
              });
-
-
-
             }, 
 
             guardar: function(){                
+
+                if($scope.frmBloque.modo == "C"){
+
+                    $scope.frmBloque.form.BloqueID = 0;
+                    $scope.frmBloque.form.ProgramacionID = $scope.frmBloque.selectedID;
+                }
+
+
                 var val = true; 
                 for(var i in $scope.frmBloque.form ){
                 if($scope.frmBloque.form.hasOwnProperty(i)){
-                    if($scope.frmBloque.form[i].trim() === ""){
-                        val = false;     
-                    } 
+                    if(i in $scope.bloque){
+                        if($scope.frmBloque.form[i] === ""){
+                            val = false;  
+                            console.log(i);    
+                        }                         
+                    }                    
                 }
               }
-
               //  Si esta valiado.
-              if(val){
-                $scope.frmBloque.validarChoqueBloque(); 
-              }          
-
+              if($scope.frmBloque.modo == "C"){
+                if(val){
+                    console.log("Se creara una"); 
+                    $scope.frmBloque.validarChoqueBloque(); 
+                } else {
+                    alert("Hay campos incompletos"); 
+                }                          
+              } else {
+                    //Update Mode. Validacion not in 
+                console.log("Este es el modo de aprendizaje.");
+                $scope.frmBloque.validarChoqueBloqueUpdate();
+              }              
             }, 
-            cancel: function(){
-              for(var i in $scope.frmBloque.form ){
+            cancel: function(){    
+            $scope.frmBloque.dialog.dialog("close");                           
+            }
+        }
+
+        $scope.panelHeader = [];   
+
+        $scope.AbrirDialog = function() {
+
+            if($scope.frmBloque.dialog == null ){
+
+                $scope.frmBloque.dialog = $("#bloqueform");
+
+                $scope.frmBloque.dialog.dialog({
+                width: 605,
+                 heigth: 450                  
+             }); 
+
+           $scope.frmBloque.dialog.on('dialogclose', function(event) {            
+
+            for(var i in $scope.frmBloque.form ){
                 if($scope.frmBloque.form.hasOwnProperty(i)){
                     $scope.frmBloque.form[i] = ""; 
                 }
               }
-                $("#bloqueform").dialog("close"); 
+
+            });
+            } else {
+// Open dialog
+                $scope.frmBloque.dialog.dialog();
+
             }
-        }
 
-
-
-
-        $scope.panelHeader = []; 
-
-        $scope.pp = function(){
-
-            alert("Con quien"); 
-
-        }
+        };
 
         $scope.AgregarBloque = function(){
-            //  En esta Parte se coloca el Div con el formulario de
-
-            $("#bloqueform").dialog({
-                width: 605,
-                 heigth: 450
-             }); 
-
+            $scope.frmBloque.modo = "C"; 
+            $scope.AbrirDialog(); 
 
         }; 
+
+        $scope.filtroArr = []; 
+
+        $scope.clearFilter = function(){
+        $scope.filtroArr = [];             
+        }
+
+        $scope.inFiltro = function(ob){
+
+
+
+            if($scope.filtroArr.length == 0){
+                return true;
+            }
+
+            
+            if($scope.filtroArr.length > 0) {               
+                if(typeof ob !== "undefined"){
+                                if("BloqueID" in ob){
+                                    if($scope.filtroArr.indexOf(ob.BloqueID) !== -1){
+                                       return true;                     
+                                    }
+                                }              
+                            }
+
+            }
+
+
+            return false; 
+
+
+        }
 
 
         $scope.master = function(){
             $scope.Pantalla = {nombre: 'Administrador de Bloques'};  
-            $("#CanalBloque").hide(); 
+            $("#CanalBloque").hide();             
+            $("#bloqueform").hide();             
             
         }; 
 
@@ -1360,25 +1487,16 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
             // Paso Uno Desaparecer el Dialog            
              $("#myModal").hide(); 
              $("#CanalBloque").show(); 
-
              $scope.frmBloque.selectedID = id; 
-
 
             // Paso #2 Cargar los Bloques en Orden y Generar el contenido segun configurado
             http(base_url + 'Bloques/ObtenerBloquesGenerados/' , {ProgramacionID: id}, function (res) {                
                     $appSession.IsSession(res); 
-
                     if(res.IsOk){
                         $scope.listaBloques = res.data; 
-                        $scope.bloques = res.bloques; 
-                        // Procesar BLoques                                               
-                    } else {
-                    }
-                    
+                        $scope.bloques = res.bloques;                     
+                    }                    
              });
-
-            console.log("AbrirPrograma"); 
-            console.log(id); 
         };
         
 }]);

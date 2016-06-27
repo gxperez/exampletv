@@ -212,6 +212,67 @@ class Bloques extends MY_Controller {
 		}
 	}
 
+	public function ActualizarValidar(){
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}
+
+		$this->load->model("Bloques_Model", "mBloques");
+
+		$this->validation->set_rules("objeto[ProgramacionID]", "ProgramacionID", "required|integer"); 
+		$this->validation->set_rules("objeto[FrecuenciaTipo]", "FrecuenciaTipo", "required|integer"); 		
+		$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
+		$this->validation->set_rules("objeto[HoraInicio]", "HoraInicio", "required"); 
+		$this->validation->set_rules("objeto[HoraFin]", "HoraFin", "required"); 			
+
+		if ($this->validation->run() == FALSE)
+         {
+         	echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), "IsSession" => true, "csrf" =>array(
+         		"name" => $this->security->get_csrf_token_name(),
+         		"hash" => $this->security->get_csrf_hash()
+         		))
+         	);
+           	return false;
+         }
+
+         if($this->input->post("objeto")){
+
+			$bloquesObj = $this->security->xss_clean($this->input->post("objeto"));
+			$bloquesObj["FrecuenciaNumero"] = 1; 
+         // Validar Choque.
+         $res = $this->mBloques->validarHoraBloqueUpdate($bloquesObj);
+         if(!$res["res"]){
+         	echo json_encode(array("IsOk"=> false, "IsSession" => true, 'data'=> $res["res"], "Msg"=> $res["msg"],"csrf" =>array(
+        "name" => $this->security->get_csrf_token_name(),
+        "hash" => $this->security->get_csrf_hash()
+        )));
+         	return false;
+         }
+
+         // Actualizamos si todo esta OK.          
+		$bloquesEnt = $this->mBloques->actualizar( $bloquesObj );
+
+				if( ! $bloquesEnt ){
+				echo json_encode(array("IsOk"=> false, "Msg"=> "Error DB al actualizar". print_r($bloquesEnt, true), "csrf" =>array(
+		        "name" => $this->security->get_csrf_token_name(),
+		        "hash" => $this->security->get_csrf_hash()
+		        ), "IsSession" => true )  );
+		        return false; 
+			}
+
+			echo json_encode(array("data" => $bloquesObj, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
+	        "name" => $this->security->get_csrf_token_name(),
+	        "hash" => $this->security->get_csrf_hash()
+	        ) )); 
+		}
+
+		
+
+
+
+	}
+
 public function Actualizar(){
 	if (!$this->session->userdata("sUsuario")){
 			echo json_encode(array("IsSession" => false)); 
@@ -219,13 +280,11 @@ public function Actualizar(){
 		}
 		$this->load->model("Bloques_Model", "mBloques");
 	$this->validation->set_rules("objeto[ProgramacionID]", "ProgramacionID", "required|integer"); 
-$this->validation->set_rules("objeto[FrecuenciaTipo]", "FrecuenciaTipo", "required|integer"); 
-$this->validation->set_rules("objeto[FrecuenciaNumero]", "FrecuenciaNumero", "required"); 
-$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
-$this->validation->set_rules("objeto[HoraInicio]", "HoraInicio", "required"); 
-$this->validation->set_rules("objeto[HoraFin]", "HoraFin", "required"); 
-$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "integer"); 
-$this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", ""); 
+	$this->validation->set_rules("objeto[FrecuenciaTipo]", "FrecuenciaTipo", "required|integer"); 
+	$this->validation->set_rules("objeto[FrecuenciaNumero]", "FrecuenciaNumero", "required"); 
+	$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
+	$this->validation->set_rules("objeto[HoraInicio]", "HoraInicio", "required"); 
+	$this->validation->set_rules("objeto[HoraFin]", "HoraFin", "required"); 	
 
 	if ($this->validation->run() == FALSE)
          {
