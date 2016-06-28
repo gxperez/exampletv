@@ -1257,6 +1257,20 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
 
         $scope.myValue = true; 
 
+        $scope.masterTabs = {
+            selected: 1,            
+            setSelected: function(id){
+                $scope.masterTabs.selected = id;
+            }
+
+        }; 
+
+        // Este es el caso.        
+        $scope.masterGrupo = {
+            
+
+        };
+
 // $scope.frmBloque.dialog
         $scope.frmBloque = {
             dialog: null,
@@ -1482,6 +1496,30 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
             
         }; 
 
+        $scope.bloquesFormat = {};
+
+
+        $scope.formatBloque = function(list){
+            var nformat= {}; 
+
+            // Ordenar la Lista Por FrecuenciaTipoID
+            list.sort(function (a, b) { if ( parseFloat(a.FrecuenciaTipo) > parseFloat(b.FrecuenciaTipo) ) return 1; if ( parseFloat(a.FrecuenciaTipo) < parseFloat( b.FrecuenciaTipo) ) return -1; return 0; }); 
+
+
+            for(var t in list){               
+                if(list.hasOwnProperty(t) ){
+                    if(!(list[t].FrecuenciaTipoDesc in  nformat)){
+                        nformat[list[t].FrecuenciaTipoDesc] = [];
+                    }                    
+                    nformat[list[t].FrecuenciaTipoDesc].push(list[t]); 
+
+                    nformat[list[t].FrecuenciaTipoDesc].sort(function (a, b) { if (a.HoraInicio > b.HoraInicio) return 1; if (a.HoraInicio < b.HoraInicio) return -1; return 0; }); 
+                }
+            }
+
+            $scope.bloquesFormat = nformat; 
+        }
+
 
         $scope.AbrirPrograma = function( id ){
             // Paso Uno Desaparecer el Dialog            
@@ -1494,7 +1532,8 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
                     $appSession.IsSession(res); 
                     if(res.IsOk){
                         $scope.listaBloques = res.data; 
-                        $scope.bloques = res.bloques;                     
+                        $scope.bloques = res.bloques;  
+                        $scope.formatBloque(res.bloques); 
                     }                    
              });
         };

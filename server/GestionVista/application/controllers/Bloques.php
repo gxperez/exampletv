@@ -266,12 +266,36 @@ class Bloques extends MY_Controller {
 	        "hash" => $this->security->get_csrf_hash()
 	        ) )); 
 		}
+	}
 
+
+	public function obtenerBloquesContenidoPorIDs(){
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}
+
+
+		if($this->input->get("BloqueID") && $this->input->get("ProgramacionID")){
+
+			$idBloque = $this->input->get("BloqueID"); 
+		$idProgramcion = $this->input->get("ProgramacionID"); 
+
+		$this->load->model("Bloques_Model", "mBloques");		
+		$estables = $this->mBloques->ObtenerDetallePorBloquePorIDProgramacion($idBloque, $idProgramcion); 
+
+		print_r($estables);
 		
 
 
 
+		} else {
+			echo json_encode(array("IsOk"=> false, "IsSession"=> true, "Msg"=> "NO se ha Enviado las variables. GET" ));
+			return false;
+		}
 	}
+
+
 
 public function Actualizar(){
 	if (!$this->session->userdata("sUsuario")){

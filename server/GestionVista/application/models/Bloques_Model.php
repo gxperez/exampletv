@@ -154,7 +154,7 @@
 	
 	public function obtenerBloquesJson(){
 		$this->load->database();
-		$query = $this->db->get(bloques);	
+		$query = $this->db->get("bloques");	
 			
 		$usuario = array();
 		foreach ($query->result() as $row)
@@ -227,6 +227,7 @@
 	}
 
 	public function ObtenerPorID($id){
+		$this->load->database();
 		$this->db->where("BloqueID", $id); 
 		$result = $this->db->get("bloques");		
 
@@ -236,6 +237,88 @@
 		}
 		return current($result->result()); 
 	}
+
+	public function ObtenerBloqueContenidoPorIdProgramacion($id){
+
+		$sql = "select bc.BloqueContenidoID, bc.BloqueID, bc.ContenidoID, bc.GrupoID, bc.Orden,  bc.Estado,
+g.Descripcion as GrupoDesc, c.Descripcion as ContenidoDesc, c.Nombre,
+c.Duracion, 
+sec_to_time(TIME_TO_SEC(b.HoraFin)-TIME_TO_SEC(b.HoraInicio)) as BloqueDuracion
+ from bloque_contenido as bc
+inner join grupo as g on g.GrupoID = bc.GrupoID
+and g.Estado = 1 and bc.Estado = 1
+inner join contenido as c on c.ContenidoID = bc.ContenidoID
+and c.Estado = 1
+inner join bloques as b on b.BloqueID = bc.BloqueID
+and b.Estado = 1
+	where b.ProgramacionID = {$id}"; 
+
+		$query = $this->db->query($sql);
+		$listaBloqueContenido = $query->result(); 
+
+		return $listaBloqueContenido;
+
+
+	}
+
+
+	public function ObtenerDetallePorBloquePorIDProgramacion($idBloque, $idProgramacion ){
+		$this->load->database();
+
+		$sql = "select bc.BloqueContenidoID, bc.BloqueID, bc.ContenidoID, bc.GrupoID, bc.Orden,  bc.Estado,
+		g.Descripcion as GrupoDesc, c.Descripcion as ContenidoDesc, c.Nombre,
+		c.Duracion, 
+		sec_to_time(TIME_TO_SEC(b.HoraFin)-TIME_TO_SEC(b.HoraInicio)) as BloqueDuracion
+		 from bloque_contenido as bc
+		inner join grupo as g on g.GrupoID = bc.GrupoID
+		and g.Estado = 1 and bc.Estado = 1
+		inner join contenido as c on c.ContenidoID = bc.ContenidoID
+		and c.Estado = 1
+		inner join bloques as b on b.BloqueID = bc.BloqueID
+		and b.Estado = 1
+		where b.ProgramacionID = {$idProgramacion} and b.BloqueID = {$idBloque}"; 
+
+		$query = $this->db->query($sql);
+		$listaBloqueContenido = $query->result(); 
+
+		$array = array();
+
+		$arrGrupos = array();
+
+		foreach ($listaBloqueContenido as $key => $value) {
+			if(!array_key_exists($value->GrupoID, $array)){
+				$array[$value->GrupoID] = array();
+			}
+			$array[$value->GrupoID][] = $value;
+		}
+		return $array;
+	}
+
+	public function ObtenerResumenBloqueContenido($idBloque, $idProgramacion){
+		// Resumen del Bloque contenido.
+		$this->load->database();
+		$sql = "select b.BloqueID, b.ProgramacionID, b.HoraInicio, b.HoraFin, bc.GrupoID, g.Descripcion,
+			sec_to_time(TIME_TO_SEC(b.HoraFin)-TIME_TO_SEC(b.HoraInicio)) as BloqueDuracion,
+			sec_to_time(SUM(TIME_TO_SEC(c.Duracion)))  as TiempoOcupado, 
+			sec_to_time( (TIME_TO_SEC(b.HoraFin)-TIME_TO_SEC(b.HoraInicio)) - SUM(TIME_TO_SEC(c.Duracion)) ) as TiempoDisponible,
+			SUM(TIME_TO_SEC(c.Duracion)) as DuracionSec,
+			(TIME_TO_SEC(b.HoraFin)-TIME_TO_SEC(b.HoraInicio)) - SUM(TIME_TO_SEC(c.Duracion))  DisponibleSec
+			 from bloque_contenido as bc
+			inner join grupo as g on g.GrupoID = bc.GrupoID
+			and g.Estado = 1 and bc.Estado = 1
+			inner join contenido as c on c.ContenidoID = bc.ContenidoID
+			and c.Estado = 1
+			inner join bloques as b on b.BloqueID = bc.BloqueID
+			and b.Estado = 1
+			where b.ProgramacionID = {$idProgramacion} and b.BloqueID = {$idBloque}
+			group by b.BloqueID, b.ProgramacionID, b.HoraInicio, b.HoraFin, bc.GrupoID, g.Descripcion
+			order by b.HoraInicio";
+
+			$query = $this->db->query($sql);
+			$listaBloqueContenido = $query->result();
+			return $listaBloqueContenido;
+
+	}	
 	
  }
  ?>

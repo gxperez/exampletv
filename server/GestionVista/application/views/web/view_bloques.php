@@ -61,13 +61,13 @@ background-color: rgb(236, 236, 214);
 
             <div class="btn-group ">
 				  <div class="btn-group">
-				    <span class="btn btn-default">Bloques</span>
+				    <span class="btn btn-default" ng-click="masterTabs.setSelected(1)">Bloques</span>
 				  </div>
 				  <div class="btn-group">
-				    <span type="button" class="btn btn-default">Contenidos</span>
+				    <span type="button" class="btn btn-default" ng-click="masterTabs.setSelected(2)">Contenidos</span>
 				  </div>
 				 <div class="btn-group">
-				    <span type="button" class="btn btn-default">Itinerario</span>
+				    <span type="button" class="btn btn-default" ng-click="masterTabs.setSelected(3)">Itinerario</span>
 		  		</div>
 			</div>
                   
@@ -76,7 +76,7 @@ background-color: rgb(236, 236, 214);
 
 
 
-    <div class="col-lg-12">
+    <div class="col-lg-12" ng-if="masterTabs.selected == 1" >
                   
                   	  
 
@@ -266,7 +266,93 @@ background-color: rgb(236, 236, 214);
                   	   </div>
                   	 </div>
                         
-					</div><!-- col-lg-12-->      	
+					</div><!-- col-lg-12-->   
+
+					<div class="col-lg-12" ng-if="masterTabs.selected == 2" >
+					<div class="" >
+					<br>
+
+						<h4> &nbsp; &nbsp; &nbsp; Bloque Contenido </h4>
+						<div class="col-lg-4">						
+
+<div class="panel-group" id="accordion">
+
+<div class="panel panel-default" ng-repeat="(k, bb) in bloquesFormat">
+
+	  <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{k}}">{{k}}</a>
+        </h4>
+      </div>              	
+      <div id="collapse_{{k}}" class="panel-collapse collapse">
+        <div class="panel-body">
+        <table class="table table-bordered table-striped table-condensed cf">
+        <thead>
+	        <tr>	        	
+	        	<th class="numeric">Hora Inicio</th>
+	        	<th class="numeric">Hora Fin</th>
+	        </tr>	        
+        </thead>
+
+        <tbody>        
+        <tr ng-repeat="p in bb">        	
+        	<td class="numeric">{{p.HoraInicio}}</td>
+        	<td class="numeric"> {{p.HoraFin}}</td>
+        </tr>        	
+        </tbody>
+        	
+        </table>        
+        	
+        </div>        	
+      </div>
+        	
+ </div>
+  </div>					
+						</div>
+
+						<div class="col-lg-8">
+							<div class="showback">
+
+							<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#default">Default</a></li>    
+
+    <li><a ng-repeat="" data-toggle="tab" href="#menu1">Grupo 2 </a></li>
+    <li><a data-toggle="tab" href="#menu1">Grupo 2 </a></li>
+    <li><a data-toggle="tab" href="#menu2">Grupo 3</a></li>
+    <li><a data-toggle="tab" href="#menu3"> ... <span alt="Agregar Grupo" class="fa fa-plus"></span> </a></li>
+
+  </ul>
+
+  <div class="tab-content">
+    <div id="default" class="tab-pane fade in active">
+
+
+    </div>
+
+    <div id="menu1" class="tab-pane fade">     
+    </div>
+
+    <div id="menu2" class="tab-pane fade">            
+    </div>
+
+    <div id="menu3" class="tab-pane fade">      
+    </div>
+  </div>
+
+
+							</div>
+						</div>
+
+
+
+
+
+					</div>
+
+					
+						
+					</div>
+
           		</div> <!-- /row -->  
           	</div>
 
