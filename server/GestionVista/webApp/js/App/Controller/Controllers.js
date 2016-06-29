@@ -1267,7 +1267,60 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
 
         // Este es el caso.        
         $scope.masterGrupo = {
-            
+            listgrupos: [],            
+            data: {},
+            resumen: {},
+            selectedBloqueID: 0,
+
+            AgregarGrupo: function(){
+
+                var divht = $("<div title='Agregar Bloque'> </div>"); 
+
+                divht.dialog(); 
+
+
+            },
+
+            setListGrupos: function(list){
+
+                var result = [];                 
+
+                for(var k in list){
+                    if(list.hasOwnProperty(k)){
+                        if(list[k].GrupoID != 1){
+                        result.push(list[k]); 
+                        }
+                    }                    
+                }
+
+                $scope.masterGrupo.listgrupos = resultl; 
+            },
+
+            obtenerBloquesContenido: function(itm){
+
+                var sendObj = {ProgramacionID: itm.ProgramacionID, BloqueID: itm.BloqueID }; 
+
+                $scope.masterGrupo.selectedBloqueID = itm.BloqueID;
+
+                http(base_url + 'Bloques/obtenerBloquesContenidoPorIDs/' , sendObj , function (res) {
+                    $appSession.IsSession(res); 
+                    if(res.IsOk){
+
+                        $scope.masterGrupo.listgrupos = res.data; 
+                        $scope.masterGrupo.resumen = res.resumen; 
+                        $scope.masterGrupo.setListGrupos(res.resumen);
+                        
+
+                    } else {
+                        alert("Error: Este Bloque no existe en el SERVER"); 
+
+                    }
+
+                }); 
+                // El ajuste de todas la cosas.                
+                console.log(itm); 
+
+            }
 
         };
 

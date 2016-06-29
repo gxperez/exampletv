@@ -275,20 +275,17 @@ class Bloques extends MY_Controller {
 			return false; 
 		}
 
-
 		if($this->input->get("BloqueID") && $this->input->get("ProgramacionID")){
-
 			$idBloque = $this->input->get("BloqueID"); 
-		$idProgramcion = $this->input->get("ProgramacionID"); 
+			$idProgramcion = $this->input->get("ProgramacionID"); 
 
-		$this->load->model("Bloques_Model", "mBloques");		
-		$estables = $this->mBloques->ObtenerDetallePorBloquePorIDProgramacion($idBloque, $idProgramcion); 
+			$this->load->model("Bloques_Model", "mBloques");		
+			$estables = $this->mBloques->ObtenerDetallePorBloquePorIDProgramacion($idBloque, $idProgramcion); 
 
-		print_r($estables);
-		
+			$resumen = $this->mBloques->ObtenerResumenBloqueContenido($idBloque, $idProgramcion);
 
-
-
+			echo json_encode(array("IsOk"=> true, "IsSession"=> true, 'Msg' => "", "data"=> $estables, "resumen"=> $resumen)); 
+			return true; 
 		} else {
 			echo json_encode(array("IsOk"=> false, "IsSession"=> true, "Msg"=> "NO se ha Enviado las variables. GET" ));
 			return false;

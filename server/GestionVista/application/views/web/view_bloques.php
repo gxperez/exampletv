@@ -294,8 +294,8 @@ background-color: rgb(236, 236, 214);
 	        </tr>	        
         </thead>
 
-        <tbody>        
-        <tr ng-repeat="p in bb">        	
+        <tbody style="cursor: pointer;">        
+        <tr ng-repeat="p in bb"  ng-click="masterGrupo.obtenerBloquesContenido(p)">
         	<td class="numeric">{{p.HoraInicio}}</td>
         	<td class="numeric"> {{p.HoraFin}}</td>
         </tr>        	
@@ -316,26 +316,27 @@ background-color: rgb(236, 236, 214);
 							<ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#default">Default</a></li>    
 
-    <li><a ng-repeat="" data-toggle="tab" href="#menu1">Grupo 2 </a></li>
-    <li><a data-toggle="tab" href="#menu1">Grupo 2 </a></li>
-    <li><a data-toggle="tab" href="#menu2">Grupo 3</a></li>
-    <li><a data-toggle="tab" href="#menu3"> ... <span alt="Agregar Grupo" class="fa fa-plus"></span> </a></li>
+    <li ng-repeat="lg in  masterGrupo.listgrupos"><a data-toggle="tab" href="#tabs-menu_{{lg.GrupoID}}">{{lg.Descripcion}} </a></li>
+    <li><a data-toggle="tab" href="#" ng-click="masterGrupo.AgregarGrupo()"> ... <span alt="Agregar Grupo" class="fa fa-plus"></span> </a></li>
 
   </ul>
 
   <div class="tab-content">
     <div id="default" class="tab-pane fade in active">
+    <div style="min-height: 500px;">    
+    	El grupo Por Defecto del Administrador.
 
+    	
+
+    	
 
     </div>
 
-    <div id="menu1" class="tab-pane fade">     
     </div>
 
-    <div id="menu2" class="tab-pane fade">            
-    </div>
 
-    <div id="menu3" class="tab-pane fade">      
+    <div ng-repeat="lgDiv in  masterGrupo.listgrupos" id="#tabs-menu_{{lgDiv.GrupoID}}" class="tab-pane fade">     
+
     </div>
   </div>
 
