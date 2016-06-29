@@ -24,10 +24,19 @@ class Bloques extends MY_Controller {
         "hash" => $this->security->get_csrf_hash()
         ) );
 
-        $this->load->model('EmunsViews_model', 'mEnum');        	
+        $this->load->model('EmunsViews_model', 'mEnum');        
+        $this->load->model('Grupo_model', 'mGrupo');        		
+        $this->load->model('Contenido_model', 'mContenido');        		
         $this->load->model("Programacion_Model", "mProgramacion");
 
-		
+        $listaGrupos = array();
+
+        foreach ($this->mGrupo->obtenerGruposActivos() as  $value) {
+        	$listaGrupos[$value->GrupoID] = $value; 
+        }
+
+        $data["contenidos"] = $this->mContenido->obtenerContenidoActivos();
+		$data["listaGrupos"] = $listaGrupos; 
 		$data['listaProgramacion'] = $this->mProgramacion->obtenerProgramacionActivas(); 
         $data['listEstadoForm'] = $this->mEnum->getEnumsEstado();   
         $data['listFrecuenciaTipo'] = $this->mEnum->getEnum("frecuenciatipo");      	
@@ -285,7 +294,8 @@ class Bloques extends MY_Controller {
 			$resumen = $this->mBloques->ObtenerResumenBloqueContenido($idBloque, $idProgramcion);
 
 			echo json_encode(array("IsOk"=> true, "IsSession"=> true, 'Msg' => "", "data"=> $estables, "resumen"=> $resumen)); 
-			return true; 
+
+			return true;
 		} else {
 			echo json_encode(array("IsOk"=> false, "IsSession"=> true, "Msg"=> "NO se ha Enviado las variables. GET" ));
 			return false;

@@ -1238,6 +1238,9 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
         // Ajustes en General de contenidos.
         $scope.listaProgramacion = {}; // vw_listaProgramas; 
 
+        $scope.listaContenido = vw_contenidos; // []; // vw_contenidos        
+
+
         $scope.bloque = {
             ProgramacionID: 0,
             FrecuenciaTipo: 0,
@@ -1267,18 +1270,39 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
 
         // Este es el caso.        
         $scope.masterGrupo = {
-            listgrupos: [],            
+            listgrupos: vw_listaGrupos, 
+            form: {},
             data: {},
             resumen: {},
             selectedBloqueID: 0,
-
+            selectedBloque: {}, 
+            hasChanges: true, 
             AgregarGrupo: function(){
 
-                var divht = $("<div title='Agregar Bloque'> </div>"); 
+                var divht = $("#grupoform"); 
+                divht.dialog(
+                {
+                 width: 610,
+                 heigth: 460
+                 });
 
-                divht.dialog(); 
+            },
 
 
+            removeContent: function(itm, index){
+                // Remover contenido.
+                console.log("Remover"); 
+
+
+            },
+
+            SubirOrden: function(itm, index){
+                console.log("Subir"); 
+
+            },
+
+            BajarOrden: function(itm, index){
+                console.log("Bajar"); 
             },
 
             setListGrupos: function(list){
@@ -1293,7 +1317,7 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
                     }                    
                 }
 
-                $scope.masterGrupo.listgrupos = resultl; 
+                $scope.masterGrupo.listgrupos = result; 
             },
 
             obtenerBloquesContenido: function(itm){
@@ -1301,15 +1325,19 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
                 var sendObj = {ProgramacionID: itm.ProgramacionID, BloqueID: itm.BloqueID }; 
 
                 $scope.masterGrupo.selectedBloqueID = itm.BloqueID;
+                $scope.masterGrupo.selectedBloque = JSON.parse(JSON.stringify(itm)); 
 
                 http(base_url + 'Bloques/obtenerBloquesContenidoPorIDs/' , sendObj , function (res) {
                     $appSession.IsSession(res); 
                     if(res.IsOk){
 
-                        $scope.masterGrupo.listgrupos = res.data; 
-                        $scope.masterGrupo.resumen = res.resumen; 
-                        $scope.masterGrupo.setListGrupos(res.resumen);
-                        
+                        $scope.masterGrupo.data = res.data; 
+                        $scope.masterGrupo.resumen = res.resumen;
+
+                        console.log($scope.masterGrupo.resumen.length); 
+                      //  $scope.masterGrupo.setListGrupos(res.resumen);
+                          $('[data-toggle="tooltip"]').tooltip();
+
 
                     } else {
                         alert("Error: Este Bloque no existe en el SERVER"); 
@@ -1377,8 +1405,7 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
 
             }, 
             validarChoqueBloque: function(){ 
-
-                console.log("Cpmtr"); 
+                
 
                 var sendObj = {ProgramacionID: $scope.frmBloque.selectedID, FrecuenciaTipo: $scope.frmBloque.form.FrecuenciaTipo, HoraInicio: $scope.frmBloque.form.HoraInicio, HoraFin: $scope.frmBloque.form.HoraFin, Estado: $scope.frmBloque.form.Estado};
                  http(base_url + 'Bloques/validarChoqueBloque/' , sendObj , function (res) {                                    

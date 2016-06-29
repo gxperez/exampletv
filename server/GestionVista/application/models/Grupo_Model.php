@@ -11,7 +11,17 @@
  
 	public function obtenerGrupo(){
 		$this->load->database();
-		$query = $this->db->get(grupo);			
+
+		$query = $this->db->get("grupo");			
+			
+		$listaGrupo = $query->result(); 
+		return $listaGrupo;
+ 	}
+
+ 	public function obtenerGruposActivos(){
+		$this->load->database();
+		$this->db->where("Estado", 1); 
+		$query = $this->db->get("grupo");			
 			
 		$listaGrupo = $query->result(); 
 		return $listaGrupo;

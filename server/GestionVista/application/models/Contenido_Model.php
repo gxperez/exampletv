@@ -11,10 +11,18 @@
  
 	public function obtenerContenido(){
 		$this->load->database();
-		$query = $this->db->get(contenido);			
+		$query = $this->db->get("contenido");			
 			
 		$listaContenido = $query->result(); 
 		return $listaContenido;
+ 	}
+
+ 	public function obtenerContenidoActivos(){
+ 		$this->load->database();
+ 		$this->db->where("Estado", 1); 
+		$query = $this->db->get("contenido");			
+		$listaContenido = $query->result();
+		return $listaContenido;		
  	}
 
  	public function obtenerContenidoPorCampo($campo, $valor = "", $limit = 0, $page = 20){

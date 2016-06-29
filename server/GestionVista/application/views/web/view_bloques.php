@@ -6,6 +6,10 @@
 	border: 1px solid rgb(215, 212, 212);
 }
 
+.butonContent > span:hover {
+	color: red;
+}
+
 .Diario {
 background-color: rgb(220, 239, 239);
 }
@@ -273,7 +277,7 @@ background-color: rgb(236, 236, 214);
 					<br>
 
 						<h4> &nbsp; &nbsp; &nbsp; Bloque Contenido </h4>
-						<div class="col-lg-4">						
+						<div class=" col-sm-3 col-lg-3">						
 
 <div class="panel-group" id="accordion">
 
@@ -310,32 +314,121 @@ background-color: rgb(236, 236, 214);
   </div>					
 						</div>
 
-						<div class="col-lg-8">
+						<div class="col-sm-9 col-lg-9">
 							<div class="showback">
 
 							<ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#default">Default</a></li>    
+    
 
-    <li ng-repeat="lg in  masterGrupo.listgrupos"><a data-toggle="tab" href="#tabs-menu_{{lg.GrupoID}}">{{lg.Descripcion}} </a></li>
-    <li><a data-toggle="tab" href="#" ng-click="masterGrupo.AgregarGrupo()"> ... <span alt="Agregar Grupo" class="fa fa-plus"></span> </a></li>
+    <li ng-repeat="(k, lg) in  masterGrupo.listgrupos"><a data-toggle="tab" href="#tabs-menu_{{lg.GrupoID}}">{{lg.Descripcion}} </a></li>
+    <li><a data-toggle="tab" href="#tabs-menu_plus_grupo"> ... <span alt="Agregar Grupo" class="fa fa-plus"></span> </a></li>
 
   </ul>
 
   <div class="tab-content">
-    <div id="default" class="tab-pane fade in active">
-    <div style="min-height: 500px;">    
-    	El grupo Por Defecto del Administrador.
+    
 
-    	
+    <div ng-repeat="lgDiv in  masterGrupo.listgrupos" id="tabs-menu_{{lgDiv.GrupoID}}" class="tab-pane fade ">     
 
+    <div style="min-height: 500px;">
+    <div class="modal-body row">
+    <div class="col-sm-8">
+    <h4>{{masterGrupo.selectedBloque.FrecuenciaTipoDesc}}</h4>
+    <p> {{masterGrupo.selectedBloque.Horario}} </p>
     	
+    </div>
+    <div class="col-sm-4" style="text-align: right;">
+    	<button class="btn" ng-click="masterGrupo.AgregarGrupo()"> <span class="fa fa-plus"></span> Agregar  </button>	    	
+    </div>   
+
+    </div>
+
+    <div class="col-md-12" ng-if="masterGrupo.hasChanges"  style="
+    background-color: rgb(227, 136, 136);
+    color: white;
+    text-align: center;
+" > <span class="glyphicon glyphicon-info-sign"></span>  Para Aplicar los cambios en el orden haz click en: &nbsp;  <button class="btn btn-danger">Guardar</button>    </div>
+
+    <h5 ng-if="masterGrupo.resumen.length == 0"> 
+    Aun no hay contenido configurado en este Grupo.
+     </h5>
+
+<table class=" table-hover table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+      	<th></th>
+      	<th> Posicion </th>
+        <th>Contenido</th>
+        <th>Duracion</th>                
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+      	<td><div class="butonContent" style="font-size: 16px; "> <span class="  glyphicon glyphicon-remove-circle" ng-click="masterGrupo.removeContent()" ></span>  <span ng-click="masterGrupo.SubirOrden()" class=" glyphicon glyphicon-arrow-up"></span> <span ng-click="masterGrupo.BajarOrden()" class=" glyphicon glyphicon-arrow-down"></span> </div> </td>
+        <td>1</td>
+        <td>EL mejor contenido del Mundo</td>
+        <td>12 segundos</td>
+      </tr>
+      
+    </tbody>
+  </table>
 
     </div>
 
     </div>
 
 
-    <div ng-repeat="lgDiv in  masterGrupo.listgrupos" id="#tabs-menu_{{lgDiv.GrupoID}}" class="tab-pane fade">     
+    <div id="tabs-menu_plus_grupo" class="tab-pane fade">  
+
+    <h4> Registrar Grupo Bloque</h4>
+
+    <div>
+    <div id="grupoform">
+		<div  class="row mt">        
+			 <form id="vform" class="form-horizontal style-form" method="get" data-toggle="validator"  >
+          	<!-- BASIC FORM ELELEMNTS -->
+          		<div class="col-lg-12">   
+
+          	<div class="form-group">
+						<label class="col-sm-2 col-sm-2 control-label">Posicion #</label>
+						<div class="col-sm-10">
+			            	<input type="number" ng-model="position" class="form-control"> </input>               	
+			            </div> 			
+			</div>
+
+
+			<div class="form-group">
+						<label class="col-sm-2 col-sm-2 control-label">Contenido</label>
+						<div class="col-sm-10">
+			            	<input type="text" ng-model="contenidoText" class="form-control"> </input>
+
+			            	<hr>
+			            	<div style="min-height: 190px;">
+
+			            	<div ng-repeat="cont in listaContenido|filter:contenidoText:strict ">
+			            	<input type="checkbox" ></input>
+				            	<span class="glyphicon glyphicon-film" data-toggle="tooltip" title="{{cont.Descripcion}}">
+				            	{{cont.Duracion}} - {{cont.Nombre}} 			            		
+				            	</span>			            		
+			            	</div>
+
+			            	</div>
+			           </div>
+			</div>
+
+<div class="modal-footer">              
+	<button class="btn btn-success" type="button" ng-click="masterGrupo.guardar()"> Guardar </button>
+	<button class="btn btn-danger" type="button" ng-click="masterGrupo.cancel()"> Cancelar </button>
+</div>            
+          		</div> <!-- col-lg-12-->      	
+          	      	
+          	  </form>
+		</div>
+ </div>
+
+    </div>
+
+
 
     </div>
   </div>
@@ -484,6 +577,13 @@ background-color: rgb(236, 236, 214);
 
 var vw_listaProgramas = <?php echo json_encode($listaProgramacion);  ?>;
 
+var vw_listaGrupos = <?php echo json_encode($listaGrupos); ?>;
+
+var vw_contenidos = <?php echo json_encode($contenidos); ?>; 
+
+console.log("Lisatado "); 
+console.log(vw_listaGrupos);
+
 
 /*
 
@@ -507,13 +607,11 @@ var vw_listaProgramas = <?php echo json_encode($listaProgramacion);  ?>;
 jQuery(function(){
 
  jQuery('#HoraInicio').datetimepicker({
-datepicker:false,
+	datepicker:false,
 	mask:'29:59:59',
-  format:'H:i:s', 	
-  // format:'Y-m-d',  
+  	format:'H:i:s', 	  	
   onShow:function( ct ){
   },
-
   onSelectTime: function(){
   	myDate  = new Date();
   	myDate2 = new Date();

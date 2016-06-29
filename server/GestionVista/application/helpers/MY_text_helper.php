@@ -70,6 +70,27 @@ class Text
 		}
 		return $selectRs;
 	}
+
+	public static function renderOptionsKeyVal($select, $lisObj, $print = true){	
+
+		$selectRs = $select; 
+		$vOption = '<option value=""> --- </option>'; 
+		
+			foreach ($lisObj as $key => $value) {
+				$vOption .= '
+				<option value="'. $key. '">
+                                '. $value. '
+                            </option>'; 			
+                            
+			}
+
+		$selectRs .= $vOption . "</select>"; 
+
+		if($print){
+			echo $selectRs; 
+		}
+		return $selectRs;
+	}
 	
 	public static function leerIdioma($file, $force=false){		
 		$file = strtolower($file);	
