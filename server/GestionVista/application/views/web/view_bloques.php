@@ -308,8 +308,7 @@ background-color: rgb(236, 236, 214);
         </table>        
         	
         </div>        	
-      </div>
-        	
+      </div>        	
  </div>
   </div>					
 						</div>
@@ -320,15 +319,14 @@ background-color: rgb(236, 236, 214);
 							<ul class="nav nav-tabs">
     
 
-    <li ng-repeat="(k, lg) in  masterGrupo.listgrupos"><a data-toggle="tab" href="#tabs-menu_{{lg.GrupoID}}">{{lg.Descripcion}} </a></li>
-    <li><a data-toggle="tab" href="#tabs-menu_plus_grupo"> ... <span alt="Agregar Grupo" class="fa fa-plus"></span> </a></li>
+    <li class="" ng-repeat="(k, lg) in  masterGrupo.listgrupos"><a data-toggle="tab" href="#tabs-menu_{{lg.GrupoID}}">{{lg.Descripcion}} </a></li>    
 
   </ul>
 
   <div class="tab-content">
     
 
-    <div ng-repeat="lgDiv in  masterGrupo.listgrupos" id="tabs-menu_{{lgDiv.GrupoID}}" class="tab-pane fade ">     
+    <div ng-repeat="lgDiv in  masterGrupo.listgrupos" id="tabs-menu_{{lgDiv.GrupoID}}" class="tab-pane fade {{isLabelActive(k)}}">     
 
     <div style="min-height: 500px;">
     <div class="modal-body row">
@@ -347,11 +345,12 @@ background-color: rgb(236, 236, 214);
     background-color: rgb(227, 136, 136);
     color: white;
     text-align: center;
-" > <span class="glyphicon glyphicon-info-sign"></span>  Para Aplicar los cambios en el orden haz click en: &nbsp;  <button class="btn btn-danger">Guardar</button>    </div>
+" > <span class="glyphicon glyphicon-info-sign"></span>  Para Aplicar los cambios en el orden haz click en: &nbsp;      <button type="button" ng-click="masterGrupo.guardarCambioOrden()" class="btn btn-danger">Guardar</button>    </div>
 
     <h5 ng-if="masterGrupo.resumen.length == 0"> 
     Aun no hay contenido configurado en este Grupo.
      </h5>
+   
 
 <table class=" table-hover table table-bordered table-striped table-condensed">
     <thead>
@@ -362,12 +361,14 @@ background-color: rgb(236, 236, 214);
         <th>Duracion</th>                
       </tr>
     </thead>
-    <tbody>
-      <tr>
-      	<td><div class="butonContent" style="font-size: 16px; "> <span class="  glyphicon glyphicon-remove-circle" ng-click="masterGrupo.removeContent()" ></span>  <span ng-click="masterGrupo.SubirOrden()" class=" glyphicon glyphicon-arrow-up"></span> <span ng-click="masterGrupo.BajarOrden()" class=" glyphicon glyphicon-arrow-down"></span> </div> </td>
-        <td>1</td>
-        <td>EL mejor contenido del Mundo</td>
-        <td>12 segundos</td>
+    <tbody id="sortable-{{lgDiv.GrupoID}}"  ui-sortable="dropzone" ng-model="masterGrupo.data[lgDiv.GrupoID]">
+      <tr ng-repeat="(k, ttg) in masterGrupo.data[lgDiv.GrupoID]">
+      	<td><div class="butonContent" style="font-size: 16px; "> <span class="  glyphicon glyphicon-remove-circle" ng-click="masterGrupo.removeContent(ttg, k)" ></span> 
+      	 
+      	 </td>
+        <td style="cursor: move;" >{{(k+1)}} {{ttg.Orden}}</td>
+        <td style="cursor: move;" >{{ttg.Nombre}}</td>
+        <td style="cursor: move;" >{{ttg.Duracion}}</td>
       </tr>
       
     </tbody>
@@ -379,23 +380,14 @@ background-color: rgb(236, 236, 214);
 
 
     <div id="tabs-menu_plus_grupo" class="tab-pane fade">  
-
-    <h4> Registrar Grupo Bloque</h4>
+    
 
     <div>
-    <div id="grupoform">
+    <div id="grupoform" title="Registrar Contenido Bloque"> 
 		<div  class="row mt">        
 			 <form id="vform" class="form-horizontal style-form" method="get" data-toggle="validator"  >
           	<!-- BASIC FORM ELELEMNTS -->
           		<div class="col-lg-12">   
-
-          	<div class="form-group">
-						<label class="col-sm-2 col-sm-2 control-label">Posicion #</label>
-						<div class="col-sm-10">
-			            	<input type="number" ng-model="position" class="form-control"> </input>               	
-			            </div> 			
-			</div>
-
 
 			<div class="form-group">
 						<label class="col-sm-2 col-sm-2 control-label">Contenido</label>
@@ -403,11 +395,12 @@ background-color: rgb(236, 236, 214);
 			            	<input type="text" ng-model="contenidoText" class="form-control"> </input>
 
 			            	<hr>
-			            	<div style="min-height: 190px;">
+			            	<div style="height: 199px; overflow: scroll;">
 
 			            	<div ng-repeat="cont in listaContenido|filter:contenidoText:strict ">
-			            	<input type="checkbox" ></input>
-				            	<span class="glyphicon glyphicon-film" data-toggle="tooltip" title="{{cont.Descripcion}}">
+
+			            	<span class="btn btn-success fa fa-plus" type="button" ng-click="masterGrupo.AgregarGuardarContenido(cont)"> Agregar </span>
+				            	<span class="glyphicon glyphicon-film btn" data-toggle="tooltip" title="{{cont.Descripcion}}">
 				            	{{cont.Duracion}} - {{cont.Nombre}} 			            		
 				            	</span>			            		
 			            	</div>
@@ -415,11 +408,6 @@ background-color: rgb(236, 236, 214);
 			            	</div>
 			           </div>
 			</div>
-
-<div class="modal-footer">              
-	<button class="btn btn-success" type="button" ng-click="masterGrupo.guardar()"> Guardar </button>
-	<button class="btn btn-danger" type="button" ng-click="masterGrupo.cancel()"> Cancelar </button>
-</div>            
           		</div> <!-- col-lg-12-->      	
           	      	
           	  </form>

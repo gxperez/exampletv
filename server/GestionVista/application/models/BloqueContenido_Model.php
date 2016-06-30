@@ -104,19 +104,15 @@
 
 	public function cambiarEstado($obj, $estado){
 		$this->load->database();
-		$bloque_contenidoEnt = $this->ObtenerPorID($obj["bloque_contenido"]);
+		$bloque_contenidoEnt = $this->ObtenerPorID($obj);
 
-		if($dispositivoEnt == null){ 
+		if($bloque_contenidoEnt == null){ 
 		        return false; 
         }        
         $update["FechaModifica"] = date("Y-m-d H:i:s");
         $update["Estado"] = $estado; 
-        $this->db->where("BloqueContenidoID", $obj["BloqueContenidoID"]);
-		$rs = $this->db->update("bloque_contenido", $update);	
-
-		if($rs){
-			return $bloque_contenidoEnt; 
-		}
+        $this->db->where("BloqueContenidoID", $obj);
+		$rs = $this->db->update("bloque_contenido", $update);			
 			return $rs; 
 	}
 

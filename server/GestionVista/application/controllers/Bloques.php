@@ -400,5 +400,42 @@ public function Actualizar(){
 	        return true; 
 		} 
 	}
+
+
+	public function EliminarBloqueContenido(){
+		// Eliminar a travez del post y del Get y validar la Session.
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}
+
+		// Por GET
+		if($this->input->get("BloqueContenidoID") && $this->input->get("BloqueID") && $this->input->get("ProgramacionID")){			
+			$this->load->model("BloqueContenido_Model", "mBloqueContenido");
+			$this->load->model("Bloques_Model", "mBloques");
+
+			$id = $this->security->xss_clean($this->input->get("BloqueContenidoID"));  
+			$idBloque = $this->security->xss_clean($this->input->get("BloqueID"));  
+			$idProgramcion = $this->security->xss_clean($this->input->get("ProgramacionID"));
+			$rest = $this->mBloqueContenido->cambiarEstado($id, 0);			
+
+			if(!$rest){
+				echo json_encode(array("IsOk"=> false, "Msg"=> "Error al Tratar de Eliminar", "IsSession" => true )  );
+		        return false; 
+			}
+
+			$resumen = $this->mBloques->ObtenerResumenBloqueContenido($idBloque, $idProgramcion);
+			echo json_encode(array( "IsOk"=> true, "Msg"=>"Success", "IsSession" => true,  "data"=> $resumen ));
+
+			return true; 
+		} else {
+			echo json_encode(array("IsOk"=> false, "Msg"=> "Error al Tratar de Eliminar", "IsSession" => true )  );	
+		}
+
+		return true;
+
+		
+	}
+
 }
 	

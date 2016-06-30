@@ -1236,9 +1236,30 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
         }
 
         // Ajustes en General de contenidos.
-        $scope.listaProgramacion = {}; // vw_listaProgramas; 
+        $scope.listaProgramacion = {}; // vw_listaProgramas;
 
-        $scope.listaContenido = vw_contenidos; // []; // vw_contenidos        
+        $scope.listaContenido = vw_contenidos; // []; // vw_contenidos
+        $scope.first = true;
+
+        $scope.dropzone = {};
+
+        $scope.isLabelActive = function(i){
+
+            if($scope.first){
+                if(i == 1){
+                   return  "active";
+                   $scope.first = false;
+                }
+                return "";     
+            }
+
+            return ""; 
+
+            
+            
+
+        }
+
 
 
         $scope.bloque = {
@@ -1276,22 +1297,51 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
             resumen: {},
             selectedBloqueID: 0,
             selectedBloque: {}, 
-            hasChanges: true, 
+            hasChanges: false, 
             AgregarGrupo: function(){
 
                 var divht = $("#grupoform"); 
                 divht.dialog(
                 {
-                 width: 610,
-                 heigth: 460
+                 width: 615,
+                 heigth: 485,
+                  modal: true
                  });
 
             },
 
+            guardarCambioOrden: function(){
+                // Como hacer que se guarde el orden.
+
+
+            },
+
+            AgregarGuardarContenido: function(){
+
+            }, 
 
             removeContent: function(itm, index){
                 // Remover contenido.
+                console.log(itm); 
+                console.log(index); 
                 console.log("Remover"); 
+
+                
+
+                 http(base_url + 'Bloques/EliminarBloqueContenido/' , {BloqueContenidoID: itm.BloqueContenidoID, BloqueID: itm.BloqueID, ProgramacionID: $scope.frmBloque.selectedID },
+                  function (res) {
+                    $appSession.IsSession(res); 
+                    if(res.IsOk){
+                        
+                        alert("Se eliminó correctamente."); 
+
+                       //  console.log($scope.masterGrupo.resumen.length); 
+                      
+
+                    } else {
+                        alert("Error: Este Bloque no existe en el SERVER"); 
+                    }
+                });
 
 
             },
