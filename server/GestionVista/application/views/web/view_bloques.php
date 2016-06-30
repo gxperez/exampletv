@@ -363,7 +363,7 @@ background-color: rgb(236, 236, 214);
     </thead>
     <tbody id="sortable-{{lgDiv.GrupoID}}"  ui-sortable="dropzone" ng-model="masterGrupo.data[lgDiv.GrupoID]">
       <tr ng-repeat="(k, ttg) in masterGrupo.data[lgDiv.GrupoID]">
-      	<td><div class="butonContent" style="font-size: 16px; "> <span class="  glyphicon glyphicon-remove-circle" ng-click="masterGrupo.removeContent(ttg, k)" ></span> 
+      	<td><div class="butonContent" style="font-size: 16px; "> <span class="  glyphicon glyphicon-remove-circle" ng-click="masterGrupo.removeContent(ttg, k, lgDiv.GrupoID)" ></span> 
       	 
       	 </td>
         <td style="cursor: move;" >{{(k+1)}} {{ttg.Orden}}</td>

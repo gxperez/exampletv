@@ -276,7 +276,8 @@ and b.Estado = 1
 		and c.Estado = 1
 		inner join bloques as b on b.BloqueID = bc.BloqueID
 		and b.Estado = 1
-		where b.ProgramacionID = {$idProgramacion} and b.BloqueID = {$idBloque}"; 
+		where b.ProgramacionID = {$idProgramacion} and b.BloqueID = {$idBloque}
+		order by Orden"; 
 
 		$query = $this->db->query($sql);
 		$listaBloqueContenido = $query->result(); 

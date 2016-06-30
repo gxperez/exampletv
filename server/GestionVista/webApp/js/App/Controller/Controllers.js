@@ -1320,7 +1320,7 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
 
             }, 
 
-            removeContent: function(itm, index){
+            removeContent: function(itm, index, grupoID){
                 // Remover contenido.
                 console.log(itm); 
                 console.log(index); 
@@ -1332,9 +1332,10 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
                   function (res) {
                     $appSession.IsSession(res); 
                     if(res.IsOk){
-                        
-                        alert("Se eliminó correctamente."); 
 
+                        $scope.masterGrupo.data[grupoID].splice(index, 1);                         
+
+                        alert("Se eliminó correctamente."); 
                        //  console.log($scope.masterGrupo.resumen.length); 
                       
 
