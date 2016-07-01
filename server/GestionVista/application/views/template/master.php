@@ -144,6 +144,7 @@ margin-left: 11px;
                           <li><a  ng-click="SetMain('fuentes/sm')">Fuentes</a></li>
                           <li><a  ng-click="SetMain('programacion/sm')">Programacion</a></li>
                           <li><a  ng-click="SetMain('grupo/sm')">Grupo</a></li>
+                          <li><a  ng-click="SetMain('grupotv/sm')">Administrador de Grupo</a></li>
                           <li><a  ng-click="SetMain('secciontemplate/sm')">Seccion Template</a></li>
                           <li><a  ng-click="SetMain('fuerzaventa/sm')">Fuerza de Venta</a></li>
                           <li><a  ng-click="SetMain('fuerzaventa/master')">Master FV </a></li>

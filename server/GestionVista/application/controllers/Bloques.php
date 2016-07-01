@@ -289,8 +289,7 @@ class Bloques extends MY_Controller {
 			$idProgramcion = $this->input->get("ProgramacionID"); 
 
 			$this->load->model("Bloques_Model", "mBloques");		
-			$estables = $this->mBloques->ObtenerDetallePorBloquePorIDProgramacion($idBloque, $idProgramcion); 
-
+			$estables = $this->mBloques->ObtenerDetallePorBloquePorIDProgramacion($idBloque, $idProgramcion);
 			$resumen = $this->mBloques->ObtenerResumenBloqueContenido($idBloque, $idProgramcion);
 
 			echo json_encode(array("IsOk"=> true, "IsSession"=> true, 'Msg' => "", "data"=> $estables, "resumen"=> $resumen)); 

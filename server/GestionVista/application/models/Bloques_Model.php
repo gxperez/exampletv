@@ -317,8 +317,16 @@ and b.Estado = 1
 
 			$query = $this->db->query($sql);
 			$listaBloqueContenido = $query->result();
-			return $listaBloqueContenido;
 
+				$arrGrupos = array();
+
+			foreach ($listaBloqueContenido as $key => $value) {
+				
+				$arrGrupos[$value->GrupoID] = $value;
+
+			}
+
+			return $arrGrupos;
 	}	
 	
  }

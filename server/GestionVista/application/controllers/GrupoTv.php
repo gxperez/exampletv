@@ -22,10 +22,38 @@ class GrupoTv extends MY_Controller {
         "hash" => $this->security->get_csrf_hash()
         ) );
 
+        $this->load->model('EmunsViews_model', 'mEnum');        	       	
+        $this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
+
+
+
+        $data['nivelTipos'] = $this->mEnum->getEnum("niveltipo");
+		$data['fuerzaVentaData'] = json_encode($this->mFuerzaVentaDispositivo->formatNivelObject($this->mFuerzaVentaDispositivo->obtenerFuerzaVentaRelacion() ) ); 
+
 		// Carga de planilla web en general.
 		$this->load->view("web/sm_grupo_tv", $data); 
 	}
 
+
+	public function ObtenerDatos(){		
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}
+		// 
+		$this->load->model("GrupoTv_Model", "mGrupoTv");
+		$this->load->model("Grupo_Model", "mGrupo");
+
+		//
+		$listaGrupos = $this->mGrupo->obtenerGruposActivos();
+
+
+		// Lista de Fuerza de Venta por Televisor.
+		echo json_encode(array("listaGrupos" => $listaGrupos, "IsOk"=> true, "IsSession" => true)); 
+
+		return true; 
+
+	}
 
 	public function Obtener(){
 		if (!$this->session->userdata("sUsuario")){

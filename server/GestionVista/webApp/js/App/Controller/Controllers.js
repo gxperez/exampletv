@@ -1289,17 +1289,23 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
 
         }; 
 
+        $scope.verCreer = function(a){
+            console.log(a);
+
+        };
+
         // Este es el caso.        
         $scope.masterGrupo = {
             listgrupos: vw_listaGrupos, 
             form: {},
             data: {},
             resumen: {},
+            selectedGrupoID: 0, 
             selectedBloqueID: 0,
             selectedBloque: {}, 
             hasChanges: false, 
-            AgregarGrupo: function(){
-
+            AgregarGrupo: function(id){
+                $scope.masterGrupo.selectedGrupoID = id;
                 var divht = $("#grupoform"); 
                 divht.dialog(
                 {
@@ -1307,16 +1313,138 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
                  heigth: 485,
                   modal: true
                  });
+            },
+
+            isContenidoInBloque: function(obj){
+
+                if($scope.masterGrupo.selectedGrupoID != 0){
+
+                    if(typeof $scope.masterGrupo.data[$scope.masterGrupo.selectedGrupoID] === 'undefined'){
+                        $scope.masterGrupo.data[$scope.masterGrupo.selectedGrupoID] = []; 
+                    }
+
+
+                    $restCont =  $scope.masterGrupo.data[$scope.masterGrupo.selectedGrupoID].filter(
+                    function(d){                    
+                        return d.ContenidoID.toString() === obj.ContenidoID.toString(); 
+                    } );
+
+                    if($restCont.length > 0 ){
+                        return false;
+                    }
+                return true;
+                } 
+
+                return true;
 
             },
 
-            guardarCambioOrden: function(){
+            validateHasChanges: function(idGrupo){
+
+                var hasChanges = false; 
+
+                for(var index in $scope.masterGrupo.data[idGrupo] ){                    
+                    if($scope.masterGrupo.data[idGrupo].hasOwnProperty(index)){                        
+                        var ii = parseInt(index) + 1; 
+
+                        var orden = parseInt($scope.masterGrupo.data[idGrupo][index].Orden); 
+                        if(ii != orden) {
+                            hasChanges = true; 
+                        }
+                    }
+                }
+
+                return hasChanges; 
+            },
+
+            guardarCambioOrden: function(idGrupo){
                 // Como hacer que se guarde el orden.
+                $listCambios = []; 
+                 for(var index in $scope.masterGrupo.data[idGrupo] ){                    
+                    if($scope.masterGrupo.data[idGrupo].hasOwnProperty(index)){                        
+                        var ii = parseInt(index) + 1; 
+                        var orden = parseInt($scope.masterGrupo.data[idGrupo][index].Orden); 
+                        if(ii != orden) {                            
+                            $listCambios.push( {BloqueContenidoID: $scope.masterGrupo.data[idGrupo][index].BloqueContenidoID,
+                             Orden: ii, 
+                             ProgramacionID: $scope.masterGrupo.selectedBloque.ProgramacionID, 
+                             BloqueID: $scope.masterGrupo.selectedBloqueID});
+                        }
+                    }
+                }
 
+                sendObj=  $scope.vCrud.formatObjForm({lista: $listCambios}); 
 
+                // Ajustar cambios en el servidor.
+                 $.post(base_url + 'BloqueContenido/CambiarOrden', sendObj, function(res){                    
+                        if (res.IsOk) {
+                          if('csrf' in res){
+                             $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                           }                           
+
+                          $scope.masterGrupo.data = res.data;
+                          $('[data-toggle="tooltip"]').tooltip();
+
+                          alert("Exitoso");
+                        }
+                        else {
+                           if('csrf' in res){
+                             $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                           }
+                            alert(res.Msg); 
+                        }
+                        $scope.$apply();
+                }, "json"); 
+              
             },
+            
 
-            AgregarGuardarContenido: function(){
+            AgregarGuardarContenido: function(obj){    
+
+                if(typeof $scope.masterGrupo.data[$scope.masterGrupo.selectedGrupoID] === 'undefined'){
+                        $scope.masterGrupo.data[$scope.masterGrupo.selectedGrupoID] = []; 
+                }            
+                
+               var sndcont = {BloqueID: $scope.masterGrupo.selectedBloqueID,
+                              ContenidoID:  obj.ContenidoID, 
+                              GrupoID: $scope.masterGrupo.selectedGrupoID, 
+                              Orden: ($scope.masterGrupo.data[$scope.masterGrupo.selectedGrupoID].length + 1),
+                              Estado: 1,
+                            ProgramacionID: $scope.masterGrupo.selectedBloque.ProgramacionID
+                               }; 
+                
+                sendObj=  $scope.vCrud.formatObjForm(sndcont); 
+                 
+
+
+                // Post del formulario.
+                 $.post(base_url + 'BloqueContenido/Crear', sendObj, function(res){
+                    
+                    console.log(res);
+                        if (res.IsOk) { 
+
+                          if('csrf' in res){
+                             $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                           }                           
+
+                            $scope.masterGrupo.data = res.data; 
+                            $scope.masterGrupo.resumen = res.resumen;                      
+                          $('[data-toggle="tooltip"]').tooltip();    
+
+                          alert("Exitoso"); 
+                        }
+                        else {
+                           if('csrf' in res){
+                             $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                           }
+                            alert(res.Msg); 
+                        }
+
+                        $scope.$apply();
+
+
+                }, "json");                 
+
 
             }, 
 
@@ -1334,9 +1462,8 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
                     if(res.IsOk){
 
                         $scope.masterGrupo.data[grupoID].splice(index, 1);                         
-
-                        alert("Se eliminó correctamente."); 
-                       //  console.log($scope.masterGrupo.resumen.length); 
+                           $scope.masterGrupo.resumen = res.data; 
+                        alert("Se eliminó correctamente.");                        
                       
 
                     } else {
@@ -2754,6 +2881,219 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
 
                 if (res.IsOk){
                     $scope.listaPlanConfig[$scope.vCrud.selectedIndex]= res.data;
+                    $scope.$apply();
+                    $scope.vCrud.reset();                    
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });            
+            break;
+        }
+        }
+}]);
+
+ $ang.controller("GrupoTVController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+
+
+
+        var form = {            
+        };
+
+        $scope.masterGroup = {grupoID: 0 }; 
+
+        $scope.listaGrupoTv =[]; 
+        $scope.listaGrupos = []; 
+        $scope.pantallaNombre = 'Registro GrupoTv';
+        $scope.buscarLista = '';
+        $scope.vCrud = appCrud;
+        // $scope.vCrud.setForm(form);         
+
+        $scope.hasTV = function(itm){
+
+            if(itm.DispositivoID == null){ 
+            $('[data-toggle="tooltip"]').tooltip();                                
+                return false; 
+            }
+            return true; 
+        };
+
+
+        $scope.tempLista = []; 
+
+        $scope.isChecked = function(itm){
+            if($scope.tempLista.indexOf(itm) !== -1){
+                return "checked"; 
+            }
+
+            return "0"; 
+
+        }
+
+        $scope.addToList = function(itm){
+
+            if($scope.hasTV(itm)){
+                if($scope.tempLista.indexOf(itm) == -1){
+                    $scope.tempLista.push(itm); 
+                }
+            }
+
+            
+
+        }
+
+        $scope.guardarLista = function(){
+
+        }; 
+
+        $scope.selectAll = function(){
+
+
+
+        }; 
+
+
+
+
+
+        $scope.ObtenerPaginacionRes = function(res, num){            
+            if(res.IsOk){
+
+                    $scope.listaGrupoTv = res.data; 
+                    $scope.vCrud.setPages({totalResult: res.totalResult, count: res.count, maxRowsPage: res.rowsPerPages}); 
+
+                } else {
+                // Mensaje de noticicaicon de erroes, normalizado y limpio.                                                    
+                    console.log('Uno un Error');
+                }
+        }
+
+        $scope.initt = function () {
+
+            $scope.Pantalla = {nombre: 'GrupoTv'};  
+            $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));    
+            
+
+             http(base_url + 'GrupoTv/ObtenerDatos', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+
+                    $scope.listaGrupos = dt.listaGrupos; 
+                    // $scope.ObtenerPaginacionRes(dt); 
+
+             });
+        };        
+
+        $scope.Buscar = function(cEvent){ 
+        if($scope.buscarLista != '') {
+
+             switch(cEvent.type ){
+                case 'keypress':
+                 if(cEvent.keyCode == 13){
+                        $scope.vCrud.$Search.send = true; 
+                        $scope.vCrud.$Search.w = $scope.buscarLista; 
+                    http(base_url + 'GrupoTv/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                            $appSession.IsSession(dt);                            
+                           $scope.ObtenerPaginacionRes(dt);                                
+                    });    
+                 }
+                break;
+                case 'click':
+
+                $scope.vCrud.$Search.send = true;
+                http(base_url + 'GrupoTv/Buscar/' + $scope.buscarLista, {},
+                 function (dt) { 
+                        $appSession.IsSession(dt);                          
+                           $scope.ObtenerPaginacionRes(dt, null);                                
+                });    
+                break;
+             }
+        } else {
+                $scope.vCrud.$Search.send = false;                                                        
+                $scope.vCrud.$Search.w= ""; 
+                http(base_url + 'GrupoTv/Obtener', {}, function (dt) {
+                    $appSession.IsSession(dt);                                         
+                    $scope.ObtenerPaginacionRes(dt); 
+             });
+         }  
+        }; 
+
+        $scope.Llenar = function(obj, index){            
+            var copiObj = JSON.parse(JSON.stringify(obj));   
+            $scope.vCrud.setForm(copiObj);            
+            $scope.vCrud.selectedIndex = index;             
+        }; 
+
+        $scope.Eliminar = function(item, indice){            
+
+            var iObj =  $scope.vCrud.formatObjForm(item); 
+            //------------------------------------------
+             $.post(base_url + 'GrupoTv/Eliminar', iObj, function(res){
+                // Validacion de Sessiones.
+                $appSession.IsSession(res);                                                                         
+                if (res.IsOk){
+                    $scope.listaGrupoTv.splice(indice, 1); 
+                    $scope.$apply();
+                    // TODO: @MensajeEliminacion;
+                } else {
+                    // TODO: @MensajeEliminacion;
+                    // Notifiacion de mensaje de Error.
+                    alert(res.Msg);
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);                        
+                }
+
+            }, 'json').fail(function() {                
+                alert('Error en el POST SERVER');
+            });  
+
+        }; 
+
+        $scope.ListAll = function(){
+        }
+
+        $scope.Guardar = function(){
+            if(!$scope.vCrud.validate()){
+                return false; 
+            }
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+            $.post(base_url + 'GrupoTv/Crear', $scope.vCrud.getForm(), function(res){
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                                      
+
+
+                if (res.IsOk){
+                    $scope.listaGrupoTv.push(res.data);
+                    $scope.vCrud.reset();                    
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+            break;
+            case 1: // Actualizar Existe 
+
+            $.post(base_url + 'GrupoTv/Actualizar', $scope.vCrud.getForm(), function(res){
+                $appSession.IsSession(res); 
+
+                if (res.IsOk){
+                    $scope.listaGrupoTv[$scope.vCrud.selectedIndex]= res.data;
                     $scope.$apply();
                     $scope.vCrud.reset();                    
                 } else {                    

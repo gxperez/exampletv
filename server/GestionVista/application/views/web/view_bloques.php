@@ -330,22 +330,34 @@ background-color: rgb(236, 236, 214);
 
     <div style="min-height: 500px;">
     <div class="modal-body row">
-    <div class="col-sm-8">
+    <div class="col-sm-4">
     <h4>{{masterGrupo.selectedBloque.FrecuenciaTipoDesc}}</h4>
     <p> {{masterGrupo.selectedBloque.Horario}} </p>
     	
     </div>
+
+    <div class="col-sm-4">
+    Tiempo Diponible
+    <div >
+    
+    	<h4>{{ masterGrupo.resumen[lgDiv.GrupoID].TiempoDisponible}}</h4>
+    	<p> Ocupado: {{ masterGrupo.resumen[lgDiv.GrupoID].TiempoOcupado}} </p>
+    </div>
+    
+    	
+    </div>
+
     <div class="col-sm-4" style="text-align: right;">
-    	<button class="btn" ng-click="masterGrupo.AgregarGrupo()"> <span class="fa fa-plus"></span> Agregar  </button>	    	
+    	<button class="btn" ng-click="masterGrupo.AgregarGrupo(lgDiv.GrupoID)"> <span class="fa fa-plus"></span> Agregar  </button>	    	
     </div>   
 
     </div>
 
-    <div class="col-md-12" ng-if="masterGrupo.hasChanges"  style="
+    <div class="col-md-12" ng-if="masterGrupo.validateHasChanges(lgDiv.GrupoID)"  style="
     background-color: rgb(227, 136, 136);
     color: white;
     text-align: center;
-" > <span class="glyphicon glyphicon-info-sign"></span>  Para Aplicar los cambios en el orden haz click en: &nbsp;      <button type="button" ng-click="masterGrupo.guardarCambioOrden()" class="btn btn-danger">Guardar</button>    </div>
+" > <span class="glyphicon glyphicon-info-sign"></span>  Para Aplicar los cambios en el orden haz click en: &nbsp;      <button type="button" ng-click="masterGrupo.guardarCambioOrden(lgDiv.GrupoID)" class="btn btn-danger">Guardar</button>    </div>
 
     <h5 ng-if="masterGrupo.resumen.length == 0"> 
     Aun no hay contenido configurado en este Grupo.
@@ -399,7 +411,8 @@ background-color: rgb(236, 236, 214);
 
 			            	<div ng-repeat="cont in listaContenido|filter:contenidoText:strict ">
 
-			            	<span class="btn btn-success fa fa-plus" type="button" ng-click="masterGrupo.AgregarGuardarContenido(cont)"> Agregar </span>
+			            	<span ng-if="masterGrupo.isContenidoInBloque(cont)" class="btn btn-success fa fa-plus" type="button" ng-click="masterGrupo.AgregarGuardarContenido(cont)"> Agregar </span> 
+			            	<span ng-if="!masterGrupo.isContenidoInBloque(cont)" class="btn glyphicon glyphicon-ok" ></span>
 				            	<span class="glyphicon glyphicon-film btn" data-toggle="tooltip" title="{{cont.Descripcion}}">
 				            	{{cont.Duracion}} - {{cont.Nombre}} 			            		
 				            	</span>			            		

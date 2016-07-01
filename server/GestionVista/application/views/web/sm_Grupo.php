@@ -91,21 +91,7 @@
 <div class="form-group">
 			<label class="col-sm-2 col-sm-2 control-label">Estado</label>
 			<div class="col-sm-10">
-             <?php  Text::renderOptions('<select ng-model="vCrud.form.Estado" class="form-control" required>', $listEstadoForm); ?>     
-
-            	
-           </div>
-</div>
-<div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">UsuarioModificaID</label>
-			<div class="col-sm-10">
-            	<input type="int" ng-model="vCrud.form.UsuarioModificaID" class="form-control" >
-           </div>
-</div>
-<div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">FechaModifica</label>
-			<div class="col-sm-10">
-            	<input type="text" ng-model="vCrud.form.FechaModifica" class="form-control" >
+             <?php  Text::renderOptions('<select ng-model="vCrud.form.Estado" class="form-control" required>', $listEstadoForm); ?> 
            </div>
 </div>
                      
