@@ -10,10 +10,63 @@
  
 	public function obtenerGrupoTv(){
 		$this->load->database();
-		$query = $this->db->get(grupo_tv);			
+		$query = $this->db->get("grupo_tv");			
 			
 		$listaGrupoTv = $query->result(); 
 		return $listaGrupoTv;
+ 	}
+
+ 	public function validarGrupoTv($obj){
+ 		$this->load->database();
+ 		$this->db->where("DispositivoID", $obj["DispositivoID"]); 
+ 		$this->db->where("GrupoID", $obj["GrupoID"]); 
+ 		$this->db->where("Estado", 1); 
+ 		$query = $this->db->get("grupo_tv");	
+
+ 		if ($query->num_rows() >= 1)
+		{
+			return false;
+		}		
+
+		return true;			
+		// $listaGrupoTv = $query->result(); 
+
+ 	}
+
+ 	public function obtenerListaGrupoTvPorGrupoID(){
+ 		$this->load->database();
+
+ 		$query = "select gt.GrupoTvID, g.GrupoID, g.Descripcion, f.GUID_FV, f.GUIDDependencia, f.Nombre as FuerzaVenta, f.Estado, 
+ f.Nivel,
+ D.DispositivoID, 
+ D.Mac,
+ D.Nombre  from grupo_tv as gt 
+ inner join Grupo as g on g.GrupoID = gt.GrupoID
+ and g.Estado = 1
+ inner join Dispositivo as d on d.DispositivoID = gt.DispositivoID
+ and d.Estado = 1
+ inner join fuerza_venta_dispositivo as fv on fv.DispositivoID = d.DispositivoID 
+ and   fv.Estado = 1
+ inner join fuerza_venta as f on f.GUID_FV = fv.GUID_FV
+ and f.Estado = 1 where gt.Estado = 1";
+
+ 			$result = $this->db->query($query);
+		$listaGrupoTv = $result->result();
+
+		$restGrupoTv = array();		
+
+		// Recorremos para dar formato al resultado
+
+		foreach ($listaGrupoTv as $itm) {
+			if(!array_key_exists($itm->GrupoID, $restGrupoTv) ){
+				$restGrupoTv[$itm->GrupoID]  = []; 	
+			}
+
+			$restGrupoTv[$itm->GrupoID][]= $itm; 			
+		}
+
+ 		return $restGrupoTv;
+
  	}
 
  	public function obtenerGrupoTvPorCampo($campo, $valor = "", $limit = 0, $page = 20){
@@ -75,6 +128,46 @@
 		$listaCampos = $this->db->field_data("grupo_tv");
 		$this->db->insert("grupo_tv", $obj);
 		return $this->db->insert_id();
+	}
+
+	public function actualizarPorGrupoIDyDispositivoID($obj){
+
+		$this->load->database();
+		$this->db->where("DispositivoID", $obj["DispositivoID"]); 
+		$this->db->where("GrupoID", $obj["GrupoID"]); 
+		$result = $this->db->get("grupo_tv");		
+
+		if ($result->num_rows() == 0)
+		{
+			return true; 
+		}
+
+		$GrupoTvEnt = current($result->result()); 
+
+
+		 
+        	if($GrupoTvEnt == null){ 
+		        return false; 
+        	}
+
+        	$update = array();
+        	foreach ($GrupoTvEnt as $key => $value) {
+        		if($key != "GrupoTvID"){
+	        		if(array_key_exists($key, $obj) && $value != $obj[$key]){
+	        			$update[$key] = $obj[$key];        			
+	        		}           			
+        		}    		
+        	}
+
+        	$update["FechaModifica"] = date("Y-m-d H:i:s");
+        	$this->db->where("DispositivoID", $obj["DispositivoID"]);
+        	$this->db->where("GrupoID", $obj["GrupoID"]);
+
+			$rs = $this->db->update("grupo_tv", $update);
+			if($rs){
+				return $GrupoTvEnt; 
+			}
+			return $rs; 		
 	}
 
 	public function actualizar($obj){

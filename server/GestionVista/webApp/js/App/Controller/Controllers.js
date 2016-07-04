@@ -2911,12 +2911,14 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
 
         $scope.masterGroup = {grupoID: 0 }; 
 
-        $scope.listaGrupoTv =[]; 
+        $scope.listaGrupoTv = {}; 
         $scope.listaGrupos = []; 
         $scope.pantallaNombre = 'Registro GrupoTv';
         $scope.buscarLista = '';
         $scope.vCrud = appCrud;
-        // $scope.vCrud.setForm(form);         
+        // $scope.vCrud.setForm(form);     
+
+
 
         $scope.hasTV = function(itm){
 
@@ -2927,37 +2929,68 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
             return true; 
         };
 
-
         $scope.tempLista = []; 
 
-        $scope.isChecked = function(itm){
-            if($scope.tempLista.indexOf(itm) !== -1){
-                return "checked"; 
+        $scope.notChecked = function(itm){
+
+            if($scope.masterGroup.GrupoID in $scope.listaGrupoTv ){
+                var array = $scope.listaGrupoTv[$scope.masterGroup.GrupoID]; 
+
+                if(array.indexOf(itm) !== -1){
+                    return false;
+                }   
+                console.log("Buscando a Demp");
+                console.log(array); 
+
+               var fnElmnt =  array.filter(function(a){
+                    return a.GUID_FV === itm.GUID_FV; 
+                 }); 
+
+               if(fnElmnt.length > 0){
+                return false; 
+               }
+                
+
             }
-
-            return "0"; 
-
+            return true; 
         }
 
         $scope.addToList = function(itm){
+            // Envio del la Formula al controlador. Uno po Uno.
+                    console.log("Mirar el arreglo ");  
+                    console.log(itm);  
+                    var sendOb = {DispositivoID: itm.DispositivoID, GrupoID: $scope.masterGroup.GrupoID};
+                    http(base_url + 'GrupoTv/AgregarGrupoTV', sendOb, function (dt) {  
 
-            if($scope.hasTV(itm)){
-                if($scope.tempLista.indexOf(itm) == -1){
-                    $scope.tempLista.push(itm); 
-                }
-            }
+                    $appSession.IsSession(dt);          
 
-            
+                    if(dt.IsOk){                                                      
+                        $scope.listaGrupoTv = dt.data; 
+                        alert("Aqui Volvio Si");  
+                    }                                  
+                    });
+        };
 
-        }
+        $scope.EliminarToList = function(itm){
+            // Envio del la Formula al controlador. Uno po Uno.
+                    console.log("Mirar el arreglo ");  
+                    console.log(itm);  
+                    var sendOb = {DispositivoID: itm.DispositivoID, GrupoID: itm.GrupoID};
+                    http(base_url + 'GrupoTv/EliminarGrupoTV', sendOb, function (dt) {  
+
+                    $appSession.IsSession(dt);  
+                    if(dt.IsOk){
+                        $scope.listaGrupoTv = dt.data; 
+                    }                                       
+                    
+                    });
+        };
 
         $scope.guardarLista = function(){
 
         }; 
 
         $scope.selectAll = function(){
-
-
 
         }; 
 
@@ -2977,11 +3010,23 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                 }
         }
 
+        $scope.getCantidadSelected = function(){
+
+            if($scope.masterGroup.GrupoID in  $scope.listaGrupoTv){
+                return $scope.listaGrupoTv[$scope.masterGroup.GrupoID].length;
+            } 
+                return 0; 
+        }; 
+
+        
+
         $scope.initt = function () {
 
             $scope.Pantalla = {nombre: 'GrupoTv'};  
-            $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));    
-            
+            $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));  
+            $scope.listaGrupoTv = vw_listaGrupoTv;
+
+           console.log($scope.listaGrupoTv);             
 
              http(base_url + 'GrupoTv/ObtenerDatos', {}, function (dt) {                
                     $appSession.IsSession(dt);                                         

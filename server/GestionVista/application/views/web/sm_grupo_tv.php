@@ -86,7 +86,7 @@ Las aventuras de un Heroe
   <hr>
 
   <div ng-if="masterGroup.GrupoID > 0">
-    LAL LA la
+    
 
   </div>
 
@@ -100,19 +100,17 @@ Las aventuras de un Heroe
           <table id="todo" class="table table-hover custom-check">
 
             <tbody>
-            <tr ng-repeat="grupoTV in listaGrupoTV[masterGroup.GrupoID]">            
-              <td>{{grupoTV.FuerzaVenta}}</td>              
+            <tr ng-repeat="grupoTV in listaGrupoTv[masterGroup.GrupoID] |filter:buscarLista:strict ">
+              <td>{{grupoTV.FuerzaVenta}}
+              <button ng-click="EliminarToList(grupoTV)" class="close" aria-hidden="true" data-dismiss="alert" type="button"> <i class="fa fa-trash-o "></i> </button>
+
+              </td>
             </tr>
             </tbody>
-          </table>          
-            
+          </table>
           </div>
-
-
   </div>
-
 </div>
-
 
 <div class="col-sm-6">
 
@@ -146,15 +144,15 @@ Las aventuras de un Heroe
 
                         <tr> 
                         <td>                          
-                        <span class="check"> <input ng-model="masterGroup.AllFV" type="checkbox" class="checked"> Select All  {{tempLista.length}} </span>
+                        <span class="check"> <input ng-model="masterGroup.AllFV" type="checkbox" class="checked"> Select All  {{getCantidadSelected() }} </span>
                         </td>                       
                         </tr>
 
-                        <tr ng-repeat="item in val| filter:buscarFV:strict" >
+                        <tr ng-repeat="item in val| filter:buscarFV:strict" ng-if="notChecked(item)" >
                           <td ng-click="addToList(item)">
-                                  <span class="check"><input checked="{{isChecked(item)}}"  ng-if="hasTV(item)" type="checkbox" class="checked" value="{{item.GUID_FV}}"></span>  <span ng-if="!hasTV(item)"  data-toggle="tooltip" title="No tiene dispositivo asignado. &nbsp; Para poder asociarlo a un grupo esta fuerza de venta debe tener un dispositivo asignado. Favor ir al maestro de Dispositivo Fuerza Venta (FV)" class="glyphicon glyphicon-ban-circle" style="color: red;"></span>
+                                  <span class="btn check glyphicon glyphicon-arrow-left" ng-if="hasTV(item)" > </span>  <span ng-if="!hasTV(item)"  data-toggle="tooltip" title="No tiene dispositivo asignado. &nbsp; Para poder asociarlo a un grupo esta fuerza de venta debe tener un dispositivo asignado. Favor ir al maestro de Dispositivo Fuerza Venta (FV)" class="glyphicon glyphicon-ban-circle" style="color: red;"></span>
 
-                                  <a href="#">{{item.FuerzaVenta}}</a> <span ng-if="hasTV(item); "> ( {{item.Mac}} ) <span>                       
+                                  <a href="#">{{item.FuerzaVenta}}</a> <span ng-if="hasTV(item); "> ({{item.Mac}} ) <span>                       
                           </td>                        
                         </tr>
                         
@@ -228,7 +226,9 @@ Las aventuras de un Heroe
 
 <script type="text/javascript">
 
-var JFData = <?php echo $fuerzaVentaData;  ?>
+var JFData = <?php echo $fuerzaVentaData;  ?>;
+
+var vw_listaGrupoTv = <?php echo json_encode($listaGrupoTv); ?>;
 
 
 

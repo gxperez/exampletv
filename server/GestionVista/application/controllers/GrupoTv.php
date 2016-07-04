@@ -25,10 +25,20 @@ class GrupoTv extends MY_Controller {
         $this->load->model('EmunsViews_model', 'mEnum');        	       	
         $this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
 
+        $this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
+
+        $this->load->model("GrupoTv_Model", "mGrupoTv");
+
+        $data['listaGrupoTv'] = $this->mGrupoTv->obtenerListaGrupoTvPorGrupoID(); 
+
 
 
         $data['nivelTipos'] = $this->mEnum->getEnum("niveltipo");
 		$data['fuerzaVentaData'] = json_encode($this->mFuerzaVentaDispositivo->formatNivelObject($this->mFuerzaVentaDispositivo->obtenerFuerzaVentaRelacion() ) ); 
+
+		// Cargar los GruposTv existentes.
+
+
 
 		// Carga de planilla web en general.
 		$this->load->view("web/sm_grupo_tv", $data); 
@@ -83,6 +93,88 @@ class GrupoTv extends MY_Controller {
 		$first = current($listaGrupoTv); 
 		echo json_encode(array("data" => $listaGrupoTv, "totalResult"=> $totalResult, "count"=> count($listaGrupoTv), "IsOk"=> true, "rowsPerPages"=> $pagConf["RowsPerPages"], "IsSession" => true)); 
 	}
+
+
+	public function EliminarGrupoTV(){
+
+	if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}	
+
+		if($this->input->get("DispositivoID") && $this->input->get("GrupoID")){
+
+			$this->load->model("GrupoTv_Model", "mGrupoTv");
+			$arrGet = $this->security->xss_clean(array('DispositivoID' => $this->input->get("DispositivoID"), "GrupoID" => $this->input->get("GrupoID") ) );
+
+				$user = $this->session->userdata("sUsuario"); 
+
+
+			$grupo_tvEnt = array('GrupoID'=> $arrGet['GrupoID'] 
+				, 'DispositivoID'=> $arrGet['DispositivoID'] 
+				, 'Estado'=> -1
+				, 'UsuarioModificaID'=> $user["IDusuario"] // Usuairo Modifica.
+				, 'FechaModifica'=> date('Y-m-d H:i:s') 
+			);
+
+			
+
+				$this->mGrupoTv->actualizarPorGrupoIDyDispositivoID( $grupo_tvEnt );
+			$dta =$this->mGrupoTv->obtenerListaGrupoTvPorGrupoID(); 
+
+				echo json_encode(array("IsOk"=> true, "data" => $dta, "Msg"=>"Success", "IsSession" => true ));
+				return 0; 
+
+		} else {
+			echo json_encode(array("IsOk"=> false, "IsSession" => true));
+			return false;
+		}
+	}
+
+	public function AgregarGrupoTV(){
+
+	if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}	
+
+
+		if($this->input->get("DispositivoID") && $this->input->get("GrupoID")){
+
+			$this->load->model("GrupoTv_Model", "mGrupoTv");
+			$arrGet = $this->security->xss_clean(array('DispositivoID' => $this->input->get("DispositivoID"), "GrupoID" => $this->input->get("GrupoID") ) );
+
+				$user = $this->session->userdata("sUsuario"); 
+
+
+			$grupo_tvEnt = array('GrupoID'=> $arrGet['GrupoID'] 
+				, 'DispositivoID'=> $arrGet['DispositivoID'] 
+				, 'Estado'=> 1
+				, 'UsuarioModificaID'=> $user["IDusuario"] // Usuairo Modifica.
+				, 'FechaModifica'=> date('Y-m-d H:i:s') 
+			);
+
+			if($this->mGrupoTv->validarGrupoTv($grupo_tvEnt)){
+
+				$id = $this->mGrupoTv->insertar( $grupo_tvEnt ); 
+			$grupo_tvEnt["GrupoTvID"] = $id; 
+
+			$dta =$this->mGrupoTv->obtenerListaGrupoTvPorGrupoID(); 
+
+				echo json_encode(array("IsOk"=> true, "data" => $dta, "Msg"=>"Success", "IsSession" => true ));
+				return 0; 
+			}
+
+			echo json_encode(array("IsOk"=> false, "IsSession" => true));
+
+		} else {
+			echo json_encode(array("IsOk"=> false, "IsSession" => true));
+			return false;
+		}
+	}
+
+
+// EL metodo para crearlo por post.
 
 	public function Crear(){
 	if (!$this->session->userdata("sUsuario")){
