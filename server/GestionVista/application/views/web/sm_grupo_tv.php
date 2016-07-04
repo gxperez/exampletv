@@ -46,6 +46,10 @@ font-weight: normal;
 color: #555555;
 }
 
+/**
+Las aventuras de un Heroe
+*/
+
    </style>
 
   <div class="row mt mb">
