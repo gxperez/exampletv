@@ -532,3 +532,8 @@ $config['client_pagination'] = array(
 	'RowsPerPages'	=> 13,
 	'maxVisiblePages' => 9	
 	);
+
+/***
+
+Ejemplo de Cambios
+*/
