@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta lang="utf8">
+	<title>datatransformer example</title>
+
+	<style type="text/css">
+		.container-chart {
+		   width: 45%;
+		  height: 500px;
+		  background-color: rgba(229, 229, 229, 0.31);
+		  box-shadow: rgba(0, 0, 0, 0.24) 0px 0px 3px 0px;
+		  margin: 13px;
+		  display: -webkit-inline-box;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="container-chart"  id="container-chart1"></div>
+		<div class="container-chart"  id="container-chart2"></div>
+		<div class="container-chart"  id="container-chart3"></div>
+		<div class="container-chart"  id="container-chart4"></div>
+		<div class="container-chart"  id="container-chart5"></div>
+		<div class="container-chart"  id="container-chart6"></div>
+	</div>
+
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="echarts-all.js"></script>
+	<script type="text/javascript" src="math.min.js"></script>
+	<script type="text/javascript" src="datatransformer.js"></script>
+	<script type="text/javascript" src="datatransformer_echart.js"></script>
+
+	<!--Testing-->
+	<script type="text/javascript">
+		var data = [
+				{"hectolitro":335,  "Latitud": 19.2500000000, "Longitud": -70.8090330000, "category":"Cerveza", "centro": "central"},
+				{"hectolitro":310, "Latitud": 19.2867530000, "Longitud": -70.80555330000,  "category":"Malta", "centro": "central"},
+				{"hectolitro":234,  "Latitud": 19.3427000000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "central"},
+				{"hectolitro":335, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Cerveza", "centro": "azua"},
+				{"hectolitro":310, "Latitud": 19.2316250000, "Longitud": -70.8090330000,  "category":"Malta", "centro": "azua"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8990330000, "category":"Refresco", "centro": "azua"},
+				{"hectolitro":335,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Cerveza", "centro": "mo"},
+				{"hectolitro":310, "Latitud": 19.3350970000, "Longitud": -70.8090330000,  "category":"Malta", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":310, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Malta", "centro": "mo"},
+				{"hectolitro":234, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Refresco", "centro": "mo"},
+				{"hectolitro":310, "Latitud": 19.2453450000, "Longitud": -70.8090330000,  "category":"Malta", "centro": "central"},
+				{"hectolitro":234,  "Latitud": 19.2423000000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "central"},
+				{"hectolitro":335,  "Latitud": 19.3052955000, "Longitud": -70.8090339900, "category":"Cerveza", "centro": "azua"},
+				{"hectolitro":310, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Malta", "centro": "azua"},
+				{"hectolitro":234, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Refresco", "centro": "azua"},
+				{"hectolitro":335, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Cerveza", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":310, "Latitud": 19.30122910000, "Longitud": -70.8090330000,  "category":"Malta", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "mo"},	
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "central"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "central"},
+				{"hectolitro":335,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Cerveza", "centro": "azua"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "azua"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "azua"},
+				{"hectolitro":335,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Cerveza", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "mo"},	
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "central"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "central"},
+				{"hectolitro":335,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Cerveza", "centro": "azua"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "azua"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "azua"},
+				{"hectolitro":335,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Cerveza", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "mo"},	
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "central"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "central"},
+				{"hectolitro":335,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Cerveza", "centro": "azua"},
+				{"hectolitro":310, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Malta", "centro": "azua"},
+				{"hectolitro":234, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Refresco", "centro": "azua"},
+				{"hectolitro":335,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Cerveza", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "mo"},	
+				{"hectolitro":310, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Malta", "centro": "central"},
+				{"hectolitro":234, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Refresco", "centro": "central"},
+				{"hectolitro":335,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Cerveza", "centro": "azua"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta ffff", "centro": "azua"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "azua"},
+				{"hectolitro":335,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Cerveza", "centro": "mo"},
+				{"hectolitro":310, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Malta", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":310,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Malta", "centro": "mo"},
+				{"hectolitro":234,  "Latitud": 19.3052910000, "Longitud": -70.8090330000, "category":"Refresco", "centro": "mo"},
+				{"hectolitro":335, "Latitud": 19.3052910000, "Longitud": -70.8090330000,  "category":"Cerveza", "centro": "central"}
+		];
+
+		var config =  {
+				"groups":["category","centro"],
+				"filters":{},
+				"measures":{"htTotal":" sum(_hectolitro_)","meta":"sum( _hectolitro_) * 2","neg":"sum( _hectolitro_)*5","neg2":"sum( _hectolitro_)*8"},
+				"visuals":[
+					{"visualType":"echart-gauge-advanced","visualName":"gauge","visualOptions":{"title":"real vs meta","subtitle":"hectolitro","group":"category","filter":"Cerveza","measure":"htTotal","measures":["meta","neg","neg2"],"theme":"macarons","colors":"#FF9800,#FF5722,#4CAF50","split":"10","horizontal":true,"elemId":"datatransformer-creator-visual-visualView-body-container"}},
+					{"visualType":"googlemap-basic","visualName":"map","visualOptions":{"title":"fsdaf","subtitle":"fdasf","latitude":"Latitud","longitude":"Longitud","markerTitle":"<h5> _hectolitro_ </h5>","markerShow":false,"iconTarget":"hectolitro","icon":"range=red,1,250|yellow,250,400","iconSize":"","latLng":"18.7058698,-70.9039233","zoom":"7","template":"RD-region"}},
+					{"visualType":"echart-gauge-basic","visualName":"gauge basic","visualOptions":{"title":"fdas","subtitle":"fsdaf","group":"category","filter":"Cerveza","measure":"htTotal","min":"","max":"","theme":"green","elemId":"datatransformer-creator-visual-visualView-body-container"}},
+					{"visualType":"echart-pie","visualName":"pie","visualOptions":{"title":"fdaf","subtitle":"asdfsaf","group":"category","measure":"htTotal","groupFormula":"sum","theme":"helianthus","elemId":"datatransformer-creator-visual-visualView-body-container"}},
+					{"visualType":"echart-bar","visualName":"bar","visualOptions":{"title":"fdas","subtitle":"fdasf","group":"category","measures":["meta","neg"],"groupFormula":"sum","theme":"roma","horizontal":false,"elemId":"datatransformer-creator-visual-visualView-body-container"}},
+					{"visualType":"echart-bar","visualName":"bar 2","visualOptions":{"title":"fdasf","subtitle":"dasff","group":"category","measures":["neg","neg2"],"groupFormula":"sum","theme":"infographic","horizontal":true,"elemId":"datatransformer-creator-visual-visualView-body-container"}},
+					{"visualType":"echart-line","visualName":"line","visualOptions":{"title":"fdsa","subtitle":"fsdaf","group":"category","measures":["neg","neg2"],"groupFormula":"sum","theme":"macarons2","shadow":false,"elemId":"datatransformer-creator-visual-visualView-body-container"}},
+					{"visualType":"echart-line","visualName":"line 2","visualOptions":{"title":"fsda","subtitle":"fdsaf","group":"category","measures":["meta","neg","neg2"],"groupFormula":"sum","theme":"sakura","shadow":true,"elemId":"datatransformer-creator-visual-visualView-body-container"}},
+					{"visualType":"echart-gauge-advanced","visualName":"gauge 2","visualOptions":{"title":"fdsa","subtitle":"fsaf","group":"category","filter":"Cerveza","measure":"htTotal","measures":["meta","neg","neg2"],"theme":"gray","colors":"","split":"10","horizontal":false,"horRadius":""}}]
+			};
+
+		// Return JSON object from request API 
+		var responseJSON = {
+			data: data,
+			config: config
+		};
+
+		/*
+		*  config.visuals have all type of visual that you can render with the data. It config has:
+		*	
+		*		0 - echart-gauge-advanced
+		*		1 - googlemap-basic
+		*		2 - echart-gauge-basic
+		*		3 - echart-bar
+		*		4 - echart-bar
+		*		5 - echart-line
+		*		6 - echart-gauge-advanced
+		*/
+
+		var dt = datatransformer.new( responseJSON.data, responseJSON.config ),
+			visuals = responseJSON.config.visuals;
+
+		dt.generateVisual(visuals[0].visualType,visuals[0].visualOptions,'container-chart1' ).render();
+		dt.generateVisual(visuals[1].visualType,visuals[1].visualOptions,'container-chart2' ).render();
+		dt.generateVisual(visuals[2].visualType,visuals[2].visualOptions,'container-chart3' ).render();
+		dt.generateVisual(visuals[3].visualType,visuals[3].visualOptions,'container-chart4' ).render();
+		dt.generateVisual(visuals[4].visualType,visuals[4].visualOptions,'container-chart5' ).render();
+		dt.generateVisual(visuals[5].visualType,visuals[5].visualOptions,'container-chart6' ).render();
+
+
+	</script>
+
+</body>
+</html>
