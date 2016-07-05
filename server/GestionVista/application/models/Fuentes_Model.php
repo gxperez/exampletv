@@ -104,9 +104,9 @@
 
 	public function cambiarEstado($obj, $estado){
 		$this->load->database();
-		$fuentesEnt = $this->ObtenerPorID($obj["fuentes"]);
+		$fuentesEnt = $this->ObtenerPorID($obj["FuenteID"]);
 
-		if($dispositivoEnt == null){ 
+		if($fuentesEnt == null){ 
 		        return false; 
         }        
         $update["FechaModifica"] = date("Y-m-d H:i:s");

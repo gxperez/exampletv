@@ -1,3 +1,4 @@
+var Glbquery ={}; 
 
 (function () {
     var $ang = appAng;
@@ -783,13 +784,114 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
         $scope.ListAll = function(){
         }
 
-        $scope.Guardar = function(){
+
+
+        $scope.temp_Prvw = ""; 
+
+        $scope.htmls = '<img src="../webApp/img/ppt.png" class="img-circle-op" width="65%" height="126">'; 
+
+        $scope.PreviewHTMLElement = function (itm){            
+
+            switch(parseInt(itm.FuenteTipo)){
+                case 1:
+                return ""; 
+                break;
+
+                case 4:
+
+                return '<img src="../webApp/img/excel.png" class="img-circle-op" width="65%" height="126">';
+                break; 
+
+                case 5:
+
+                if("ContenidoTexto" in itm){
+                    var jqText = $(itm.ContenidoTexto); 
+                       var listOfImg = jqText.find("img"); 
+
+                       if(listOfImg.length > 0 ){
+                            var txtImg = $(listOfImg[0]).html(); 
+                            var objTxtImg= $(txtImg);
+                            return '<img src="' + listOfImg[0].src +'" class="" width="65%" height="126">';
+                       }
+                }    
+
+                return '<img src="../webApp/img/ppt.png" class="img-circle-op" width="65%" height="126">';
+                break;
+
+
+
+            }
+
+
+
+        }; 
+
+        $scope.PreviewOfficeHTML = function(){
+
+            // Preliminar de conversion del Html y los Excel. 
+            $("#url_preview").html(""); 
+            url = $scope.vCrud.form.Url;
+            if($scope.vCrud.form.FuenteTipo == 3){
+                $.getJSON(url, function(res){
+                    var responseJSON = res; 
+                    var dt = datatransformer.new( responseJSON.data, responseJSON.config),
+                    visuals = responseJSON.config.visuals;
+                    dt.generateVisual(visuals[0].visualType,visuals[0].visualOptions,'url_preview' ).render();
+
+                });
+                // El BISChar
+                
+
+
+                return false; 
+                
+            }
+
+
+
+            $.get(url, function(rHtml){
+                // Espera Mensaje @!                
+                $scope.temp_Prvw = rHtml;
+
+            if($scope.vCrud.form.FuenteTipo == 5){
+
+                Glbquery = $($scope.temp_Prvw); 
+                var listImg = Glbquery.find("img");
+                var txtAppend = ""; 
+                
+                for (var it = 0; it < listImg.length; it++) {
+                     if(listImg.hasOwnProperty(it)){
+                            if(typeof listImg[it] !== "undefined" && ("src" in listImg[it]) ){
+                                    $("#url_preview").append('<img src="' + listImg[it].src +'" style = "height: 145px; margin: 8px;">');
+                            }                            
+                       //     var temp =  $(listImg[it]).attr("style", "height: 145px; margin: 8px;"); 
+                        //    $("#url_preview").append(temp);
+                        }
+                }
+
+                                    
+
+            }
+
+            if($scope.vCrud.form.FuenteTipo == 4) {
+                    $("#url_preview").html("<div id='excel-vw_vw' style='background-color: white;'>" + $scope.temp_Prvw + "</div>"); 
+            }               
+
+            }).fail(function() {
+                alert('Erro en el Servicio, no pudo encontrar el Documento'); 
+            });       
+                            
+        }
+
+        $scope.Guardar = function(){            
+
+        switch($scope.vCrud.modo) {
+            case 0: // Nuevo Crear
+
             if(!$scope.vCrud.validate()){
                 return false; 
             }
 
-        switch($scope.vCrud.modo) {
-            case 0: // Nuevo Crear
             $.post(base_url + 'Fuentes/Crear', $scope.vCrud.getForm(), function(res){
                     // Ajustes del Json. Respuesta del Formulario.
                     $appSession.IsSession(res);                                      
@@ -2965,8 +3067,7 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                     $appSession.IsSession(dt);          
 
                     if(dt.IsOk){                                                      
-                        $scope.listaGrupoTv = dt.data; 
-                        alert("Aqui Volvio Si");  
+                        $scope.listaGrupoTv = dt.data;                          
                     }                                  
                     });
         };
@@ -3091,7 +3192,7 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                 } else {
                     // TODO: @MensajeEliminacion;
                     // Notifiacion de mensaje de Error.
-                    alert(res.Msg);
+                    // alert(res.Msg);
                 }
 
                 if('csrf' in res){
@@ -3124,7 +3225,7 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                     $scope.vCrud.reset();                    
                 } else {
                     // Reasignacion de Tokens.
-                    alert(res.Msg);                     
+                  //  alert(res.Msg);                     
                 }
                 if('csrf' in res){
                         $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);

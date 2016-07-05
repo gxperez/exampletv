@@ -70,17 +70,10 @@ class Fuentes extends MY_Controller {
 		// Auto Validacion del Formulario.
 
 	$this->validation->set_rules("objeto[FuenteTipo]", "FuenteTipo", "required|integer"); 
-$this->validation->set_rules("objeto[FuenteTipoID]", "FuenteTipoID", "required|integer"); 
-$this->validation->set_rules("objeto[RepresentacionTipo]", "RepresentacionTipo", "required|integer"); 
-$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "max_length[45]"); 
-$this->validation->set_rules("objeto[Url]", "Url", "required|max_length[500]"); 
-$this->validation->set_rules("objeto[GuidRelacionalJson]", "GuidRelacionalJson", "required|max_length[50]"); 
-$this->validation->set_rules("objeto[ContentByID]", "ContentByID", "required|max_length[100]"); 
-$this->validation->set_rules("objeto[ContenidoTexto]", "ContenidoTexto", "required"); 
-$this->validation->set_rules("objeto[EsManual]", "EsManual", "required"); 
-$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
-$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "required|integer"); 
-$this->validation->set_rules("objeto[FechaModifica]", "FechaModifica", "required"); 
+	$this->validation->set_rules("objeto[RepresentacionTipo]", "RepresentacionTipo", "required|integer"); 
+	$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "max_length[45]"); 		
+	$this->validation->set_rules("objeto[EsManual]", "EsManual", "required"); 
+	$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer");
 
 
 	if ($this->validation->run() == FALSE)
@@ -95,22 +88,50 @@ $this->validation->set_rules("objeto[FechaModifica]", "FechaModifica", "required
     if($this->input->post("objeto")){
 		$fuentesObj = $this->security->xss_clean($this->input->post("objeto"));
 
-		$fuentesEnt = array('FuenteTipo'=> $fuentesObj['FuenteTipo'] 
-, 'FuenteTipoID'=> $fuentesObj['FuenteTipoID'] 
-, 'RepresentacionTipo'=> $fuentesObj['RepresentacionTipo'] 
-, 'Descripcion'=> $fuentesObj['Descripcion'] 
-, 'Url'=> $fuentesObj['Url'] 
-, 'GuidRelacionalJson'=> $fuentesObj['GuidRelacionalJson'] 
-, 'ContentByID'=> $fuentesObj['ContentByID'] 
-, 'ContenidoTexto'=> $fuentesObj['ContenidoTexto'] 
-, 'EsManual'=> $fuentesObj['EsManual'] 
-, 'Estado'=> $fuentesObj['Estado'] 
-, 'UsuarioModificaID'=> $fuentesObj['UsuarioModificaID'] 
-, 'FechaModifica'=> date('Y-m-d H:i:s') 
-);
+		$user = $this->session->userdata("sUsuario"); 
+
+		// Condicionantes por Tipo de Fuente
+		
+		$fuentesEnt = array('FuenteTipo'=> $fuentesObj['FuenteTipo'], 
+			'RepresentacionTipo'=> $fuentesObj['RepresentacionTipo'] ,
+			'Descripcion'=> $fuentesObj['Descripcion'],
+			'EsManual'=> $fuentesObj['EsManual'],
+			'Estado'=> $fuentesObj['Estado'], 
+			'UsuarioModificaID'=> $user["IDusuario"],
+			'FechaModifica'=> date('Y-m-d H:i:s')  ); 
+
+		switch ($fuentesObj['FuenteTipo']) {
+			case '1': // Imagen
+			$fuentesEnt["FuenteTipoID"] = $fuentesObj['FuenteTipoID'];
+				break;
+			case '2': // Texto
+
+			$fuentesEnt['ContenidoTexto']= $fuentesObj['ContenidoTexto']; 
+				break;
+
+			case '3':  // BisChart
+			$fuentesEnt['Url']= $fuentesObj['Url']; 
+                            
+				break;
+
+			case '4':  // OfficeViewerExcel.                            
+			case '5':  // OfficeViewerPowerPoint.                            
+
+			$fuentesEnt['Url'] = $fuentesObj['Url']; 
+			$fuentesEnt['ContentByID'] = isset($fuentesObj['ContentByID'])? $fuentesObj['ContentByID']: "";  
+			$fuentesEnt['ContenidoTexto'] = $this->extraerLink($fuentesEnt['Url']); 
+			
+
+				break;			
+			default:
+
+			$fuentesEnt['Url']= $fuentesObj['Url'];
+				# code...
+				break;
+		}	
 
 			$id = $this->mFuentes->insertar( $fuentesEnt ); 
-			$fuentesEnt["FuenteID"] = $id; 
+			$fuentesEnt["FuenteID"] = $id;
 
 			echo json_encode(array("data" => $fuentesEnt, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
         "name" => $this->security->get_csrf_token_name(),
@@ -123,24 +144,46 @@ $this->validation->set_rules("objeto[FechaModifica]", "FechaModifica", "required
 		}
 	}
 
+	public function revisar(){
+
+		$urk = "http://cnddosdobis:8090/WebServices/api.asmx/ObtenerDocumentoHTML?docCode=B41CBC74-D623-495D-98C5-F67C8B48D98C"; 
+
+		$fuentesEnt = array();
+		$fuentesEnt['ContenidoTexto'] = $this->extraerLink($urk); 
+		$leng = strlen( $fuentesEnt['ContenidoTexto']);
+
+		echo "<h2> Mostraremos las Imagenes. $leng </h2>"; 
+		
+
+	}
+
+
+public function extraerLink($url){
+
+	$contents = file_get_contents($url); 
+	if($contents === false){
+		return ""; 		
+	}
+
+	$contents = utf8_encode($contents); 
+	return $contents; 
+
+
+}
+
 public function Actualizar(){
 	if (!$this->session->userdata("sUsuario")){
 			echo json_encode(array("IsSession" => false)); 
 			return false; 
 		}
 		$this->load->model("Fuentes_Model", "mFuentes");
-	$this->validation->set_rules("objeto[FuenteTipo]", "FuenteTipo", "required|integer"); 
-$this->validation->set_rules("objeto[FuenteTipoID]", "FuenteTipoID", "required|integer"); 
-$this->validation->set_rules("objeto[RepresentacionTipo]", "RepresentacionTipo", "required|integer"); 
-$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "max_length[45]"); 
-$this->validation->set_rules("objeto[Url]", "Url", "required|max_length[500]"); 
-$this->validation->set_rules("objeto[GuidRelacionalJson]", "GuidRelacionalJson", "required|max_length[50]"); 
-$this->validation->set_rules("objeto[ContentByID]", "ContentByID", "required|max_length[100]"); 
-$this->validation->set_rules("objeto[ContenidoTexto]", "ContenidoTexto", "required"); 
-$this->validation->set_rules("objeto[EsManual]", "EsManual", "required"); 
-$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
-$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "required|integer"); 
-$this->validation->set_rules("objeto[FechaModifica]", "FechaModifica", "required"); 
+
+$this->validation->set_rules("objeto[FuenteTipo]", "FuenteTipo", "required|integer"); 
+	$this->validation->set_rules("objeto[RepresentacionTipo]", "RepresentacionTipo", "required|integer"); 
+	$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "max_length[45]"); 		
+	$this->validation->set_rules("objeto[EsManual]", "EsManual", "required"); 
+	$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer");
+
 
 	if ($this->validation->run() == FALSE)
          {
@@ -153,7 +196,21 @@ $this->validation->set_rules("objeto[FechaModifica]", "FechaModifica", "required
 
      if($this->input->post("objeto")){
 		$fuentesObj = $this->security->xss_clean($this->input->post("objeto"));
-		$fuentesEnt = $this->mFuentes->actualizar( $fuentesObj );
+
+		switch ($fuentesObj['FuenteTipo']) {
+			case '1': // Imagen
+			$fuentesObj["FuenteTipoID"] = $fuentesObj['FuenteTipoID'];
+			$fuentesObj['ContenidoTexto'] = ""; 
+				break;
+
+			case '4':  // OfficeViewerExcel.                            
+			case '5':  // OfficeViewerPowerPoint.                            			
+			$fuentesObj['ContentByID'] = $fuentesObj['ContentByID']? $fuentesObj['ContentByID']: "";  
+			$fuentesObj['ContenidoTexto'] = $this->extraerLink($fuentesObj['Url']); 	
+			break;	
+		}
+
+		$fuentesEnt = $this->mFuentes->actualizar($fuentesObj);
 
 				if( ! $fuentesEnt ){
 				echo json_encode(array("IsOk"=> false, "Msg"=> "Error DB al actualizar". print_r($fuentesEnt, true), "csrf" =>array(
