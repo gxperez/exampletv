@@ -67,76 +67,83 @@
 			 <form id="vform" class="form-horizontal style-form" method="get" data-toggle="validator"  >
           	<!-- BASIC FORM ELELEMNTS -->
           	<div class="row mt">
-              <div id="header-crudTools" class="crudTools col-md-12">     
-                  <div>
-                    <div class="btn-group">                      
-                      <button id="btnGuardar" type="submit" class="btn btn-default" ng-click="Guardar()" ><span class="fa fa-floppy-o"> </span> Guardar</button>
-                      <button type="reset" class="btn btn-default" ng-click="vCrud.reset();"> <span class="fa fa-arrow-left" > </span> Cancelar</button>
-                      <button type="reset" class="btn btn-default" ng-click="vCrud.reset()"> <span class="fa fa-times"> </span> Salir</button>
-                  </div>
-                  </div>
-              </div>              
+            
 
 
           		<div class="col-lg-12">
                   <div class="form-panel" ng-form="vCrud.$Form.Main" >
                   	  <h4 class="mb"><i class="fa fa-angle-right"></i> {{Pantalla.nombre}}</h4>
 
-                  	  <div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">Nombre</label>
-			<div class="col-sm-10">
-            	<input type="text" ng-model="vCrud.form.Nombre" class="form-control" required>
+
+  <div id="rootwizard" class="tabbable tabs-left">
+  <ul>
+      <li><a href="#tab1" data-toggle="tab">Encabezado Contenido</a></li>
+    <li><a href="#tab2" data-toggle="tab">Secciones Template</a></li>
+    <li><a href="#tab3" data-toggle="tab">Seccion Fuentes</a></li>    
+  </ul>
+  <div class="tab-content">
+
+     <ul class="pager wizard">
+      <li class="previous first" style="display:none;"><a href="#">First</a></li>
+      <li class="previous"><a href="#">Previous</a></li>
+      <li class="next last" style="display:none;"><a href="#">Last</a></li>
+        <li class="next"><a href="#">Next</a></li>
+    </ul>
+
+      <div class="tab-pane" id="tab1">
+
+         <div class="form-group">
+      <label class="col-sm-2 col-sm-2 control-label">Nombre</label>
+      <div class="col-sm-10">
+              <input type="text" ng-model="vCrud.form.Nombre" class="form-control" required>
            </div>
 </div>
 <div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">Descripcion</label>
-			<div class="col-sm-10">
-            	<input type="text" ng-model="vCrud.form.Descripcion" class="form-control" required>
+      <label class="col-sm-2 col-sm-2 control-label">Descripcion</label>
+      <div class="col-sm-10">
+              <input type="text" ng-model="vCrud.form.Descripcion" class="form-control" required>
            </div>
 </div>
+
+
 <div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">SliderMaestroID</label>
-			<div class="col-sm-10">
-            	<input type="int" ng-model="vCrud.form.SliderMaestroID" class="form-control" required>
-           </div>
-</div>
-<div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">Duracion</label>
-			<div class="col-sm-10">
-            	<input type="text" ng-model="vCrud.form.Duracion" class="form-control" required>
-           </div>
-</div>
-<div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">Estado</label>
-			<div class="col-sm-10">
+      <label class="col-sm-2 col-sm-2 control-label">Estado</label>
+      <div class="col-sm-10">
 
          <?php  Text::renderOptions('<select ng-model="vCrud.form.Estado" class="form-control" required>', $listEstadoForm); ?>                                    
                   
            </div>
 </div>
-<div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">Guid</label>
-			<div class="col-sm-10">
-            	<input type="text" ng-model="vCrud.form.Guid" class="form-control" required>
-           </div>
+
+       
+      </div>
+      <div class="tab-pane" id="tab2">
+        2
+      </div>
+    <div class="tab-pane" id="tab3">
+      3
+      </div>   
+    
+   
+  </div>  
 </div>
-<div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">UsuarioModificaID</label>
-			<div class="col-sm-10">
-            	<input type="int" ng-model="vCrud.form.UsuarioModificaID" class="form-control" required>
-           </div>
-</div>
-<div class="form-group">
-			<label class="col-sm-2 col-sm-2 control-label">FechaModifica</label>
-			<div class="col-sm-10">
-            	<input type="text" ng-model="vCrud.form.FechaModifica" class="form-control" required>
-           </div>
-</div>
-                     
-                        
+
+
+
+               
                   </div>
           		</div><!-- col-lg-12-->      	
           	</div><!-- /row -->         	
           	  </form>
 			</div>
     </div>
+
+
+<script type="text/javascript" src="<?php echo base_url(). "webApp/"; ?>js/jquery.bootstrap.wizard.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+    $('#rootwizard').bootstrapWizard({'tabClass': 'nav nav-tabs'});
+});
+    
+    </script>
