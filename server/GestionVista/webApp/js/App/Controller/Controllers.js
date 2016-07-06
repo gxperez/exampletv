@@ -529,6 +529,21 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
             posicion: 1, 
             setPosicion: function(id){
                 $scope.wizard.posicion = id; 
+            }, 
+
+            mostrarEsquema: function(){
+
+                for(var i in vw_listEsquemaTipo){
+
+                    if(vw_listEsquemaTipo.hasOwnProperty(i)){
+                        if(parseInt(vw_listEsquemaTipo[i]) == parseInt($scope.wizard.form.EsquemaTipo)){
+                            return '<img height="138" src="../webApp/img/esqm_' + i.toString().trim() + '.png" style="margin-left: 82px; margin-top: 10px;" >';
+                        }
+                    }
+                }
+
+                return ""; 
+
             }
         }; 
 

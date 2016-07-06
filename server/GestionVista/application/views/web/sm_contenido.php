@@ -219,12 +219,18 @@ background-size: cover;
       <label class="col-sm-2 col-sm-2 control-label">EsquemaTipo</label>
       <div class="col-sm-10">
               <?php  Text::renderOptions('<select ng-model="wizard.form.EsquemaTipo" class="form-control" required>', $listEsquemaTipo); ?>
-           </div>
+<br>
+              <div id="muestraEquema" class="centered" ng-bind-html="wizard.mostrarEsquema()">
+
+              </div>
+      </div>
 </div>
+
 <div class="form-group">
       <label class="col-sm-2 col-sm-2 control-label">MostrarHeader</label>
-      <div class="col-sm-10">
-              <input type="text" ng-model="wizard.form.MostrarHeader" class="form-control" required>
+      <div class="col-sm-10"> 
+      <?php  Text::renderOptions('<select ng-model="wizard.form.MostrarHeader" class="form-control" required>', array('Mostrar' => 1, 'Ocultar' => 0 ) ); ?>
+              
            </div>
 </div>
 <div class="form-group">
@@ -285,6 +291,8 @@ background-size: cover;
 
 });
 
+
+var vw_listEsquemaTipo = <?php echo json_encode($listEsquemaTipo);  ?>;
 
     
     </script>
