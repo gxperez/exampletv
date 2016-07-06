@@ -8,6 +8,10 @@ class Contenido extends MY_Controller {
 	 */
 	public function index()
 	{	
+
+	
+	echo $this->generateGUID(); 
+
 	}
 	
 	public function sm()
@@ -24,6 +28,11 @@ class Contenido extends MY_Controller {
 
 			$this->load->model('EmunsViews_model', 'mEnum');        	
         	$data['listEstadoForm'] = $this->mEnum->getEnumsEstado();
+
+        	$data['listEsquemaTipo'] = $this->mEnum->getEnum("esquematipo"); 
+        	$data['listTransicionTipoIni'] = $this->mEnum->getEnum("transiciontipo");
+        	$data['listTransicionTipoFin'] = $data['listTransicionTipoIni'];
+
         	
 		// Carga de planilla web en general.
 		$this->load->view("web/sm_contenido", $data); 
@@ -60,44 +69,43 @@ class Contenido extends MY_Controller {
 	}
 
 	public function Crear(){
-	if (!$this->session->userdata("sUsuario")){
+		if (!$this->session->userdata("sUsuario")){
 			echo json_encode(array("IsSession" => false)); 
 			return false; 
 		}
 		$this->load->model("Contenido_Model", "mContenido");
+		$this->load->model("SliderMaestro_Model", "mSlider");
+		
 		// Auto Validacion del Formulario.
 
-	$this->validation->set_rules("objeto[Nombre]", "Nombre", "required|max_length[100]"); 
-$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "required|max_length[100]"); 
-$this->validation->set_rules("objeto[SliderMaestroID]", "SliderMaestroID", "required|integer"); 
-$this->validation->set_rules("objeto[Duracion]", "Duracion", "required"); 
-$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
-$this->validation->set_rules("objeto[Guid]", "Guid", "required|max_length[50]"); 
-$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "required|integer"); 
-$this->validation->set_rules("objeto[FechaModifica]", "FechaModifica", "required"); 
+		$this->validation->set_rules("objeto[Nombre]", "Nombre", "required|max_length[100]"); 
+		$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "required|max_length[100]"); 
+		$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
 
-
-	if ($this->validation->run() == FALSE)
+		if ($this->validation->run() == FALSE)
          {
-            echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), "IsSession" => true, "csrf" =>array(
-        "name" => $this->security->get_csrf_token_name(),
-        "hash" => $this->security->get_csrf_hash()
-        ) )  );
-           	return false;
-    }
+	            echo json_encode(array("IsOk"=> false, "Msg"=> validation_errors(), "IsSession" => true, "csrf" =>array(
+	        "name" => $this->security->get_csrf_token_name(),
+	        "hash" => $this->security->get_csrf_hash()
+	        ) )  );
+           		return false;
+    	}
 
     if($this->input->post("objeto")){
 		$contenidoObj = $this->security->xss_clean($this->input->post("objeto"));
 
+		$sliderObj = $this->mSlider->autoInsertar(); 
 		$contenidoEnt = array('Nombre'=> $contenidoObj['Nombre'] 
-, 'Descripcion'=> $contenidoObj['Descripcion'] 
-, 'SliderMaestroID'=> $contenidoObj['SliderMaestroID'] 
-, 'Duracion'=> $contenidoObj['Duracion'] 
-, 'Estado'=> $contenidoObj['Estado'] 
-, 'Guid'=> $contenidoObj['Guid'] 
-, 'UsuarioModificaID'=> $contenidoObj['UsuarioModificaID'] 
-, 'FechaModifica'=> date('Y-m-d H:i:s') 
-);
+		, 'Descripcion'=> $contenidoObj['Descripcion'] 
+		, 'SliderMaestroID'=> $sliderObj->SliderMaestroID
+		, 'Duracion'=> "00:00:00" 
+		, 'Estado'=> 1
+		, 'Guid'=> $this->generateGUID()
+		, 'UsuarioModificaID'=> $this->session->userdata("sUsuario")["IDusuario"] 
+		, 'FechaModifica'=> date('Y-m-d H:i:s') 
+		);
+
+		// Si se puede 
 
 			$id = $this->mContenido->insertar( $contenidoEnt ); 
 			$contenidoEnt["ContenidoID"] = $id; 
@@ -107,26 +115,24 @@ $this->validation->set_rules("objeto[FechaModifica]", "FechaModifica", "required
         "hash" => $this->security->get_csrf_hash()
         ) ));
 
-		} else {
+	} else {
 			echo json_encode(array("IsOk"=> false, "IsSession" => true));
 			return false;
-		}
 	}
+}
+
+
 
 public function Actualizar(){
 	if (!$this->session->userdata("sUsuario")){
 			echo json_encode(array("IsSession" => false)); 
 			return false; 
 		}
+
 		$this->load->model("Contenido_Model", "mContenido");
-	$this->validation->set_rules("objeto[Nombre]", "Nombre", "required|max_length[100]"); 
-$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "required|max_length[100]"); 
-$this->validation->set_rules("objeto[SliderMaestroID]", "SliderMaestroID", "required|integer"); 
-$this->validation->set_rules("objeto[Duracion]", "Duracion", "required"); 
-$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
-$this->validation->set_rules("objeto[Guid]", "Guid", "required|max_length[50]"); 
-$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "required|integer"); 
-$this->validation->set_rules("objeto[FechaModifica]", "FechaModifica", "required"); 
+		$this->validation->set_rules("objeto[Nombre]", "Nombre", "required|max_length[100]"); 
+		$this->validation->set_rules("objeto[Descripcion]", "Descripcion", "required|max_length[100]"); 
+		$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer");  
 
 	if ($this->validation->run() == FALSE)
          {

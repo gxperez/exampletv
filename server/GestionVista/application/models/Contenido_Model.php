@@ -90,6 +90,7 @@
 		$this->load->database();
 
 		$ContenidoEnt = $this->ObtenerPorID($obj["ContenidoID"]);
+
         	if($ContenidoEnt == null){ 
 		        return false; 
         	}
@@ -101,6 +102,7 @@
 	        		}           			
         		}    		
         	}
+        	
         	$update["FechaModifica"] = date("Y-m-d H:i:s");
         	$this->db->where("ContenidoID", $obj["ContenidoID"]);
 			$rs = $this->db->update("contenido", $update);

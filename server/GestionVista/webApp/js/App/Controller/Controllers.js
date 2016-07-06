@@ -523,6 +523,97 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
         $scope.vCrud = appCrud;
         $scope.vCrud.setForm(form); 
 
+        $scope.wizard = {
+            form: {}, 
+            validado: false,
+            posicion: 1, 
+            setPosicion: function(id){
+                $scope.wizard.posicion = id; 
+            }
+        }; 
+
+
+
+
+$scope.AgregarTemplate = function(){
+
+    alert("Buscar un Formulario tipo string. ");     
+
+}
+
+        // Primer formulario
+        $scope.nextForm= function(){
+
+            if($scope.wizard.posicion == 1){
+                    switch($scope.vCrud.modo) {
+                        case 0:  // Esto es Guardar.
+                        if(!$scope.vCrud.validate()){
+                            $scope.wizard.validado = false;
+                            return false; 
+                        }
+                        $scope.wizard.validado = true;
+                        // Guardar
+                        $scope.guardarContenido(); 
+                        break;
+                        case 1:  // Esto es Modificacion.
+
+                         $scope.wizard.validado = true;                        
+                        $scope.actualizarContenido(); 
+                        break;
+                    }
+            }
+
+            
+        };
+        // 
+
+$scope.actualizarContenido = function(){    
+    var sendForm = $scope.vCrud.getForm();
+
+      $.post(base_url + 'Contenido/Actualizar', sendForm, function(res){
+                $appSession.IsSession(res);                
+                if (res.IsOk){
+                    $scope.listaContenido[$scope.vCrud.selectedIndex]= res.data; 
+                    $scope.vCrud.setForm(res.data);                   
+                    $scope.$apply();                                       
+                } else {                    
+                    alert(res.Msg);                     
+                }
+
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+
+            }, 'json').fail(function() {
+                alert('Erro en el Servicio 500'); 
+            });      
+};
+
+
+$scope.guardarContenido = function(){    
+    var sendForm = $scope.vCrud.getForm();
+    $.post(base_url + 'Contenido/Crear', sendForm, function(res){        
+                    // Ajustes del Json. Respuesta del Formulario.
+                    $appSession.IsSession(res);                    
+                if (res.IsOk){
+
+                    $scope.listaContenido.push(res.data);                    
+                    $scope.vCrud.setForm(res.data);
+                    $scope.vCrud.modo = 1;                     
+                    $scope.$apply();
+                            
+                } else {
+                    // Reasignacion de Tokens.
+                    alert(res.Msg);                     
+                }
+                if('csrf' in res){
+                        $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                }
+            }, 'json');
+
+}; 
+
+
         $scope.vCrud.initt({url: base_url + 'Contenido/Obtener', 
             'callback': function(res, num){
                 $scope.ObtenerPaginacionRes(res, num);     
@@ -623,12 +714,14 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
         }
 
         $scope.Guardar = function(){
+
             if(!$scope.vCrud.validate()){
                 return false; 
             }
 
         switch($scope.vCrud.modo) {
             case 0: // Nuevo Crear
+
             $.post(base_url + 'Contenido/Crear', $scope.vCrud.getForm(), function(res){
                     // Ajustes del Json. Respuesta del Formulario.
                     $appSession.IsSession(res);                                      

@@ -11,8 +11,7 @@
  
 	public function obtenerSliderMaestro(){
 		$this->load->database();
-		$query = $this->db->get(slider_maestro);			
-			
+		$query = $this->db->get("slider_maestro");	
 		$listaSliderMaestro = $query->result(); 
 		return $listaSliderMaestro;
  	}
@@ -48,7 +47,7 @@
 	
 	public function obtenerSliderMaestroJson(){
 		$this->load->database();
-		$query = $this->db->get(slider_maestro);	
+		$query = $this->db->get("slider_maestro");	
 			
 		$usuario = array();
 		foreach ($query->result() as $row)
@@ -77,6 +76,21 @@
 		$this->db->insert("slider_maestro", $obj);
 		return $this->db->insert_id();
 	}
+
+
+	public function autoInsertar(){
+		$obj = array('Duracion'=> "00:00:00" 
+			, 'Estado'=> 1 
+			, 'UsuarioModificaID'=> 1
+			, 'FechaModifica'=> date('Y-m-d H:i:s') 
+);
+
+		$this->load->database();
+		$listaCampos = $this->db->field_data("slider_maestro");
+		$this->db->insert("slider_maestro", $obj);
+		return $this->ObtenerPorID($this->db->insert_id());		
+	}
+
 
 	public function actualizar($obj){
 		$this->load->database();
