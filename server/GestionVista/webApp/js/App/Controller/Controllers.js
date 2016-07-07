@@ -518,17 +518,26 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
         var form = {            
         };
         $scope.listaContenido =[]; 
+        $scope.listaTemplatePages = [];
         $scope.pantallaNombre = 'Registro Contenido';
         $scope.buscarLista = '';
         $scope.vCrud = appCrud;
         $scope.vCrud.setForm(form); 
 
+        $scope.generarBosetoEsquema= function(){
+
+
+
+            return "Genrado"; 
+        }; 
+
         $scope.wizard = {
-            form: {}, 
+            form: {},
+            $Fom: {},  
             modo: 0,
             validado: false,
             posicion: 1, 
-
+            selectedIndex: 0,             
             reset: function(){
 
                 for(var i in $scope.wizard.form){      
@@ -538,10 +547,60 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
                 }
             }, 
 
-            setPosicion: function(id){
-                $scope.wizard.posicion = id; 
+            CargarSeccionesFuentes: function(objeto){
+                console.log(objeto); 
+
+
+                
+
+
+
 
             }, 
+
+            setPosicion: function(id){
+                $scope.wizard.posicion = id;
+
+                if(id > 1){
+                    $("#btn-next").hide();     
+                } else {
+                    $("#btn-next").show();                         
+                }
+            }, 
+
+            validar: function(){
+                // Validar.
+                    for (var form in $scope.wizard.$Form) {
+                if ($scope.wizard.$Form[form].hasOwnProperty("$invalid") && $scope.wizard.$Form[form].$invalid) {
+
+                       $.blockUI({ 
+            message: $('<div style="size: font-size: 20px;"> <span>Campos incompletos </span>  <p>hay campos obligatorios que debes completar </p></div>'),
+            fadeIn: 700, 
+            fadeOut: 700, 
+            timeout: 2000, 
+            showOverlay: false, 
+            centerY: false, 
+            css: { 
+                width: '350px', 
+                top: '60px', 
+                left: '', 
+                right: '10px', 
+                border: 'none', 
+                padding: '5px', 
+                backgroundColor: '#000', 
+                '-webkit-border-radius': '10px', 
+                '-moz-border-radius': '10px', 
+                opacity: .6, 
+                color: '#fff' 
+            } 
+        });                     
+                 //$sysUtil.ShowMessage($smt.info, "Favor de completar los registros correctamente.");
+                return false;
+            }
+        }
+        return true; 
+                //
+            },
 
             mostrarEsquema: function(){
 
@@ -556,40 +615,125 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
                 return ""; 
             },
 
-            llenar: function(obj, index){   
+            llenar: function(obj, index){
                      
                 var copiObj = JSON.parse(JSON.stringify(obj));   
-                $scope.vCrud.setForm(copiObj);            
-                $scope.vCrud.selectedIndex = index;             
-
+                $scope.wizard.form = copiObj; 
+                $scope.wizard.selectedIndex = index; 
+                $scope.wizard.modo = 1;                
             },
+
+            ObtenerEsquemaPorID: function(obj, indx){
+                                
+                if(obj.Posicion == null){
+                    obj.Posicion = (parseInt(indx) + 1); 
+                }
+
+                for(var i in vw_listEsquemaTipo){
+                    if(vw_listEsquemaTipo.hasOwnProperty(i)){
+                        if(parseInt(vw_listEsquemaTipo[i]) == parseInt(obj.EsquemaTipo.toString() )){
+                            return i.toString().trim();
+                        }
+                    }
+                } 
+
+                return "N/A"; 
+            }, 
 
             guardarTemplatePages: function(){
 
-
                 if($scope.wizard.modo == 0){
-                    $scope.wizard.reset(); 
                     // Crear.
+                    $scope.wizard.form.SliderMaestroID = $scope.vCrud.form.SliderMaestroID; 
+                    $scope.wizard.form.Posicion = (parseInt($scope.listaTemplatePages.length) + 1); 
+                    var sendO = $scope.vCrud.formatObjForm($scope.wizard.form);
+
+                    console.log(sendO); 
+                    if(!$scope.wizard.validar()){
+                        return false; 
+                    }
+
+
+                    $.post(base_url + 'TemplatePages/Crear', sendO, function(res){                
+                        $appSession.IsSession(res);
+
+                        if (res.IsOk){
+                            $scope.listaTemplatePages.push(res.data);                                        
+                            $scope.$apply();       
+                            // Aplicando los Ajustes.
+                            $('#myModal').modal('hide');
+                            $scope.wizard.reset(); 
+
+                        } else {                    
+                            alert(res.Msg);                     
+                        }
+
+                        if('csrf' in res){
+                                $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                        }
+
+                    }, 'json').fail(function() {
+                        alert('Erro en el Servicio 500'); 
+                    });   
 
                 } else {
                     // Modificar.
 
-                }
+                    $scope.wizard.form.SliderMaestroID = $scope.vCrud.form.SliderMaestroID;  
 
+                    $scope.wizard.form.Posicion = (parseInt($scope.wizard.selectedIndex) + 1); 
+
+                    var sendO = $scope.vCrud.formatObjForm($scope.wizard.form);
+
+
+
+                       $.post(base_url + 'TemplatePages/Actualizar', sendO, function(res){                
+                        $appSession.IsSession(res);
+
+                        if (res.IsOk){
+                            $scope.listaTemplatePages[$scope.wizard.selectedIndex] = res.data;                                        
+                            $scope.$apply();       
+                            // Aplicando los Ajustes.
+                            $('#myModal').modal('hide');
+                        } else {                    
+                            alert(res.Msg);                     
+                        }
+
+                        if('csrf' in res){
+                                $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                        }
+
+                    }, 'json').fail(function() {
+                        alert('Erro en el Servicio 500'); 
+                    });   
+
+
+
+                }
             }
         }; 
 
 
 
 
-$scope.AgregarTemplate = function(){
-    // 
+$scope.AgregarTemplate = function(){    // 
      $scope.wizard.modo = 0;
-
-    // alert("Buscar un Formulario tipo string. ");     
-
+     // Reset.
+     $scope.wizard.reset(); 
 }
 
+
+$scope.anteriorCursor = function(){
+
+    if ($scope.wizard.posicion > 1){
+            $scope.wizard.posicion--;   
+
+    }    
+
+    if($scope.wizard.posicion < 2){
+         $("#btn-next").show();
+    }
+}; 
         // Primer formulario
         $scope.nextForm= function(){
 
@@ -610,6 +754,8 @@ $scope.AgregarTemplate = function(){
                         $scope.actualizarContenido(); 
                         break;
                     }
+                    $scope.wizard.posicion = 2; 
+                    $("#btn-next").hide();
             }
 
             
@@ -622,7 +768,8 @@ $scope.actualizarContenido = function(){
       $.post(base_url + 'Contenido/Actualizar', sendForm, function(res){
                 $appSession.IsSession(res);                
                 if (res.IsOk){
-                    $scope.listaContenido[$scope.vCrud.selectedIndex]= res.data; 
+
+                    $scope.listaContenido[$scope.vCrud.selectedIndex]=  JSON.parse(JSON.stringify($scope.vCrud.form)); // res.data; 
                     $scope.vCrud.setForm(res.data);                   
                     $scope.$apply();                                       
                 } else {                    
@@ -650,6 +797,9 @@ $scope.guardarContenido = function(){
                     $scope.vCrud.setForm(res.data);
                     $scope.vCrud.modo = 1;                     
                     $scope.$apply();
+
+                    // YO vivo por Lei.
+
                             
                 } else {
                     // Reasignacion de Tokens.
@@ -727,9 +877,27 @@ $scope.guardarContenido = function(){
         }; 
 
         $scope.Llenar = function(obj, index){            
-            var copiObj = JSON.parse(JSON.stringify(obj));   
+            var copiObj = JSON.parse(JSON.stringify(obj)); 
+
+            console.log(copiObj); 
+
             $scope.vCrud.setForm(copiObj);            
-            $scope.vCrud.selectedIndex = index;             
+            $scope.vCrud.selectedIndex = index;  
+
+            // LLenado de las conspiraciones.
+            // PAra los templates. 
+            $scope.listaTemplatePages = []; 
+
+            http(base_url + 'TemplatePages/ObtenerPorIDSliderMaestro', {id: copiObj.SliderMaestroID}, function (dt) { 
+                    $appSession.IsSession(dt); 
+                    $scope.listaTemplatePages = dt.data; 
+                    if(dt.data == null){
+                        $scope.listaTemplatePages = []; 
+                    }
+             });  
+            
+
+
         }; 
 
         $scope.Eliminar = function(item, indice){            
@@ -795,7 +963,11 @@ $scope.guardarContenido = function(){
                 $appSession.IsSession(res); 
 
                 if (res.IsOk){
-                    $scope.listaContenido[$scope.vCrud.selectedIndex]= res.data;
+                    console
+                    $scope.listaContenido[$scope.vCrud.selectedIndex]= JSON.parse(JSON.stringify($scope.vCrud.form));
+
+                    console.log(res.data);
+
                     $scope.$apply();
                     $scope.vCrud.reset();                    
                 } else {                    

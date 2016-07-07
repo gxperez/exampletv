@@ -162,6 +162,7 @@
 
 
         validate: function(){
+
             for (var form in Crud.$Form) {
                 if (Crud.$Form[form].hasOwnProperty("$invalid") && Crud.$Form[form].$invalid) {
                        $.blockUI({ 
@@ -184,8 +185,7 @@
                 opacity: .6, 
                 color: '#fff' 
             } 
-        }); 
-                    
+        });                     
                  //$sysUtil.ShowMessage($smt.info, "Favor de completar los registros correctamente.");
                 return false;
             }

@@ -100,18 +100,24 @@ background-size: cover;
 
   <div id="rootwizard" class="tabbable tabs-left">
   <ul>
-      <li><a href="#tab1" data-toggle="tab">Título: <strong>"{{vCrud.form.Nombre}}"</strong> </a></li>
-    <li><a href="#tab2" data-toggle="tab">Slider Templetes</a></li>
-    <li><a href="#tab3" data-toggle="tab">Seccion Fuentes</a></li>    
+      <li ><a ng-click="wizard.setPosicion(1);" href="#tab1" data-toggle="tab">Título: <strong>"{{vCrud.form.Nombre}}"</strong> </a></li>
+    <li><a ng-click="wizard.setPosicion(2);" href="#tab2" data-toggle="tab">Slider Templetes</a></li>
+    <li><a  ng-click="wizard.setPosicion(3);" href="#tab3" data-toggle="tab">Seccion Fuentes</a></li>    
   </ul>
   <div class="tab-content">
 
-     <ul class="pager wizard">     
-      <li class="previous first"><a href="#" class="fa fa-sign-out btn" type="reset"  ng-click="vCrud.reset();" >Cancelar </a></li>      
-      <li class="previous"><a class="fa fa-arrow-left" href="#">Anterior</a></li>
-      <li class="next last" style="display:none;"><a href="#">Last</a></li>
-        <li class="next"><a  href="#" ng-click="nextForm()"> <span class="fa fa-arrow-right btn btn-success"> Siguiente</span>  </a></li>
-    </ul>
+  <div class="pager row">
+  <div style="float:right">
+
+      <input type='button' id="btn-next" ng-click="nextForm()" class='fa fa-arrow-right btn-success btn button-next' name='next' value='Siguiente' />            
+
+    </div>
+    <div style="float:left">      
+      <span class="fa fa-sign-out btn" type="reset"  ng-click="vCrud.reset();">Cancelar</span>
+      <input type='button' class='btn button-previous' name='previous'  ng-click="anteriorCursor()" value='Anterior' />
+    </div>
+</div>
+
 
       <div class="tab-pane" id="tab1">
 
@@ -163,34 +169,55 @@ background-size: cover;
                   </div>
                 </footer>
                           </div><!-- -- /darkblue panel ---->
-                        </div>
+      </div>
 
+      <div id="content-TemplatePages">
+      
 
-      <div class="col-lg-4 col-md-4 col-sm-4 mb">
+            <div class="col-lg-4 col-md-4 col-sm-4 mb" ng-repeat="(k, tmppg) in listaTemplatePages">
               <div class="content-panel pn node">
                 <div id="blog-bg" >
-                  <div class="badge badge-popular">FULL</div>
-                  <div class="blog-title">Slider # 1 </div>
+                  <div class="badge badge-popular">{{wizard.ObtenerEsquemaPorID(tmppg, k)}}</div>
+                  <div class="blog-title">Slider # {{tmppg.Posicion}}  &nbsp; {{tmppg.Duracion}}</div>
                 </div>
-                <div class="blog-text">
-  <button data-toggle="modal" data-target="#myModal" class="btn fa-pencil">Editar</button>
-  <button>Entre</button>
-  <button>la Tarea</button>
-                  <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. <a href="#">Read More</a></p>
+                <div class="blog-text wizard">
+                <p> Duracion: {{tmppg.Duracion}}</p>
+
+
+          <button data-toggle="modal" data-target="#myModal" class="btn fa-pencil" ng-click="wizard.llenar(tmppg, k);">Editar</button>   
+
+          <span ng-click="wizard.CargarSeccionesFuentes(tmppg)" class='btn btn-default button-next' ><a href="#tab3" data-toggle="tab" >Configurar</a></span> 
+          
+          
                 </div>
               </div>
             </div>
 
-        
       </div>
-      
-      </div>
-    <div class="tab-pane" id="tab3">
 
+      </div>
+      </div>
+
+    <div class="tab-pane" id="tab3">
       <div class="notContenido" ng-if="wizard.validado == false" >
         <br><h3> No se he encontrado Titulo.</h3><hr>        
         <p> Debes ir al tabs de títulos y configurar y clickear en <strong>"Siguiente"</strong> </p>
       </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3> Secciones y Fuentes</h3>            
+
+          <div ng-bind-html="generarBosetoEsquema()">
+
+          </div>        
+
+        </div>
+      </div>
+
+
+
+
     </div>   
           		</div><!-- col-lg-12-->      	
           	</div><!-- /row -->         	
@@ -213,7 +240,7 @@ background-size: cover;
       <div class="modal-body">
 
       <div class="col-lg-12">
-                  <div class="" >                      
+                  <div class="" ng-form="wizard.$Form.Main"  >                      
                    
 <div class="form-group">
       <label class="col-sm-2 col-sm-2 control-label">EsquemaTipo</label>
@@ -229,7 +256,11 @@ background-size: cover;
 <div class="form-group">
       <label class="col-sm-2 col-sm-2 control-label">MostrarHeader</label>
       <div class="col-sm-10"> 
-      <?php  Text::renderOptions('<select ng-model="wizard.form.MostrarHeader" class="form-control" required>', array('Mostrar' => 1, 'Ocultar' => 0 ) ); ?>
+      <select ng-model="wizard.form.MostrarHeader" class="form-control" required>
+      <option value="0"> Ocultar </option>
+      <option value="1"> Mostrar </option>
+      </select>
+      
               
            </div>
 </div>
@@ -260,12 +291,13 @@ background-size: cover;
 </div>   
   </div>  
 </div>
-
       </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary">Guardar cambios</button>
+        <button type="button" class="btn btn-primary" ng-click= "wizard.guardarTemplatePages()" >Guardar cambios</button>
       </div>
+
     </div>
   </div>
 </div>
@@ -277,9 +309,18 @@ background-size: cover;
 
     <script type="text/javascript">
     $(document).ready(function() {
+
+/*
     $('#rootwizard').bootstrapWizard({'tabClass': 'nav nav-tabs', onTabClick: function(tab, navigation, index) {
-      return false;
+ //     return false;
     }});
+    */
+
+    $(document).ready(function() {
+    $('#rootwizard').bootstrapWizard({'tabClass': 'nav nav-tabs', 'nextSelector': '.button-next', 'previousSelector': '.button-previous', 'firstSelector': '.button-first', 'lastSelector': '.button-last'
+
+  });
+}); 
 
 
  jQuery('#datetimepicker2').datetimepicker({

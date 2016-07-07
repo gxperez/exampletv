@@ -11,7 +11,7 @@
  
 	public function obtenerTemplatePages(){
 		$this->load->database();
-		$query = $this->db->get(template_pages);			
+		$query = $this->db->get("template_pages");			
 			
 		$listaTemplatePages = $query->result(); 
 		return $listaTemplatePages;
@@ -48,7 +48,7 @@
 	
 	public function obtenerTemplatePagesJson(){
 		$this->load->database();
-		$query = $this->db->get(template_pages);	
+		$query = $this->db->get("template_pages");	
 			
 		$usuario = array();
 		foreach ($query->result() as $row)
@@ -93,7 +93,8 @@
 	        		}           			
         		}    		
         	}
-        	$update["FechaModifica"] = date("Y-m-d H:i:s");
+        	
+        	$update["FechaModificacion"] = date("Y-m-d H:i:s");
         	$this->db->where("TemplatePagesID", $obj["TemplatePagesID"]);
 			$rs = $this->db->update("template_pages", $update);
 			if($rs){
@@ -120,7 +121,22 @@
 			return $rs; 
 	}
 
+	public function ObtenerPorIDSliderMaestro($sliderMaestroID){
+		$this->load->database();
+		$this->db->where("Estado", 1);
+		$this->db->where("SliderMaestroID", $sliderMaestroID );		
+		$this->db->order_by("Posicion");		
+		$result = $this->db->get("template_pages");		
+		if ($result->num_rows() == 0)
+		{
+			return null; 
+		}
+
+		return $result->result(); 		
+	}
+
 	public function ObtenerPorID($id){
+		$this->load->database();
 		$this->db->where("TemplatePagesID", $id); 
 		$result = $this->db->get("template_pages");		
 

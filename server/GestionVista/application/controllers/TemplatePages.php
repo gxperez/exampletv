@@ -9,6 +9,7 @@ class TemplatePages extends MY_Controller {
 	public function index()
 	{	
 	}
+
 	
 	public function sm()
 	{
@@ -24,6 +25,24 @@ class TemplatePages extends MY_Controller {
 
 		// Carga de planilla web en general.
 		$this->load->view("web/sm_template_pages", $data); 
+	}
+
+	public function ObtenerPorIDSliderMaestro(){
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}
+
+		if($this->input->get("id")){
+
+			$this->load->model("TemplatePages_Model", "mTemplatePages");
+			$id = $this->input->get("id"); 
+			$templatePages = $this->mTemplatePages->ObtenerPorIDSliderMaestro($id);
+			echo json_encode(array("data" => $templatePages, "IsOk"=> true, "IsSession" => true)); 
+		} else {
+
+		}
+
 	}
 
 
@@ -66,14 +85,10 @@ class TemplatePages extends MY_Controller {
 
 	$this->validation->set_rules("objeto[SliderMaestroID]", "SliderMaestroID", "required|integer"); 
 $this->validation->set_rules("objeto[EsquemaTipo]", "EsquemaTipo", "required|integer"); 
-$this->validation->set_rules("objeto[MostrarHeader]", "MostrarHeader", "required"); 
 $this->validation->set_rules("objeto[Duracion]", "Duracion", "required"); 
 $this->validation->set_rules("objeto[TransicionTipoIni]", "TransicionTipoIni", "required|integer"); 
 $this->validation->set_rules("objeto[TransicionTipoFin]", "TransicionTipoFin", "required|integer"); 
 $this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
-$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "required|integer"); 
-$this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "required"); 
-
 
 	if ($this->validation->run() == FALSE)
          {
@@ -85,23 +100,23 @@ $this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "
     }
 
     if($this->input->post("objeto")){
-		$template_pagesObj = $this->security->xss_clean($this->input->post("objeto"));
 
+		$template_pagesObj = $this->security->xss_clean($this->input->post("objeto"));
 		$template_pagesEnt = array('SliderMaestroID'=> $template_pagesObj['SliderMaestroID'] 
-, 'EsquemaTipo'=> $template_pagesObj['EsquemaTipo'] 
-, 'MostrarHeader'=> $template_pagesObj['MostrarHeader'] 
-, 'Duracion'=> $template_pagesObj['Duracion'] 
-, 'TransicionTipoIni'=> $template_pagesObj['TransicionTipoIni'] 
-, 'TransicionTipoFin'=> $template_pagesObj['TransicionTipoFin'] 
-, 'Estado'=> $template_pagesObj['Estado'] 
-, 'UsuarioModificaID'=> $template_pagesObj['UsuarioModificaID'] 
-, 'FechaModificacion'=> date('Y-m-d H:i:s') 
-);
+			, 'EsquemaTipo'=> $template_pagesObj['EsquemaTipo'] 
+			, 'MostrarHeader'=> isset($template_pagesObj['MostrarHeader'])?$template_pagesObj['MostrarHeader']: 0
+			, 'Duracion'=> $template_pagesObj['Duracion'] 
+			, 'TransicionTipoIni'=> $template_pagesObj['TransicionTipoIni'] 
+			, 'TransicionTipoFin'=> $template_pagesObj['TransicionTipoFin'] 
+			, 'Estado'=> $template_pagesObj['Estado'] 
+			, 'UsuarioModificaID'=> $this->session->userdata("sUsuario")["IDusuario"]
+			, 'FechaModificacion'=> date('Y-m-d H:i:s') 
+			);
 
 			$id = $this->mTemplatePages->insertar( $template_pagesEnt ); 
 			$template_pagesEnt["TemplatePagesID"] = $id; 
 
-			echo json_encode(array("data" => $dispositivoEnt, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
+			echo json_encode(array("data" => $template_pagesEnt, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
         "name" => $this->security->get_csrf_token_name(),
         "hash" => $this->security->get_csrf_hash()
         ) ));
@@ -118,15 +133,13 @@ public function Actualizar(){
 			return false; 
 		}
 		$this->load->model("TemplatePages_Model", "mTemplatePages");
-	$this->validation->set_rules("objeto[SliderMaestroID]", "SliderMaestroID", "required|integer"); 
-$this->validation->set_rules("objeto[EsquemaTipo]", "EsquemaTipo", "required|integer"); 
-$this->validation->set_rules("objeto[MostrarHeader]", "MostrarHeader", "required"); 
-$this->validation->set_rules("objeto[Duracion]", "Duracion", "required"); 
-$this->validation->set_rules("objeto[TransicionTipoIni]", "TransicionTipoIni", "required|integer"); 
-$this->validation->set_rules("objeto[TransicionTipoFin]", "TransicionTipoFin", "required|integer"); 
-$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
-$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "required|integer"); 
-$this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "required"); 
+		$this->validation->set_rules("objeto[SliderMaestroID]", "SliderMaestroID", "required|integer"); 
+		$this->validation->set_rules("objeto[EsquemaTipo]", "EsquemaTipo", "required|integer"); 
+		$this->validation->set_rules("objeto[MostrarHeader]", "MostrarHeader", "required"); 
+		$this->validation->set_rules("objeto[Duracion]", "Duracion", "required"); 
+		$this->validation->set_rules("objeto[TransicionTipoIni]", "TransicionTipoIni", "required|integer"); 
+		$this->validation->set_rules("objeto[TransicionTipoFin]", "TransicionTipoFin", "required|integer"); 
+		$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
 
 	if ($this->validation->run() == FALSE)
          {
@@ -139,8 +152,8 @@ $this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "
 
      if($this->input->post("objeto")){
 		$template_pagesObj = $this->security->xss_clean($this->input->post("objeto"));
-		$template_pagesEnt = $this->mTemplatePages->actualizar( $template_pagesObj );
 
+		$template_pagesEnt = $this->mTemplatePages->actualizar( $template_pagesObj );
 				if( ! $template_pagesEnt ){
 				echo json_encode(array("IsOk"=> false, "Msg"=> "Error DB al actualizar". print_r($template_pagesEnt, true), "csrf" =>array(
 		        "name" => $this->security->get_csrf_token_name(),
@@ -149,7 +162,7 @@ $this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "
 		        return false; 
 			}
 
-			echo json_encode(array("data" => $dispositivoObj, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
+			echo json_encode(array("data" => $template_pagesEnt, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
 	        "name" => $this->security->get_csrf_token_name(),
 	        "hash" => $this->security->get_csrf_hash()
 	        ) )); 
@@ -211,4 +224,125 @@ $this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "
 	        return true; 
 		} 
 	}
+
+	// El esquema Envado por Get.
+	public function obtenerTablaEsquemaID(){
+
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}		
+
+// Los bloques del Espero. 
+
+		$listBlok = array();
+
+		$listBlok["Full"] = '<div id="Full">
+			<div class="Full"></div>
+			</div>'; 
+		$listBlok["DxD"] = '<div id="DxD">
+	<table class="tbltv">
+		<tr>
+			<td><div id="pos_1"></div> </td> <td> <div id="pos_2"></div> </td>
+		</tr>
+		<tr>
+			<td><div id="pos_3"></div> </td> <td> <div id="pos_4"></div></td>
+		</tr>
+	</table>
+</div>'; 
+
+		$listBlok["TresxTres"] = '<div id="TresxTres">
+	<table class="tbltv">
+		<tr>
+			<td><div id="pos_1"></div></td> <td><div id="pos_2"></div> </td>  <td><div id="pos_3"></div></td>
+		</tr>
+		<tr>
+			<td><div id="pos_4"></div></td> <td><div id="pos_5"></div> </td>  <td><div id="pos_6"></div></td>
+		</tr>
+	</table>
+</div>';
+
+
+		$listBlok["TresxTres"] = '<div id="Ux2_V">
+	<table class="tbltv">
+		<tbody><tr>
+			<td colspan="2">   	<div id="pos_1">  </div>  	 </td>
+		</tr>
+		<tr>
+			<td><div id="pos_2"> </div></td> <td><div id="pos_3"> </div> </td> 
+		</tr>
+	</tbody></table>
+</div>';
+
+$listBlok["TresxTres"] = '<div id="Ux3_V">
+	<table class="tbltv">
+		<tbody><tr>
+			<td colspan="3">   	<div id="pos_1"> </div>  	 </td>
+		</tr>
+		<tr>
+			<td><div id="pos_2"> </div></td>  <td><div id="pos_3"> </div> </td>  <td><div id="pos_4"></div> </td> 
+		</tr>
+	</tbody></table>
+</div>'; 
+
+$listBlok["TresxTres"] = '<div id="UX1_V">
+	<table class="tbltv">
+		<tr>
+			<td >   	<div id="pos_1"></div>  	 </td>
+		</tr>
+
+		<tr>
+			<td><div id="pos_2"></div></td> 
+		</tr>
+	</table>
+</div>'; 
+
+$listBlok["TresxTres"] = '<div id="Ux2_H">
+	<table class="tbltv">
+		<tbody>
+		<tr>
+			<td rowspan="2">   	<div id="pos_1"> 1</div> </td>   <td><div id="pos_2"> 2</div></td> 
+		</tr>
+		<tr>		
+			<td><div id="pos_3"> 3 </div></td> 
+		</tr>
+		</tbody>
+	</table>
+</div>'; 
+
+	$listBlok["TresxTres"] = '<div id="Ux3_H">
+	<table class="tbltv">
+		<tbody>
+		<tr>
+			<td rowspan="3">   	<div id="pos_1"> 1</div> </td>   <td><div id="pos_2"> </div></td> 
+		</tr>
+
+		<tr>		
+			<td><div id="pos_3">  </div></td> 
+		</tr>
+
+		<tr>		
+			<td><div id="pos_4">  </div></td> 
+		</tr>
+		</tbody>
+	</table>
+</div>'; 
+
+	$listBlok["TresxTres"] = '<div id="Ux1_H">
+	<table class="tbltv">
+		<tbody>
+		<tr>
+			<td>   	<div id="pos_1"> 1</div> </td>   <td><div id="pos_2"> </div></td> 
+		</tr>
+
+		</tbody>
+	</table>
+</div>'; 
+
+
+
+
+	}
+
+
 }
