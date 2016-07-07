@@ -37,8 +37,18 @@ function __construct()
 			// Crear Usuario Nuevo.
 			$registro = array("nombreUsuario"=> $usuario, "clave"=> $clave, "ultimaSesion"=> date("Y-m-d H:i:s"), "Estado"=> 1, "GUID"=> $keyS); 
 
-			$this->db->insert("usuario_log_sesion", $registro); 
-			return array("resultado"=> true, "registro"=>$registro); 
+			$id = $this->db->insert("usuario_log_sesion", $registro); 
+			$registro['usuario_log_sesionID'] = $id;
+
+			//Buscando el mismo registro insertado
+			$queryRs = $this->db->query("select * from usuario_log_sesion where usuario_log_sesionID = {$id}");
+			$rest = ""; 
+			foreach ($queryRs->result() as $row)
+			{
+			$rest = $row; 
+			}
+
+			return array("resultado"=> true, "registro"=>$rest); 
 		}
 
 	 

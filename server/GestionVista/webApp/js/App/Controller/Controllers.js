@@ -525,10 +525,22 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
 
         $scope.wizard = {
             form: {}, 
+            modo: 0,
             validado: false,
             posicion: 1, 
+
+            reset: function(){
+
+                for(var i in $scope.wizard.form){      
+                    if($scope.wizard.form.hasOwnProperty(i) ){                    
+                            $scope.wizard.form[i] =  "";
+                    }
+                }
+            }, 
+
             setPosicion: function(id){
                 $scope.wizard.posicion = id; 
+
             }, 
 
             mostrarEsquema: function(){
@@ -541,8 +553,28 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
                         }
                     }
                 }
-
                 return ""; 
+            },
+
+            llenar: function(obj, index){   
+                     
+                var copiObj = JSON.parse(JSON.stringify(obj));   
+                $scope.vCrud.setForm(copiObj);            
+                $scope.vCrud.selectedIndex = index;             
+
+            },
+
+            guardarTemplatePages: function(){
+
+
+                if($scope.wizard.modo == 0){
+                    $scope.wizard.reset(); 
+                    // Crear.
+
+                } else {
+                    // Modificar.
+
+                }
 
             }
         }; 
@@ -551,8 +583,10 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
 
 
 $scope.AgregarTemplate = function(){
+    // 
+     $scope.wizard.modo = 0;
 
-    alert("Buscar un Formulario tipo string. ");     
+    // alert("Buscar un Formulario tipo string. ");     
 
 }
 

@@ -99,8 +99,7 @@
             if(Crud.form.hasOwnProperty(i) ){
                 if(!(i in Crud.hash)){
                     Crud.form[i] =  "";                     
-                }
-              
+                }              
             }
           } 
         },
