@@ -11,7 +11,7 @@
  
 	public function obtenerSeccionTemplate(){
 		$this->load->database();
-		$query = $this->db->get(seccion_template);			
+		$query = $this->db->get("seccion_template");			
 			
 		$listaSeccionTemplate = $query->result(); 
 		return $listaSeccionTemplate;
@@ -120,7 +120,30 @@
 			return $rs; 
 	}
 
+
+	public function obtenerSeccionPorTemplatePagesID($id){
+		$this->load->database();
+
+		$this->db->where("TemplatePagesID", $id); 
+		$this->db->where("Estado", 1); 		
+		$result = $this->db->get("seccion_template");	
+
+		$listaSeccionTemplate = $result->result(); 
+
+		$result = array();
+
+		foreach ($listaSeccionTemplate as $value) {
+			$result["pos_" . $value->Posicion] = $value; 
+
+		}
+		return $result;	
+
+
+
+	}
+
 	public function ObtenerPorID($id){
+		$this->load->database();
 		$this->db->where("SeccionTemplateID", $id); 
 		$result = $this->db->get("seccion_template");		
 

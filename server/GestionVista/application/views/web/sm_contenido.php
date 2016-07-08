@@ -24,6 +24,22 @@ background-size: 100%;
 background-size: cover;
 }
 
+.Full, .tbltv {
+width: 618px;
+height: 378px;
+background-color: rgb(160, 160, 160);
+}
+
+.tbltv td, .tbltv th {
+padding: 0;
+border: 1px rgb(107, 98, 98) solid;
+}
+
+.tbltv td:hover {
+opacity: 0.3;
+background-color: #000;
+}
+
   </style>
 <div class="styleCrud">
 <div id="ListMantenimiento">
@@ -208,7 +224,7 @@ background-size: cover;
         <div class="col-sm-12">
           <h3> Secciones y Fuentes</h3>            
 
-          <div ng-bind-html="generarBosetoEsquema()">
+          <div compile="esquemaHtml">
 
           </div>        
 

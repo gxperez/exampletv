@@ -524,11 +524,30 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
         $scope.vCrud = appCrud;
         $scope.vCrud.setForm(form); 
 
-        $scope.generarBosetoEsquema= function(){
+        $scope.esquemaHtml = ""; 
+        $scope.esquemaItemSeleccionado = false;
+
+// seccionTemp.listSeccion
+        $scope.seccionTemp = {
+            listSeccion: {pos_1: {}, pos_2: {}, pos_3: {}, pos_4: {}, pos_5: {}, pos_6: {}, pos_7: {}
+            }, 
+            agregar: function(num, obj){
+                // Aqui va el contenido.
+                console.log(obj);                 
+                alert(obj); 
 
 
 
-            return "Genrado"; 
+            }
+        };
+
+        $scope.generarBosetoEsquema= function(descripcion){
+
+                http(base_url + 'TemplatePages/obtenerTablaEsquemaID', {EsquemaTipo: descripcion}, function (dt) {                    
+                    $scope.esquemaHtml = dt;
+                    console.log(dt);
+                 });
+            
         }; 
 
         $scope.wizard = {
@@ -537,9 +556,10 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
             modo: 0,
             validado: false,
             posicion: 1, 
-            selectedIndex: 0,             
-            reset: function(){
+            selectedIndex: 0,
 
+            reset: function(){
+                
                 for(var i in $scope.wizard.form){      
                     if($scope.wizard.form.hasOwnProperty(i) ){                    
                             $scope.wizard.form[i] =  "";
@@ -547,14 +567,29 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
                 }
             }, 
 
-            CargarSeccionesFuentes: function(objeto){
-                console.log(objeto); 
-
+            renderjQueryPosicion = function(){
 
                 
 
+            },
 
+            CargarSeccionesFuentes: function(objeto){
+                console.log(objeto);   
+                $scope.generarBosetoEsquema($scope.wizard.ObtenerEsquemaNombre(objeto.EsquemaTipo)); 
+                
+                // Buscar objetso en Seccion.
 
+                 http(base_url + 'SeccionTemplate/obtenerSecionTempatePorTempateID', {TemplatePagesID: objeto.TemplatePagesID}, function (dt) {                    
+                    $appSession.IsSession(dt);
+
+                    if (dt.IsOk){
+                        $scope.seccionTemp.listSeccion = dt.data; 
+
+                    }
+                    console.log(dt);
+                 });                 
+            
+                
 
             }, 
 
@@ -621,6 +656,18 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
                 $scope.wizard.form = copiObj; 
                 $scope.wizard.selectedIndex = index; 
                 $scope.wizard.modo = 1;                
+            },
+
+            ObtenerEsquemaNombre: function(id){
+
+                  for(var i in vw_listEsquemaTipo){
+                    if(vw_listEsquemaTipo.hasOwnProperty(i)){
+                        if(parseInt(vw_listEsquemaTipo[i]) == parseInt( id.toString() )){
+                            return i.toString().trim();
+                        }
+                    }
+                } 
+
             },
 
             ObtenerEsquemaPorID: function(obj, indx){

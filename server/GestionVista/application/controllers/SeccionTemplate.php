@@ -4,7 +4,7 @@ class SeccionTemplate extends MY_Controller {
 
 	/**
 	 * Index Page for this controller.
-	 	@autor:	Grequis Xavier Perez Fortuna.
+	 *	@autor:	Grequis Xavier Perez Fortuna.
 	 */
 	public function index()
 	{	
@@ -30,6 +30,26 @@ class SeccionTemplate extends MY_Controller {
 
 		// Carga de planilla web en general.
 		$this->load->view("web/sm_seccion_template", $data); 
+	}
+
+	public function obtenerSecionTempatePorTempateID(){
+
+		if (!$this->session->userdata("sUsuario")){
+			echo json_encode(array("IsSession" => false)); 
+			return false; 
+		}
+
+		/// 
+		if($this->input->get("TemplatePagesID")){
+			$this->load->model("SeccionTemplate_Model", "mSeccionTemplate");
+
+			$listSeccion_templateEnt = $this->mSeccionTemplate->obtenerSeccionPorTemplatePagesID($this->input->get("TemplatePagesID") );
+			echo json_encode(array("data" => $listSeccion_templateEnt, "IsOk"=> true,  "IsSession" => true) ); 		
+			return true; 
+
+		}
+
+
 	}
 
 

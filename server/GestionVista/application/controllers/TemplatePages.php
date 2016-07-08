@@ -238,15 +238,15 @@ public function Actualizar(){
 		$listBlok = array();
 
 		$listBlok["Full"] = '<div id="Full">
-			<div class="Full"></div>
+			<div class="Full" ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )"></div>
 			</div>'; 
 		$listBlok["DxD"] = '<div id="DxD">
 	<table class="tbltv">
 		<tr>
-			<td><div id="pos_1"></div> </td> <td> <div id="pos_2"></div> </td>
+			<td ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )"><div id="pos_1"></div> </td> <td ng-click="seccionTemp.agregar(2, seccionTemp.listSeccion.pos_2 )"> <div id="pos_2"></div> </td>
 		</tr>
 		<tr>
-			<td><div id="pos_3"></div> </td> <td> <div id="pos_4"></div></td>
+			<td ng-click="seccionTemp.agregar(3, seccionTemp.listSeccion.pos_3 )"><div id="pos_3"></div> </td> <td ng-click="ng-click="seccionTemp.agregar(4, seccionTemp.listSeccion.pos_4 )""> <div id="pos_4"></div></td>
 		</tr>
 	</table>
 </div>'; 
@@ -254,91 +254,101 @@ public function Actualizar(){
 		$listBlok["TresxTres"] = '<div id="TresxTres">
 	<table class="tbltv">
 		<tr>
-			<td><div id="pos_1"></div></td> <td><div id="pos_2"></div> </td>  <td><div id="pos_3"></div></td>
+			<td ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )"><div id="pos_1"></div></td> <td ng-click="seccionTemp.agregar(2, seccionTemp.listSeccion.pos_2 )" ><div id="pos_2"></div> </td>  <td ng-click="seccionTemp.agregar(3, seccionTemp.listSeccion.pos_3 )"><div id="pos_3"></div></td>
 		</tr>
 		<tr>
-			<td><div id="pos_4"></div></td> <td><div id="pos_5"></div> </td>  <td><div id="pos_6"></div></td>
+			<td ng-click="seccionTemp.agregar(4, seccionTemp.listSeccion.pos_4 )"><div id="pos_4"></div></td> <td ng-click="seccionTemp.agregar(5, seccionTemp.listSeccion.pos_5 )" ><div id="pos_5"></div> </td>  <td ng-click="seccionTemp.agregar(6, seccionTemp.listSeccion.pos_6 )"><div id="pos_6"></div></td>
 		</tr>
 	</table>
 </div>';
 
 
-		$listBlok["TresxTres"] = '<div id="Ux2_V">
+		$listBlok["Ux2_V"] = '<div id="Ux2_V">
 	<table class="tbltv">
 		<tbody><tr>
-			<td colspan="2">   	<div id="pos_1">  </div>  	 </td>
+			<td ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )" colspan="2">   	<div id="pos_1">  </div>  	 </td>
 		</tr>
 		<tr>
-			<td><div id="pos_2"> </div></td> <td><div id="pos_3"> </div> </td> 
+			<td ng-click="seccionTemp.agregar(2, seccionTemp.listSeccion.pos_2 )" ><div id="pos_2"> </div></td> <td><div id="pos_3"> </div> </td> 
 		</tr>
 	</tbody></table>
 </div>';
 
-$listBlok["TresxTres"] = '<div id="Ux3_V">
+$listBlok["Ux3_V"] = '<div id="Ux3_V">
 	<table class="tbltv">
 		<tbody><tr>
-			<td colspan="3">   	<div id="pos_1"> </div>  	 </td>
+			<td ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )" colspan="3">   	<div id="pos_1"> </div>  	 </td>
 		</tr>
 		<tr>
-			<td><div id="pos_2"> </div></td>  <td><div id="pos_3"> </div> </td>  <td><div id="pos_4"></div> </td> 
+			<td ng-click="seccionTemp.agregar(2, seccionTemp.listSeccion.pos_2 )" ><div id="pos_2"> </div></td>  <td ng-click="seccionTemp.agregar(3, seccionTemp.listSeccion.pos_3 )"><div id="pos_3"> </div> </td>  <td ng-click="seccionTemp.agregar(4, seccionTemp.listSeccion.pos_4 )"><div id="pos_4"></div> </td> 
 		</tr>
 	</tbody></table>
 </div>'; 
 
-$listBlok["TresxTres"] = '<div id="UX1_V">
+$listBlok["UX1_V"] = '<div id="UX1_V">
 	<table class="tbltv">
 		<tr>
-			<td >   	<div id="pos_1"></div>  	 </td>
+			<td ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )">   	<div id="pos_1"></div>  	 </td>
 		</tr>
 
 		<tr>
-			<td><div id="pos_2"></div></td> 
+			<td ng-click="seccionTemp.agregar(2, seccionTemp.listSeccion.pos_2 )" ><div id="pos_2"></div></td> 
 		</tr>
 	</table>
 </div>'; 
 
-$listBlok["TresxTres"] = '<div id="Ux2_H">
+$listBlok["Ux2_H"] = '<div id="Ux2_H">
 	<table class="tbltv">
 		<tbody>
 		<tr>
-			<td rowspan="2">   	<div id="pos_1"> 1</div> </td>   <td><div id="pos_2"> 2</div></td> 
+			<td ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )" rowspan="2">   	<div id="pos_1"> </div> </td>   <td ng-click="seccionTemp.agregar(2, seccionTemp.listSeccion.pos_2 )"><div id="pos_2"> 2</div></td> 
 		</tr>
 		<tr>		
-			<td><div id="pos_3"> 3 </div></td> 
+			<td ng-click="seccionTemp.agregar(3, seccionTemp.listSeccion.pos_3 )"><div id="pos_3">  </div></td> 
 		</tr>
 		</tbody>
 	</table>
 </div>'; 
 
-	$listBlok["TresxTres"] = '<div id="Ux3_H">
+	$listBlok["Ux3_H"] = '<div id="Ux3_H">
 	<table class="tbltv">
 		<tbody>
 		<tr>
-			<td rowspan="3">   	<div id="pos_1"> 1</div> </td>   <td><div id="pos_2"> </div></td> 
+			<td ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )" rowspan="3">   	<div id="pos_1"> </div> </td>   <td ng-click="seccionTemp.agregar(2, seccionTemp.listSeccion.pos_2 )"><div id="pos_2"> </div></td> 
 		</tr>
 
 		<tr>		
-			<td><div id="pos_3">  </div></td> 
+			<td ng-click="seccionTemp.agregar(3, seccionTemp.listSeccion.pos_3 )" ><div id="pos_3">  </div></td> 
 		</tr>
 
 		<tr>		
-			<td><div id="pos_4">  </div></td> 
+			<td ng-click="seccionTemp.agregar(4, seccionTemp.listSeccion.pos_4 )" ><div id="pos_4">  </div></td> 
 		</tr>
 		</tbody>
 	</table>
 </div>'; 
 
-	$listBlok["TresxTres"] = '<div id="Ux1_H">
+	$listBlok["Ux1_H"] = '<div id="Ux1_H">
 	<table class="tbltv">
 		<tbody>
 		<tr>
-			<td>   	<div id="pos_1"> 1</div> </td>   <td><div id="pos_2"> </div></td> 
+			<td ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )">   	<div id="pos_1"> </div> </td>   <td ng-click="seccionTemp.agregar(2, seccionTemp.listSeccion.pos_2 )" ><div id="pos_2"> </div></td> 
 		</tr>
-
 		</tbody>
 	</table>
 </div>'; 
 
+
+if($this->input->get("EsquemaTipo")){	
+
+	$keyGet = $this->input->get("EsquemaTipo"); 
+
+	if(array_key_exists($keyGet, $listBlok)){
+		echo $listBlok[$keyGet]; 
+		return true; 
+	}
+
+} 
 
 
 
