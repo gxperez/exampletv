@@ -91,14 +91,9 @@ class SeccionTemplate extends MY_Controller {
 		// Auto Validacion del Formulario.
 
 	$this->validation->set_rules("objeto[TemplatePagesID]", "TemplatePagesID", "required|integer"); 
-$this->validation->set_rules("objeto[ContenidoTipo]", "ContenidoTipo", "required|integer"); 
-$this->validation->set_rules("objeto[Posicion]", "Posicion", "required|integer"); 
+	$this->validation->set_rules("objeto[Posicion]", "Posicion", "required|integer"); 
 $this->validation->set_rules("objeto[Encabezado]", "Encabezado", "required|max_length[100]"); 
 $this->validation->set_rules("objeto[FuenteID]", "FuenteID", "required|integer"); 
-$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
-$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "required|integer"); 
-$this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "required"); 
-
 
 	if ($this->validation->run() == FALSE)
          {
@@ -113,19 +108,20 @@ $this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "
 		$seccion_templateObj = $this->security->xss_clean($this->input->post("objeto"));
 
 		$seccion_templateEnt = array('TemplatePagesID'=> $seccion_templateObj['TemplatePagesID'] 
-, 'ContenidoTipo'=> $seccion_templateObj['ContenidoTipo'] 
-, 'Posicion'=> $seccion_templateObj['Posicion'] 
-, 'Encabezado'=> $seccion_templateObj['Encabezado'] 
-, 'FuenteID'=> $seccion_templateObj['FuenteID'] 
-, 'Estado'=> $seccion_templateObj['Estado'] 
-, 'UsuarioModificaID'=> $seccion_templateObj['UsuarioModificaID'] 
-, 'FechaModificacion'=> date('Y-m-d H:i:s') 
-);
+		, 'ContenidoTipo'=> 1 // Por ahora Solo un Tipo de Contenido.
+		, 'Posicion'=> $seccion_templateObj['Posicion'] 
+		, 'Encabezado'=> $seccion_templateObj['Encabezado'] 
+		, 'FuenteID'=> $seccion_templateObj['FuenteID'] 
+		, 'Estado'=> 1
+		, 'UsuarioModificaID'=>  $this->session->userdata("sUsuario")["IDusuario"]
+		, 'FechaModificacion'=> date('Y-m-d H:i:s') 
+	);
+
 
 			$id = $this->mSeccionTemplate->insertar( $seccion_templateEnt ); 
 			$seccion_templateEnt["SeccionTemplateID"] = $id; 
 
-			echo json_encode(array("data" => $dispositivoEnt, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
+			echo json_encode(array("data" => $seccion_templateEnt, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
         "name" => $this->security->get_csrf_token_name(),
         "hash" => $this->security->get_csrf_hash()
         ) ));
@@ -142,14 +138,10 @@ public function Actualizar(){
 			return false; 
 		}
 		$this->load->model("SeccionTemplate_Model", "mSeccionTemplate");
-	$this->validation->set_rules("objeto[TemplatePagesID]", "TemplatePagesID", "required|integer"); 
-$this->validation->set_rules("objeto[ContenidoTipo]", "ContenidoTipo", "required|integer"); 
-$this->validation->set_rules("objeto[Posicion]", "Posicion", "required|integer"); 
-$this->validation->set_rules("objeto[Encabezado]", "Encabezado", "required|max_length[100]"); 
-$this->validation->set_rules("objeto[FuenteID]", "FuenteID", "required|integer"); 
-$this->validation->set_rules("objeto[Estado]", "Estado", "required|integer"); 
-$this->validation->set_rules("objeto[UsuarioModificaID]", "UsuarioModificaID", "required|integer"); 
-$this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "required"); 
+		$this->validation->set_rules("objeto[TemplatePagesID]", "TemplatePagesID", "required|integer"); 
+		$this->validation->set_rules("objeto[Posicion]", "Posicion", "required|integer"); 
+		$this->validation->set_rules("objeto[Encabezado]", "Encabezado", "required|max_length[100]"); 
+		$this->validation->set_rules("objeto[FuenteID]", "FuenteID", "required|integer"); 
 
 	if ($this->validation->run() == FALSE)
          {
@@ -162,6 +154,8 @@ $this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "
 
      if($this->input->post("objeto")){
 		$seccion_templateObj = $this->security->xss_clean($this->input->post("objeto"));
+		$seccion_templateObj["UsuarioModificaID"] = $this->session->userdata("sUsuario")["IDusuario"]; 
+
 		$seccion_templateEnt = $this->mSeccionTemplate->actualizar( $seccion_templateObj );
 
 				if( ! $seccion_templateEnt ){
@@ -172,7 +166,7 @@ $this->validation->set_rules("objeto[FechaModificacion]", "FechaModificacion", "
 		        return false; 
 			}
 
-			echo json_encode(array("data" => $dispositivoObj, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
+			echo json_encode(array("data" => $seccion_templateEnt, "IsOk"=> true, "Msg"=>"Success", "IsSession" => true, "csrf" =>array(
 	        "name" => $this->security->get_csrf_token_name(),
 	        "hash" => $this->security->get_csrf_hash()
 	        ) )); 

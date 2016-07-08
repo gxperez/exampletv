@@ -11,10 +11,27 @@
  
 	public function obtenerFuentes(){
 		$this->load->database();
-		$query = $this->db->get(fuentes);			
+		$query = $this->db->get("fuentes");			
 			
 		$listaFuentes = $query->result(); 
 		return $listaFuentes;
+ 	}
+
+
+ 	public function obtenerFuentesActivas(){
+		$this->load->database();
+
+		$this->db->where("Estado", 1); 
+		$query = $this->db->get("fuentes");			
+			
+		$listaFuentes = $query->result(); 
+		$listEnum =  array();
+		foreach ($listaFuentes as $value) {
+
+			$listEnum[$value->FuenteID] =  $value; 
+			
+		}
+		return $listEnum;
  	}
 
  	public function obtenerFuentesPorCampo($campo, $valor = "", $limit = 0, $page = 20){

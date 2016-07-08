@@ -72,6 +72,9 @@ class PHPWebSocket
 	public $wsClientIPCount = array();
 	public $wsOnEvents      = array();
 
+	// Agregada Para proyecto GstionVista
+	public $listTV			= array();
+
 	/*
 		$this->wsClients[ integer ClientID ] = array(
 			0 => resource  Socket,                            // client socket

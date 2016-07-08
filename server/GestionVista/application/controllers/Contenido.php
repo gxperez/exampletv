@@ -27,11 +27,14 @@ class Contenido extends MY_Controller {
         ) );
 
 			$this->load->model('EmunsViews_model', 'mEnum');        	
+			$this->load->model('Fuentes_model', 'mFuentes');        	
         	$data['listEstadoForm'] = $this->mEnum->getEnumsEstado();
 
         	$data['listEsquemaTipo'] = $this->mEnum->getEnum("esquematipo"); 
         	$data['listTransicionTipoIni'] = $this->mEnum->getEnum("transiciontipo");
         	$data['listTransicionTipoFin'] = $data['listTransicionTipoIni'];
+
+        	$data['listFuentesActivas'] = $this->mFuentes->obtenerFuentesActivas(); 
 
         	
 		// Carga de planilla web en general.

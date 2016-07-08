@@ -44,8 +44,7 @@ var Glbquery ={};
 
         var link = base_url + link;  
 
-        for (var i = gbl_Master_setInvervalLog.length - 1; i >= 0; i--) {
-            console.log("Se eliminaron los Set time out # " + gbl_Master_setInvervalLog[i] ); 
+        for (var i = gbl_Master_setInvervalLog.length - 1; i >= 0; i--) {            
                     clearInterval(gbl_Master_setInvervalLog[i]); 
                    
                }       
@@ -255,8 +254,7 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         }; 
 
         $scope.Eliminar = function(item, indice){
-            console.log("Eliminar: ");
-            console.log(indice);
+            
 
             var iObj =  $scope.vCrud.formatObjForm(item); 
             //------------------------------------------
@@ -306,7 +304,8 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
 
                 if (res.IsOk){
                     $scope.listaDispositivo.push(res.data);
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset();  
+                    $scope.$apply();                  
                 } else {
                     // Reasignacion de Tokens.
                     alert(res.Msg);                     
@@ -326,7 +325,8 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
                 if (res.IsOk){
                     $scope.listaDispositivo[$scope.vCrud.selectedIndex]= res.data;
                     $scope.$apply();
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset();  
+
                 } else {
                     // Reasignacion de Tokens. Mensaje
                     // Notifiacion de mensaje de Error.
@@ -472,7 +472,8 @@ $ang.controller("BloquesController", ["$scope", "$http",  "AppCrud", "AppHttp","
 
                 if (res.IsOk){
                     $scope.listaBloques.push(res.data);
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset();    
+                    $scope.$apply();                
                 } else {
                     // Reasignacion de Tokens.
                     alert(res.Msg);                     
@@ -524,19 +525,116 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
         $scope.vCrud = appCrud;
         $scope.vCrud.setForm(form); 
 
-        $scope.esquemaHtml = ""; 
-        $scope.esquemaItemSeleccionado = false;
+        $scope.esquemaHtml = "";         
 
 // seccionTemp.listSeccion
         $scope.seccionTemp = {
+
+            modo: 0, 
+            form: {},
+            $Form: {},  
             listSeccion: {pos_1: {}, pos_2: {}, pos_3: {}, pos_4: {}, pos_5: {}, pos_6: {}, pos_7: {}
             }, 
+
+
+            limpiar: function(){               
+
+                for(var i in $scope.seccionTemp.form){      
+                    if($scope.seccionTemp.form.hasOwnProperty(i) ){                    
+                            $scope.seccionTemp.form[i] =  "";
+                    }
+                }
+
+                  if ($scope.seccionTemp.$Form["Second"].hasOwnProperty("$setPristine"))
+                   {
+                            $scope.seccionTemp.$Form["Second"].$setPristine();
+                   }
+
+            }, 
+
             agregar: function(num, obj){
                 // Aqui va el contenido.
-                console.log(obj);                 
-                alert(obj); 
+                if (typeof obj === 'undefined' || obj === null){
+                    $scope.seccionTemp.limpiar(); 
+                    // console.log(obj);                                     
+                    $scope.seccionTemp.modo= 0;
+                    $scope.seccionTemp.form.Posicion = num; 
+
+                } else {
+                    
+                    $scope.seccionTemp.modo = 1;
+                    $scope.seccionTemp.form = JSON.parse(JSON.stringify(obj));                                        
+                    $scope.seccionTemp.form.Posicion = num; 
+                }
+
+                $("#myFormSeccionTemp").modal('toggle');
+            }, 
+
+            guardar: function(){
+
+                if($scope.seccionTemp.modo == 0){
+                    // Registrar
+                    $scope.seccionTemp.form.TemplatePagesID = $scope.wizard.selectedTemplatePagesID;                    
+                    var sendO = $scope.vCrud.formatObjForm($scope.seccionTemp.form);
+                    $.post(base_url + 'SeccionTemplate/Crear', sendO, function(res){                
+                        $appSession.IsSession(res);
+
+                        if (res.IsOk){    
+                             $('#myFormSeccionTemp').modal('hide');
+                             $scope.seccionTemp.limpiar(); 
+
+                             $scope.wizard.obtenerSeccionFuentes($scope.wizard.selectedTemplatePagesID);
+                             $scope.$apply();
 
 
+                        } else {                    
+                            alert(res.Msg);                     
+                        }
+
+                        if('csrf' in res){
+                                $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                                
+                        }
+
+
+                    }, 'json').fail(function() {
+                        alert('Erro en el Servicio 500'); 
+                    });
+
+                } 
+
+                if($scope.seccionTemp.modo == 1){
+                    // Modific
+                    var sendO = $scope.vCrud.formatObjForm($scope.seccionTemp.form);
+
+                    $.post(base_url + 'SeccionTemplate/Actualizar', sendO, function(res){                
+                        $appSession.IsSession(res);
+
+                        if (res.IsOk){                            
+                            
+                            // Aplicando los Ajustes.                            
+                            $('#myFormSeccionTemp').modal('hide');
+                             $scope.seccionTemp.limpiar(); 
+
+                            $scope.wizard.obtenerSeccionFuentes($scope.wizard.selectedTemplatePagesID);
+
+                            $scope.$apply();       
+                            
+
+                        } else {                    
+                            alert(res.Msg);                     
+                        }
+
+                        if('csrf' in res){
+                                $scope.vCrud.setHash(res.csrf.name, res.csrf.hash);
+                        }
+
+                    }, 'json').fail(function() {
+                        alert('Erro en el Servicio 500'); 
+                    });                    
+                } 
+                
+                 
 
             }
         };
@@ -544,8 +642,7 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
         $scope.generarBosetoEsquema= function(descripcion){
 
                 http(base_url + 'TemplatePages/obtenerTablaEsquemaID', {EsquemaTipo: descripcion}, function (dt) {                    
-                    $scope.esquemaHtml = dt;
-                    console.log(dt);
+                    $scope.esquemaHtml = dt;                    
                  });
             
         }; 
@@ -557,6 +654,7 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
             validado: false,
             posicion: 1, 
             selectedIndex: 0,
+            selectedTemplatePagesID: 0,
 
             reset: function(){
                 
@@ -567,29 +665,47 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
                 }
             }, 
 
-            renderjQueryPosicion = function(){
+            unsetjQueryPosition: function(){
+                var arr = ["pos_1", "pos_2", "pos_3", "pos_4", "pos_5", "pos_6", "pos_7"]; 
+                for (var i = arr.length - 1; i >= 0; i--) {
+                    $("#" + arr[i]).html(""); 
+                }
+                 
+            }, 
 
-                
+            renderjQueryPosicion:function(){
 
+                for(var i in $scope.seccionTemp.listSeccion){
+                    if($scope.seccionTemp.listSeccion.hasOwnProperty(i)){
+
+                        var FuenteDecTXT = ($scope.seccionTemp.listSeccion[i].FuenteID in vw_listFuentes)? vw_listFuentes[$scope.seccionTemp.listSeccion[i].FuenteID].Descripcion: "N/A"; 
+
+                        var title = '<div class="darkblue-panel"> <div class="darkblue-header"><h5>'+  $scope.seccionTemp.listSeccion[i].Encabezado +  '</h5></div> <p class="mt"><b>' + FuenteDecTXT  + '</b><br>Consultar Fuente</p></div>'; 
+                        $("#" + i).html(title); 
+                    }
+                }
             },
 
-            CargarSeccionesFuentes: function(objeto){
-                console.log(objeto);   
-                $scope.generarBosetoEsquema($scope.wizard.ObtenerEsquemaNombre(objeto.EsquemaTipo)); 
-                
-                // Buscar objetso en Seccion.
+            obtenerSeccionFuentes: function(TemplatePagesID){
 
-                 http(base_url + 'SeccionTemplate/obtenerSecionTempatePorTempateID', {TemplatePagesID: objeto.TemplatePagesID}, function (dt) {                    
+                 // Buscar objetso en Seccion.
+                 http(base_url + 'SeccionTemplate/obtenerSecionTempatePorTempateID', {TemplatePagesID: TemplatePagesID}, function (dt) {                    
                     $appSession.IsSession(dt);
 
                     if (dt.IsOk){
                         $scope.seccionTemp.listSeccion = dt.data; 
+                        $scope.wizard.renderjQueryPosicion(); 
+                    }                    
+                 });
+            }, 
 
-                    }
-                    console.log(dt);
-                 });                 
-            
-                
+            CargarSeccionesFuentes: function(objeto){
+
+                $scope.wizard.unsetjQueryPosition(); 
+                $scope.generarBosetoEsquema($scope.wizard.ObtenerEsquemaNombre(objeto.EsquemaTipo));
+
+                $scope.wizard.selectedTemplatePagesID = objeto.TemplatePagesID;
+                $scope.wizard.obtenerSeccionFuentes(objeto.TemplatePagesID); 
 
             }, 
 
@@ -694,8 +810,7 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
                     $scope.wizard.form.SliderMaestroID = $scope.vCrud.form.SliderMaestroID; 
                     $scope.wizard.form.Posicion = (parseInt($scope.listaTemplatePages.length) + 1); 
                     var sendO = $scope.vCrud.formatObjForm($scope.wizard.form);
-
-                    console.log(sendO); 
+                    
                     if(!$scope.wizard.validar()){
                         return false; 
                     }
@@ -994,6 +1109,7 @@ $scope.guardarContenido = function(){
                 if (res.IsOk){
                     $scope.listaContenido.push(res.data);
                     $scope.vCrud.reset();                    
+                    $scope.$apply();
                 } else {
                     // Reasignacion de Tokens.
                     alert(res.Msg);                     
@@ -1260,7 +1376,8 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
 
                 if (res.IsOk){
                     $scope.listaFuentes.push(res.data);
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset(); 
+                    $scope.$apply();                   
                 } else {
                     // Reasignacion de Tokens.
                     alert(res.Msg);                     
@@ -1489,10 +1606,10 @@ $scope.ActualizarHoja = function(){
                     // Ajustes del Json. Respuesta del Formulario.
                     $appSession.IsSession(res);                                      
 
-
                 if (res.IsOk){
                     $scope.listaFuerzaVenta.push(res.data);
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset(); 
+                    $scope.$apply();                   
                 } else {
                     // Reasignacion de Tokens.
                     alert(res.Msg);                     
@@ -1655,7 +1772,8 @@ $scope.ActualizarHoja = function(){
 
                 if (res.IsOk){
                     $scope.listaGrupo.push(res.data);
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset(); 
+                    $scope.$apply();                   
                 } else {
                     // Reasignacion de Tokens.
                     alert(res.Msg);                     
@@ -2071,10 +2189,7 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
 
                             $scope.frmBloque.cancel();                           
                             $scope.AbrirPrograma($scope.frmBloque.selectedID);                          
-
                             $scope.frmBloque.dialog.dialog("close");
-
-
                           //$("#bloqueform").dialog("close"); 
                           $scope.$apply();
 
@@ -2401,7 +2516,8 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
 
                 if (res.IsOk){
                     $scope.listaProgramacion.push(res.data);
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset(); 
+                    $scope.$apply();                   
                 } else {
                     // Reasignacion de Tokens.
                     alert(res.Msg);                     
@@ -2563,7 +2679,8 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
 
                 if (res.IsOk){
                     $scope.listaSeccionTemplate.push(res.data);
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset(); 
+                    $scope.$apply();                   
                 } else {
                     // Reasignacion de Tokens.
                     alert(res.Msg);                     
@@ -2724,7 +2841,8 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
 
                 if (res.IsOk){
                     $scope.listaUsuarioLogSesion.push(res.data);
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset(); 
+                    $scope.$apply();                   
                 } else {
                     // Reasignacion de Tokens.
                     alert(res.Msg);                     
@@ -2885,8 +3003,7 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
                         $scope.listaDispositivo.splice($ind, 1); 
                         $scope.listaDispositivo.unshift($disp[0]);                         
                     } else {
-                            console.log("Aqui hay que Agregar un Nuevo Dispositivo que no Exite.");
-                            console.log($scope.liveDisp[mc]);                                        
+                                                        
                             $scope.listaDispositivo.unshift({DispositivoID: $scope.liveDisp[mc].DispositivoID, Mac: mc, Nombre: "Nuevo Dispositivo #" + $scope.listaDispositivo.length , Descripcion: "Dispositivo sin Registrar", Estado: "1"});
                             $scope.dropzoneFields[$scope.liveDisp[mc].DispositivoID] = []; 
                     }
@@ -3120,7 +3237,8 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
 
                 if (res.IsOk){
                     $scope.listaFuerzaVentaDispositivo.push(res.data);
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset();
+                    $scope.$apply();                    
                 } else {
                     // Reasignacion de Tokens.
                     alert(res.Msg);                     
@@ -3326,7 +3444,8 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
 
                 if (res.IsOk){
                     $scope.listaPlanConfig.push(res.data);
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset(); 
+                    $scope.$apply();                   
                 } else {
                     // Reasignacion de Tokens.
                     alert(res.Msg);                     
@@ -3402,9 +3521,8 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                 if(array.indexOf(itm) !== -1){
                     return false;
                 }   
-                console.log("Buscando a Demp");
-                console.log(array); 
-
+                
+                
                var fnElmnt =  array.filter(function(a){
                     return a.GUID_FV === itm.GUID_FV; 
                  }); 
@@ -3419,8 +3537,7 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
         }
 
         $scope.addToList = function(itm){
-            // Envio del la Formula al controlador. Uno po Uno.
-                    console.log("Mirar el arreglo ");  
+            // Envio del la Formula al controlador. Uno po Uno.                      
                     console.log(itm);  
                     var sendOb = {DispositivoID: itm.DispositivoID, GrupoID: $scope.masterGroup.GrupoID};
                     http(base_url + 'GrupoTv/AgregarGrupoTV', sendOb, function (dt) {  
@@ -3435,8 +3552,7 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
 
         $scope.EliminarToList = function(itm){
             // Envio del la Formula al controlador. Uno po Uno.
-                    console.log("Mirar el arreglo ");  
-                    console.log(itm);  
+                     
                     var sendOb = {DispositivoID: itm.DispositivoID, GrupoID: itm.GrupoID};
                     http(base_url + 'GrupoTv/EliminarGrupoTV', sendOb, function (dt) {  
 
@@ -3487,8 +3603,7 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
             $scope.Pantalla = {nombre: 'GrupoTv'};  
             $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));  
             $scope.listaGrupoTv = vw_listaGrupoTv;
-
-           console.log($scope.listaGrupoTv);             
+                   
 
              http(base_url + 'GrupoTv/ObtenerDatos', {}, function (dt) {                
                     $appSession.IsSession(dt);                                         
@@ -3583,7 +3698,8 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
 
                 if (res.IsOk){
                     $scope.listaGrupoTv.push(res.data);
-                    $scope.vCrud.reset();                    
+                    $scope.vCrud.reset();  
+                    $scope.$apply();                 
                 } else {
                     // Reasignacion de Tokens.
                   //  alert(res.Msg);                     

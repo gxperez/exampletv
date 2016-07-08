@@ -48,7 +48,7 @@
 	
 	public function obtenerSeccionTemplateJson(){
 		$this->load->database();
-		$query = $this->db->get(seccion_template);	
+		$query = $this->db->get("seccion_template");	
 			
 		$usuario = array();
 		foreach ($query->result() as $row)
@@ -93,7 +93,7 @@
 	        		}           			
         		}    		
         	}
-        	$update["FechaModifica"] = date("Y-m-d H:i:s");
+        	$update["FechaModificacion"] = date("Y-m-d H:i:s");
         	$this->db->where("SeccionTemplateID", $obj["SeccionTemplateID"]);
 			$rs = $this->db->update("seccion_template", $update);
 			if($rs){

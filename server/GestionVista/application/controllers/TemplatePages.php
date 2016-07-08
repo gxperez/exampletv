@@ -238,7 +238,7 @@ public function Actualizar(){
 		$listBlok = array();
 
 		$listBlok["Full"] = '<div id="Full">
-			<div class="Full" ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )"></div>
+			<div class="Full" ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )"> <div id="pos_1"></div> </div>
 			</div>'; 
 		$listBlok["DxD"] = '<div id="DxD">
 	<table class="tbltv">
@@ -301,7 +301,7 @@ $listBlok["Ux2_H"] = '<div id="Ux2_H">
 	<table class="tbltv">
 		<tbody>
 		<tr>
-			<td ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )" rowspan="2">   	<div id="pos_1"> </div> </td>   <td ng-click="seccionTemp.agregar(2, seccionTemp.listSeccion.pos_2 )"><div id="pos_2"> 2</div></td> 
+			<td ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )" rowspan="2">   	<div id="pos_1"> </div> </td>   <td ng-click="seccionTemp.agregar(2, seccionTemp.listSeccion.pos_2 )"><div id="pos_2"> </div></td> 
 		</tr>
 		<tr>		
 			<td ng-click="seccionTemp.agregar(3, seccionTemp.listSeccion.pos_3 )"><div id="pos_3">  </div></td> 

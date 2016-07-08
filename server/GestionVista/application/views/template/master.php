@@ -138,18 +138,20 @@ margin-left: 11px;
                           <span>Formularios</span>
                       </a>
                       <ul class="sub">
-                          <li><a  ng-click="SetMain('dispositivo/sm')">Dispositivos</a></li>
-                          <li><a  ng-click="SetMain('bloques/sm')">Bloques</a></li>
                           <li><a  ng-click="SetMain('contenido/sm')">Contenido</a></li>
                           <li><a  ng-click="SetMain('fuentes/sm')">Fuentes</a></li>
-                          <li><a  ng-click="SetMain('programacion/sm')">Programacion</a></li>
-                          <li><a  ng-click="SetMain('grupo/sm')">Grupo</a></li>
-                          <li><a  ng-click="SetMain('grupotv/sm')">Administrador de Grupo</a></li>
-                          <li><a  ng-click="SetMain('secciontemplate/sm')">Seccion Template</a></li>
-                          <li><a  ng-click="SetMain('fuerzaventa/sm')">Fuerza de Venta</a></li>
-                          <li><a  ng-click="SetMain('fuerzaventa/master')">Master FV </a></li>
                           <li><a  ng-click="SetMain('fuerzaventadispositivo/master')">Master Dispositivo FV</a></li>
                           <li><a  ng-click="SetMain('bloques/master')">Master Bloques</a></li>
+                          <li><a  ng-click="SetMain('fuerzaventa/master')">Fuerza de Venta FV </a></li>
+                          <li><a  ng-click="SetMain('grupotv/sm')">Administrador de Grupo</a></li>
+                          <li><a  ng-click="SetMain('dispositivo/sm')">Dispositivos</a></li>                          
+                          <li><a  ng-click="SetMain('programacion/sm')">Programacion</a></li>
+                          <li><a  ng-click="SetMain('grupo/sm')">Grupo</a></li>
+                          <li><a  ng-click="SetMain('bloques/sm')">Bloques</a></li>
+                          <li><a  ng-click="SetMain('fuerzaventa/sm')">FV</a></li>
+                          
+                          
+                          
 
                       </ul>
                   </li>

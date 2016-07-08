@@ -33,7 +33,10 @@ background-color: rgb(160, 160, 160);
 .tbltv td, .tbltv th {
 padding: 0;
 border: 1px rgb(107, 98, 98) solid;
+min-width: 106px;
+height: 190px;
 }
+
 
 .tbltv td:hover {
 opacity: 0.3;
@@ -320,6 +323,51 @@ background-color: #000;
                
                   </div>
 
+                  <div class="modal fade" id="myFormSeccionTemp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" ng-form="seccionTemp.$Form.Second">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Seccion Fuente </h4>
+      </div>
+    
+      <div class="modal-body">
+    
+         <div class="form-group">
+      <label class="col-sm-2 col-sm-2 control-label">Encabezado</label>
+        <div class="col-sm-10">
+          <input type="text" ng-model="seccionTemp.form.Encabezado" class="form-control" required>
+
+         </div>
+      </div>
+      
+    <div class="form-group">
+      <label class="col-sm-2 col-sm-2 control-label">FuenteID</label>
+
+      <div class="col-sm-10">
+      <select ng-model="seccionTemp.form.FuenteID" class="form-control" required>
+      <option></option>
+      <?php
+          foreach ($listFuentesActivas as $key => $value) {
+            echo "<option value='$key'> {$value->Descripcion} </option>";             
+          }
+       ?>        
+      </select>
+
+      </div>                    
+        </div>      
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" ng-click= "seccionTemp.guardar()" >Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script type="text/javascript" src="<?php echo base_url(). "webApp/"; ?>js/jquery.bootstrap.wizard.js"></script>
 
@@ -350,6 +398,11 @@ background-color: #000;
 
 
 var vw_listEsquemaTipo = <?php echo json_encode($listEsquemaTipo);  ?>;
+
+
+var vw_listFuentes = <?php echo json_encode($listFuentesActivas); ?>; 
+
+
 
     
     </script>
