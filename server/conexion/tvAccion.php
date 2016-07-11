@@ -13,9 +13,11 @@ try
 
 		 $row = $bd->obtener_fila($result, 0); 
 
-		 
-
 		 $DispositivoID = $row['DispositivoID']; 
+
+		 $consultaGruposPertenece = $bd->ejecutar("select GrupoID, DispositivoID from Grupo_Tv where Estado = 1 and DispositivoID = {$row['DispositivoID']};" );
+		 $listaGrupo =  $bd->obtener_fila($consultaGruposPertenece, 0); 
+		 
 
 			if($row['Cantidad'] ==  0){
 				// Hay Que Crear el Televisor
@@ -38,13 +40,12 @@ try
 
 			$stmt = $bd->ejecutar("INSERT INTO `bis_gestionvista`.`session_dispositivo_log` (`DispositivoID`, `Mac`, `Ip`, `Estado`, `uid`) VALUES ('$DispositivoID', '{$dispositivoEnt['Mac']}', '{$dispositivoEnt['Ip']}', '1', '{$row['uid']}');");
 
-			$row["DispositivoID"] = $DispositivoID; 
+				$row["DispositivoID"] = $DispositivoID; 
 				$row["Mac"]	= $dispositivoEnt['Mac'];				
 				$row["Ip"]	= $dispositivoEnt['Ip'];
-
-
-
-			return $row;
+				$row["listGrupos"] = $listaGrupo;
+				
+				return $row;
 	}
 
 	function logoutTV($dispositivoEnt){
@@ -67,8 +68,9 @@ try
 	$arrayName = array('Mac' => '2.fddf2.3dfd.35',  'Ip'=> '2.3636.336');
 	$arrayName = registrarValidarTV($arrayName); 
 	logoutTV($arrayName); 
-
 	*/
+
+
 
 
 

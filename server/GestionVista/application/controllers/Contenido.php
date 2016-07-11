@@ -8,10 +8,8 @@ class Contenido extends MY_Controller {
 	 */
 	public function index()
 	{	
-
 	
 	echo $this->generateGUID(); 
-
 	}
 	
 	public function sm()
@@ -220,4 +218,39 @@ public function Actualizar(){
 	        return true; 
 		} 
 	}
+
+	public function httpQuitsObtenerPrograma(){
+
+		// ?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1
+
+		if( $this->input->get("sckt_hash")){
+			$hash = $this->input->get("sckt_hash"); 
+			if($hash == 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1'){
+				// Aqui se busca y s recorre la programacion.
+				$this->load->model("Contenido_Model", "mContenido");
+
+				// Programa por el ID del Grupo como key 
+				$programaHoy = $this->mContenido->obtenerProgramaHoy(); 
+				$contenidoHoy = $this->mContenido->obtenerContenidoHoyPorGrupo();				
+				
+
+				echo json_encode(array("Programa"=> $programaHoy,
+				 "contenido"=>$contenidoHoy				 
+				 ) ); 
+
+				return true; 
+			}
+		}
+
+		echo "Solicitud no encontrada"; 
+		return false; 
+	}
+
+
+	public function GenerarBisChartPorFuerzaVenta(){
+
+			$fuente = $this->mContenido->ObtenerContenidoHoyFuentes();
+
+	}
+
 }

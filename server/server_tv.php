@@ -4,75 +4,94 @@ set_time_limit(0);
 date_default_timezone_set("America/Santo_Domingo"); 
 // include the web sockets server script (the server is started at the far bottom of this file)
 require 'class.PHPWebSocket.php';
+require 'class.AdminBisTV.php'; 
 
-//
-/*
-$arrayName = array('Mac' => '2.fddf2.3dfd.35',  'Ip'=> '2.3636.336');
-	$arrayName = registrarValidarTV($arrayName); 
-	logoutTV($arrayName); 
 
-	*/
+/* Varivable para solicitude via http. */
 
+$glb_Hash = 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1'; 	
 
 // when a client sends data to the server
 function wsOnMessage($clientID, $message, $messageLength, $binary) {
 	global $Server;
+	global $BisGestion; 
+
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
 	$timeNow =  new DateTime(); 
 	
 	$confRes = array( "accion"=> "ACTIVAR", "mensaje"=> "Esperando respuestas", "fecha"=> $timeNow->format('Y,m,d,H,i,s') ); 
 
-	$Server->log("Recepcion de Solicitud de Registro");
+	$Server->log("Recepcion de Solicitud de Registro.");
 	$Server->log( $timeNow->format('Y,m,d,H,i,s')  );
+	$Server->log("=================================");
+	$Server->log($message); 
+
 	
 	if ($messageLength == 0) {
 		$Server->wsClose($clientID);
 		return;
 	}
 
-	//The speaker is the only person in the room. Don't let them feel lonely.
-/*	if ( sizeof($Server->wsClients) == 1 )
-		$Server->wsSend($clientID, json_encode($confRes) );
-	else
-	*/
-		//Send the message to everyone but the person who said it
+	$varible = json_decode($message);		
+
+
+	if(array_key_exists("accion" , $varible ) ){
+
+		if($varible->accion == "ACTIVAR"){
+			// 
+			$Server->wsClients[$clientID]; 
+			$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));
+			$Server->listTV[$clientID] = registrarValidarTV($arrayName);
+
+
+			$Server->log("Mensaje Traigos: "); 
+
+			$retornos =	$BisGestion->setHasRefresh(); 
+
+			$Server->log( print_r($retornos, true) ); 
+
+		}
+
+		return false; 
+	}
+
+	/// Ya entendí por que pasa Esto.
+
 		foreach ( $Server->wsClients as $id => $client )
+
 			if ( $id != $clientID ) {
 
-			$varible = json_decode($message); 
+			$varible = json_decode($message);
+		
 
 			if(array_key_exists("accion" , $varible ) ){
-				$Server->log(print_r($varible, true)); 
+
+
+				$Server->log(print_r($varible, true));
+
 				if($varible->accion == "ACTIVAR"){
-
-					$Server->log("=================================="); 
-					$Server->log(""); 
-					$Server->log("Nuevo Arreglo a Ser INsertado"); 
-
-					$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));
-
-
-					$Server->log(""); 
-					$Server->log(print_r($arrayName, true)); 
-
-					 
+					$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));					
+// 					$Server->log(print_r($arrayName, true)); 					 
 					 $Server->listTV[$clientID] = registrarValidarTV($arrayName); 
-
-					 $Server->log(""); 
-					 $Server->log("Se Creo: ". $clientID ); 
-
-					 $Server->log( $Server->listTV ); 
-
+					 
+					 $Server->log("Esta En linea el Cliente #: ". $clientID );					 
 					 $Server->log($Server->listTV[$clientID]); 
-					 $Server->log("Se Creo La session en el Log. ==================="); 
+					 $Server->log("====== Se Establecio la session con el servidor. ==========");
 
+					 // Activacion consultar 
+					 	$dataHoy = date("Y-m-d"); 					 	
 
+					   if(array_key_exists("FechaPrograma" , $varible ) ){
 
+					  //  	$varible["FechaPrograma"]
 
+					   	// Validar que el Televisor envio 
 
+					   } else {
+					   	// Enviar la Actualizacion. 
+
+					   }
 				}
-
-				
 			}
 
 
@@ -80,6 +99,11 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 				// $Server->wsSend($id, "Visitor $clientID ($ip) said \"$message\"" .  "=>: ". $varible);
 				$Server->wsSend($id,  json_encode($confRes));				
 		}
+}
+
+function cargarProgramacion(){
+
+
 }
 
 // when a client connects
@@ -96,7 +120,8 @@ function wsOnOpen($clientID)
 
 
 	//Send a join notice to everyone but the person who joined
-	foreach ( $Server->wsClients as $id => $client )
+	foreach ( $Server->wsClients as $id => $client )		
+
 		if ( $id != $clientID ) {
 		$messal =  array(
 						'mensaje' => '"Visitor $clientID ($ip) has joined the room. con el String"',
@@ -106,7 +131,7 @@ function wsOnOpen($clientID)
 				$Server->wsSend($id,  json_encode($messal) );
 		} else {
 
-		$rs = array("accion"=> '',  "fecha"=> $tempDateNow->format('Y,m,d,H,i,s')) ; 
+		$rs = array("accion"=> 'ACTIVAR',  "fecha"=> $tempDateNow->format('Y,m,d,H,i,s')) ; 
 			$Server->wsSend($id,  json_encode($rs) );
 
 		}
@@ -121,8 +146,7 @@ function wsOnClose($clientID, $status) {
 
 	$Server->log(print_r($Server->listTV, true)); 
 	
-	logoutTV($Server->listTV[$clientID]); 
-
+	logoutTV( $Server->listTV[$clientID] ); 
 
 	$Server->log( " Cerro Session en Base de datos. "); 
 
@@ -142,8 +166,9 @@ require "conexion/tvAccion.php";
 require 'conexion/Conexion.php';
 require 'conexion/instanciaDB.php';
 
-
 $bd= ConexionDB::getInstance();
+
+$BisGestion = new AdminBisTV($bd); 
 
 // start the server
 $Server = new PHPWebSocket();

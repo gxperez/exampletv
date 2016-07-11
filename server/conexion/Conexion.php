@@ -9,8 +9,9 @@ Class ConexionDB{
    private $link;
    private $stmt;
    private $array;
-
    static $_instance;
+
+   public $argServer; 
 
    private function __construct(){
       $this->setConexion();
@@ -68,6 +69,13 @@ Class ConexionDB{
    public function lastID(){
       return mysqli_insert_id($this->link);
    }
+
+   public function conectarServerInfo(){
+
+      // Conxion del Json para Distribuirlo por 
+
+   }
+
 
 }
 ?>
