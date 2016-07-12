@@ -395,7 +395,11 @@ sf.service.VideoPlayer.play({
 
 		setTimerPerPrograma: function(serverDatetime){
 			// set timer 
-			var fechas
+			var arrF = serverDatetime.split(",");
+			
+			var fechaHoy = new Date(parseInt(arrF[0]), (parseInt(arrF[1])-1), parseInt(arrF[2]), parseInt(arrF[3]), parseInt(arrF[4]), parseInt(arrF[5]) );
+			
+
 
 			var a_obj = JSON.parse(localStorage.getItem("programaTV")); 
 
@@ -405,7 +409,7 @@ sf.service.VideoPlayer.play({
 				for(var ti in programa){
 					if( programa.hasOwnProperty(ti) ){
 
-						programa[ti].
+						programa[ti];
 					}
 					// 
 					
