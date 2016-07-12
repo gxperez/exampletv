@@ -161,6 +161,23 @@
 		return $listaContenido;
 	}
 
+	public function obtenerProgramaHoyPorGrupoID( $GrupoID ){
+		$this->load->database();
+
+		$this->db->where("GrupoID", $GrupoID); 
+		$result = $this->db->get("vw_rep_programacion_contenido_hoy");
+
+		// Logica para arrmar los contenidos en el Portal.
+		$listaContenido = array();
+		foreach ($result->result() as $row)
+		{
+
+			$listaContenido[] = $row; 			
+		}
+
+		return $listaContenido;
+	}
+
 
 	public function obtenerContenidoHoyPorGrupo(){
 
@@ -191,6 +208,71 @@ inner join seccion_template as st on st.TemplatePagesID = tp.TemplatePagesID
  and st.Estado = 1
 inner join Fuentes as FF on FF.FuenteID = st.FuenteID and FF.Estado = 1
 where p.Estado = 1
+and (now() BETWEEN p.FechaEjecutaInicio and p.FechaEjecutaFin)
+AND vwPS.DiaSemana = dayofweek(NOW())
+group by cc.Guid, cc.Duracion, cc.Descripcion, 
+bcc.GrupoID, bcc.Orden, tp.EsquemaTipo,
+tp.TemplatePagesID,
+tp.Duracion, 
+tp.TransicionTipoIni, 
+tp.TransicionTipoFin, 
+tp.MostrarHeader, 
+st.Encabezado, 
+st.ContenidoTipo, 
+st.Posicion, 
+FF.FuenteID;"; 
+
+		$query = $this->db->query($sql);
+		$listaContenido = array();
+
+		// Logica para arrmar los contenidos en el Portal.
+		$listaContenido = array();
+		foreach ($query->result() as $row)
+		{
+			if(!array_key_exists($row->Guid, $listaContenido)){
+				$listaContenido[$row->Guid] = array();
+			}
+			if(!array_key_exists($row->GrupoID, $listaContenido[$row->Guid] )){				
+				$listaContenido[$row->Guid][$row->GrupoID] = array();
+
+			}
+			// GUID->GrupoID			
+			$listaContenido[$row->Guid][$row->GrupoID][] = $row;
+
+		}
+		return $listaContenido;
+	}
+
+
+	public function obtenerContenidoHoyPorGrupoPorGrupoID($id){
+
+		$this->load->database();
+
+		$sql = "select cc.Guid, cc.Duracion, cc.Descripcion, 
+bcc.GrupoID, bcc.Orden, tp.EsquemaTipo,
+tp.TemplatePagesID,
+tp.Duracion as DuracionPages, 
+tp.TransicionTipoIni, 
+tp.TransicionTipoFin, 
+tp.MostrarHeader, 
+st.Encabezado, 
+st.ContenidoTipo, 
+st.Posicion, 
+FF.FuenteID
+ from 
+programacion as p 
+inner join vw_programacion_bloque_semana as vwPS 
+on vwPS.ProgramacionID= p.ProgramacionID and vwPS.Estado = 1
+
+inner join bloque_contenido as bcc on bcc.BloqueID = vwPS.BloqueID
+inner join contenido as cc on cc.ContenidoID = bcc.ContenidoID
+and cc.Estado = 1
+inner join template_pages as tp on tp.SliderMaestroID = cc.SliderMaestroID
+and tp.Estado = 1
+inner join seccion_template as st on st.TemplatePagesID = tp.TemplatePagesID
+ and st.Estado = 1
+inner join Fuentes as FF on FF.FuenteID = st.FuenteID and FF.Estado = 1
+where p.Estado = 1 and bcc.GrupoID = {$id}
 and (now() BETWEEN p.FechaEjecutaInicio and p.FechaEjecutaFin)
 AND vwPS.DiaSemana = dayofweek(NOW())
 group by cc.Guid, cc.Duracion, cc.Descripcion, 
@@ -263,6 +345,42 @@ FF.FuenteID;";
 		return $listaContenido; 
 	}
 
+
+public function ObtenerContenidoHoyFuentesPorGrupoID($grupoID){
+		$this->load->database();
+		// Semana de Querys.		
+
+		$sqlQuery = "select FF.FuenteID, FF.Descripcion, FF.EsManual, FF.FuenteTipo, FF.Url
+ 					from 
+			programacion as p 
+				inner join vw_programacion_bloque_semana as vwPS 
+			on vwPS.ProgramacionID= p.ProgramacionID and vwPS.Estado = 1
+				inner join bloque_contenido as bcc on bcc.BloqueID = vwPS.BloqueID
+				inner join contenido as cc on cc.ContenidoID = bcc.ContenidoID
+			and cc.Estado = 1
+				inner join template_pages as tp on tp.SliderMaestroID = cc.SliderMaestroID
+			and tp.Estado = 1
+			inner join seccion_template as st on st.TemplatePagesID = tp.TemplatePagesID
+ 		and st.Estado = 1
+		inner join Fuentes as FF on FF.FuenteID = st.FuenteID and FF.Estado = 1
+		where p.Estado = 1 and bcc.GrupoID = {$grupoID}
+		and (now() BETWEEN p.FechaEjecutaInicio and p.FechaEjecutaFin)
+			AND vwPS.DiaSemana = dayofweek(NOW())
+		group by FF.FuenteID, FF.Descripcion, FF.EsManual, FF.FuenteTipo, FF.Url;"; 
+
+		$query = $this->db->query($sqlQuery);
+		$listaContenido = array();
+
+		foreach ($query->result() as $row)
+		{
+			// Ajustes en General.
+			if(!array_key_exists($row->FuenteID, $listaContenido)){
+				$listaContenido[$row->FuenteID] = array();
+			}
+			$listaContenido[$row->FuenteID][] = $row; 
+		}
+		return $listaContenido; 
+	}
 
 	
  }

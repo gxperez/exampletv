@@ -8,7 +8,7 @@ class AdminBisTV
 	private $db = false; 
 
 
-	public function __construct($db){
+	public function __construct( $db ){
 		$this->db = $db; 		
 	}
 
@@ -36,7 +36,7 @@ class AdminBisTV
 
 		$retorno = array();
 
-		while($rows =$bd->obtener_fila($result, 0) ) {
+		while($rows =$this->db->obtener_fila($result, 0) ) {
 
 			if(!array_key_exists($rows["GrupoID"], $retorno)){
 				$retorno[$rows["GrupoID"]] = array();

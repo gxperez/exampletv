@@ -10,12 +10,16 @@ require 'class.AdminBisTV.php';
 /* Varivable para solicitude via http. */
 
 $glb_Hash = 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1'; 	
+$integracionConfig = array(
+'server' => "http://10.234.133.76:7777/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1"
+	 );
 
 // when a client sends data to the server
 function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 	global $Server;
 	global $BisGestion; 
+	global $integracionConfig; 
 
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
 	$timeNow =  new DateTime(); 
@@ -38,17 +42,29 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 	if(array_key_exists("accion" , $varible ) ){
 
-		if($varible->accion == "ACTIVAR"){
-			// 
-			$Server->wsClients[$clientID]; 
-			$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));
-			$Server->listTV[$clientID] = registrarValidarTV($arrayName);
+		switch ($varible->accion) {
+			case "ACTIVAR":
+				$Server->wsClients[$clientID]; 
+				$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));
+				$Server->listTV[$clientID] = registrarValidarTV($arrayName);
 
-			$Server->log("Cliente $clientID Esta conectado."); 						
-			$retornos =	$BisGestion->setHasRefresh(); 
-			$Server->log( print_r($retornos, true) ); 
+				$Server->log("Cliente $clientID Esta conectado."); 						
+				$retornos =	$BisGestion->setHasRefresh(); 
+				$Server->log( print_r($retornos, true) ); 
 
+				$Server->wsSend($clientID,  json_encode(array('accion' => "NOTIFICAR", "Msg"=> "El dispositivo confirmara si esta actualizado", "fecha"=> $timeNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"], "fechaActual"=> date("Y-m-d") ) ) );	
+
+				break;
+
+			case "ACTIVAR":
+
+			break; 
+
+			default:
+				# code...
+				break;
 		}
+		
 
 		return false; 
 	}
@@ -109,6 +125,7 @@ function wsOnOpen($clientID)
 {
 
 	global $Server;
+	global $integracionConfig;
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
 	
 	$tempDateNow =  new DateTime(); 
@@ -129,7 +146,7 @@ function wsOnOpen($clientID)
 				$Server->wsSend($id,  json_encode($messal) );
 		} else {
 
-		$rs = array("accion"=> 'ACTIVAR',  "fecha"=> $tempDateNow->format('Y,m,d,H,i,s')) ; 
+		$rs = array("accion"=> 'ACTIVAR',  "Msg"=> "El dispositivo Esta conectado", "fecha"=> $tempDateNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"]) ; 
 			$Server->wsSend($id,  json_encode($rs) );
 
 		}

@@ -26,7 +26,8 @@
  		if ($query->num_rows() >= 1)
 		{
 			return false;
-		}		
+		}
+		
 
 		return true;			
 		// $listaGrupoTv = $query->result(); 
@@ -212,7 +213,27 @@
 			return $rs; 
 	}
 
+	public function obtenerGrupoPorMacTv($mac){
+		$this->load->database();
+
+		$sql = "select gt.GrupoTvID, GrupoID, gt.DispositivoID, d.Nombre   from grupo_Tv as gt
+inner join dispositivo as d
+on d.DispositivoID = gt.DispositivoID
+ where gt.Estado = 1 and Mac = '{$mac}';"; 
+
+ 		$query = $this->db->query($sql);
+
+ 		// Este es el Resultado final del sistema.
+		$listaDispositivo = $query->result(); 
+		return $listaDispositivo;
+
+
+
+
+	}
+
 	public function ObtenerPorID($id){
+		$this->load->database();
 		$this->db->where("GrupoTvID", $id); 
 		$result = $this->db->get("grupo_tv");		
 

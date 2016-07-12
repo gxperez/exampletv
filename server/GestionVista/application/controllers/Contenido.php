@@ -222,19 +222,61 @@ public function Actualizar(){
 	public function httpQuitsObtenerPrograma(){
 
 		// ?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1
+		$defualGrupoID = 1; 
+		$idGrupo = 0; 
 
 		if( $this->input->get("sckt_hash")){
 			$hash = $this->input->get("sckt_hash"); 
-			if($hash == 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1'){
-				// Aqui se busca y s recorre la programacion.
+			if($hash == 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1'){				
 				$this->load->model("Contenido_Model", "mContenido");
+				$this->load->model("GrupoTv_Model", "mGrupoTv");
 
-				// Programa por el ID del Grupo como key 
-				$programaHoy = $this->mContenido->obtenerProgramaHoy(); 
-				$contenidoHoy = $this->mContenido->obtenerContenidoHoyPorGrupo();				
+				if($this->input->get("Mac")){
+					// Este es el FIltro.
+
+				$Mac = $this->input->get("Mac"); 
+				$grupoTv = $this->mGrupoTv->obtenerGrupoPorMacTv($Mac); 				
+
+				if(count($grupoTv) == 0 ){
+					//  
+					$idGrupo = $defualGrupoID;
+
+				} else {
+
+					$idGrupo = current($grupoTv)->GrupoID;
+				}
+
+					// Mac  FIltro por Grupo Especifico
 				
 
-				echo json_encode(array("Programa"=> $programaHoy,
+				// $programaHoy = $this->mContenido->obtenerProgramaHoy();				
+				// $contenidoHoy = $this->mContenido->obtenerContenidoHoyPorGrupo();
+				$programaHoy = $this->mContenido->obtenerProgramaHoyPorGrupoID($idGrupo);	
+
+				if(count($programaHoy)== 0){
+
+					echo "NO NO NO"; exit(); 
+
+				}
+
+				$contenidoHoy = $this->mContenido->obtenerContenidoHoyPorGrupoPorGrupoID($idGrupo);
+				$fuentesHoy = $this->mContenido->ObtenerContenidoHoyFuentesPorGrupoID($idGrupo); 
+
+
+
+				 echo json_encode(array("IsOk"=> true, "programa"=> $programaHoy,
+				 "contenido"=>$contenidoHoy, "fuentes"=>$fuentesHoy			 
+				 ) ); 
+
+				 return 0; 
+
+				}
+				
+
+
+				
+
+				echo json_encode(array("IsOk"=> true, "programa"=> $programaHoy,
 				 "contenido"=>$contenidoHoy				 
 				 ) ); 
 
