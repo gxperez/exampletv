@@ -18,14 +18,12 @@ class AdminBisTV
 		if(!$this->dtRefresh){
 			// Refrescando la Pantalla. 
 			$listaPorograma = $this->obtenerProgramaGlobal(); 
-			return $listaPorograma; 
-			// Es la Primera Vez para todos
-			return true; 
+
+			return $listaPorograma; 			
 		}
 
 		$date = date("Y-m-d"); 
-
-		if(array_key_exists($date, $this->dtRefresh)) {
+		if(!array_key_exists($date, $this->dtRefresh)) {
 			// Ajustes e General.			
 
 		}

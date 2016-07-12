@@ -13,15 +13,16 @@ $glb_Hash = 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1';
 
 // when a client sends data to the server
 function wsOnMessage($clientID, $message, $messageLength, $binary) {
+
 	global $Server;
 	global $BisGestion; 
 
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
 	$timeNow =  new DateTime(); 
 	
-	$confRes = array( "accion"=> "ACTIVAR", "mensaje"=> "Esperando respuestas", "fecha"=> $timeNow->format('Y,m,d,H,i,s') ); 
+	// $confRes = array( "accion"=> "ACTIVAR", "mensaje"=> "Esperando respuestas", "fecha"=> $timeNow->format('Y,m,d,H,i,s') ); 
 
-	$Server->log("Recepcion de Solicitud de Registro.");
+	$Server->log("Recepcion de Mensajes.");
 	$Server->log( $timeNow->format('Y,m,d,H,i,s')  );
 	$Server->log("=================================");
 	$Server->log($message); 
@@ -43,11 +44,8 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 			$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));
 			$Server->listTV[$clientID] = registrarValidarTV($arrayName);
 
-
-			$Server->log("Mensaje Traigos: "); 
-
+			$Server->log("Cliente $clientID Esta conectado."); 						
 			$retornos =	$BisGestion->setHasRefresh(); 
-
 			$Server->log( print_r($retornos, true) ); 
 
 		}
