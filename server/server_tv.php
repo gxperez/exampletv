@@ -11,7 +11,8 @@ require 'class.AdminBisTV.php';
 
 $glb_Hash = 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1'; 	
 $integracionConfig = array(
-'server' => "http://10.234.133.76:7777/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1"
+	'server' => 'http://192.168.183.1:7777/gestion/server/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1'
+//  'server' => "http://10.234.133.76:7777/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1"
 	 );
 
 // when a client sends data to the server
@@ -193,7 +194,9 @@ $Server->bind('close', 'wsOnClose');
 
 // for other computers to connect, you will probably need to change this to your LAN IP or external IP,
 // alternatively use: gethostbyaddr(gethostbyname($_SERVER['SERVER_NAME']))
-$Server->wsStartServer('10.234.133.76', 9300); // ws://10.234.130.55:9300'  127.0.0.1
+// $Server->wsStartServer('10.234.133.76', 9300); // ws://10.234.130.55:9300'  127.0.0.1
+$Server->wsStartServer('192.168.183.1', 9300); // ws://10.234.130.55:9300'  127.0.0.1
+
 
 
 

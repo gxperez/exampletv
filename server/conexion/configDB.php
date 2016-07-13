@@ -4,7 +4,7 @@
 //Servidor
 $host='localhost';
 $user='root';
-$password='';
+$password='123';
 $db='bis_gestionvista';
 ?>
 

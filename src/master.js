@@ -9,6 +9,7 @@ var fileObj = {};
 var instancia = null;
 
 var configFiles = ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ];   //{ 0 = serverURL, 1 = version, 2 = all source }
+var serverUpdatePath = null; 
 var macTV;
 var rr = 0;
 
@@ -144,10 +145,7 @@ Master = {
 							
 							Master.sIndex.sccns[option.slide.seccion[it].posicion] = {c: 0, max: option.slide.seccion[it].contenido.length, modulo: "jquery" };
 							 
-							$(DivId).html(innerHtml.html());
-							
-							
-							
+							$(DivId).html(innerHtml.html());						
 							
 						}
 						
@@ -197,9 +195,43 @@ sf.service.VideoPlayer.play({
 				alert('######getAVplay Exception :[' +e.code + '] ' + e.message);
     		}
 
-    		*/
+    		*/		
 
-		
+		}, 
+
+		cambiarSimpleImgPantallaFull: function(url, eventos){
+
+			var op = Master.setOptionEsquema(1);
+
+				Master.renderStruct(op, function(){
+					
+					var view = {
+		    	        	showInfoBar: false, 
+		    	        	EventRemote: eventos,
+		    	          				
+		    				slide: {
+		    	        		esquemaTipo: 1,
+		    	        		"autochange": false,	    	        		
+		    	        		duracion: 0,
+		    	        		seccion: [
+		    	    						{ 
+		    	    						posicion: 1,
+		    	    						encabezado: "Encabezado",
+		    	    						contenidoTipo: 1,
+		    	    						bgColor: "#000",
+		    	    						modulo: "jquery",
+		    	    						contenido: [ {
+		    											representacionTipo: 3,
+		    											data: "<img src='"+ url + "' style='max-height: 715px;  align-items: center;'>"	    	    						
+		    	    								}	    	    								
+		    	    								]				
+		    	    						}				
+		    	    					]
+		    	    				}	        			
+		    	        	};		        	
+		        	Master.renderPage(view);
+				});
+
 
 		}, 
 		
@@ -425,10 +457,9 @@ sf.service.VideoPlayer.play({
 
 			alert("Configuracion de Tiempo"); 
 			alert(serverDatetime); 
+			// alert(typeof aa);
 
-			alert(typeof aa);
-
-			alert(aa);  
+			// alert(aa);  
 
 // 			Master.setTimerPerPrograma(serverDatetime);
 
@@ -697,8 +728,10 @@ MasterTV = function() {
 
 MasterTV.prototype.setFileConfig = function(){	
 	
-	// Yes Exists File. OF COMPUTER.	
-	var firstData = ['10.234.133.76:9300'];
+	// Yes Exists File. OF COMPUTER.
+		
+	var firstData = ['192.168.183.1:9300'];
+	//var firstData = ['10.234.133.76:9300'];
 	var firstServer = 'localhost:7777/GestionVista/'; 
 	var app_info = {}; 
 	var page_config = {}; 	
@@ -757,7 +790,33 @@ MasterTV.prototype.setFileConfig = function(){
 						
 			switch (index) { // { 0 = serverURL, 1 = version, 2 = all source }
 				case 0:
-					app_info.server = allStr.split(",");
+				alert("Validar que el socket es nuevo"); 
+				var validate = false;
+				var currentUpdatePath = allStr.split(",");//  firstData;
+
+				var tempSr = allStr.split(",")
+				for(var t in firstData){
+
+					if( tempSr.indexOf(firstData[t]) === -1 ){
+						validate = true;
+						currentUpdatePath = firstData;
+					}
+				}
+
+				if(serverUpdatePath != null){
+					validate = true; 
+					currentUpdatePath = firstData.split(",");				
+				}
+
+				if(validate){
+					alert("Actualizara el Documento para las IPS o por Actualicion del Servicio"); 
+
+					var fileObjTemp = fileSystemObj.openCommonFile(curWidget.id + '/' + configFiles[0], 'w');
+					fileObjTemp.writeAll(currentUpdatePath.toString() );
+					fileSystemObj.closeCommonFile(fileObjTemp);
+				}
+
+					app_info.server = currentUpdatePath;
 					break;				
 				case 1:  					
 
@@ -838,6 +897,10 @@ MasterTV.prototype.ObtenerPrograma= function(fecha, servicio, fechaServidor){
 			// Estuvo OK el asunto
 			alt[fecha] = {programa: res.programa, contenido: res.contenido}; 
 			localStorage.setItem("programaTV", JSON.stringify(alt) );
+			log("Configurando programa."); 
+
+			Master.cambiarSimpleImgPantallaFull("template/img/actualizando.png", {}); 
+
 			Master.setTimerPerPrograma(fechaServidor);
 
 
