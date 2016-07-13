@@ -408,7 +408,6 @@ order by bcc.Orden, tp.Posicion, st.Posicion;";
 
 
 					if($row->EsManual){
-						
 
 					}
 
