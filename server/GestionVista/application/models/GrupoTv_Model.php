@@ -213,10 +213,48 @@
 			return $rs; 
 	}
 
+	public function GenerarFiltroPorMac($mac){
+
+		$this->load->database();
+		$filtrosDefinidos = array("@Region"=>"Todos","@Centros"=>"Todos","@Zona"=>"Zona 110");
+
+
+		$sql = "select CASE when (fv.Nivel = 1) then '@Region' 
+ when (fv.Nivel = 2 or  fv.Nivel = 3 or fv.Nivel = 4 ) then
+ '@Centro' 
+ when fv.Nivel = 5 then '@Zona'
+ else 
+ '@Ruta'
+ END
+ as Variable, s.DispositivoID, fv.Nombre,  fv.Descripcion, fv.Nivel
+ 	from fuerza_venta_dispositivo as fvd
+ inner join Fuerza_venta as fv
+ on fv.GUID_FV = fvd.GUID_FV and fvd.Estado = 1 and fv.Estado = 1
+ inner join dispositivo as s on s.DispositivoID = fvd.DispositivoID and s.Estado = 1
+ where s.Mac = '{$mac}';"; 
+
+ 		$query = $this->db->query($sql);
+
+ 		if ($query->num_rows() > 0)
+		{
+
+			$res = current($query->result()); 
+
+			if(array_key_exists($res->Variable, $filtrosDefinidos)){				
+				// 				
+				$filtrosDefinidos[$res->Variable] = $res->Nombre; 
+			}
+		}
+
+		return json_encode($filtrosDefinidos); 
+
+
+	}
+
 	public function obtenerGrupoPorMacTv($mac){
 		$this->load->database();
 
-		$sql = "select gt.GrupoTvID, GrupoID, gt.DispositivoID, d.Nombre   from grupo_Tv as gt
+		$sql = "select gt.GrupoTvID, GrupoID, gt.DispositivoID, d.Nombre, Fn_ObtenerFuerzaGUIDFVPorDispositivo(gt.DispositivoID) as GUID   from grupo_Tv as gt
 inner join dispositivo as d
 on d.DispositivoID = gt.DispositivoID
  where gt.Estado = 1 and Mac = '{$mac}';"; 

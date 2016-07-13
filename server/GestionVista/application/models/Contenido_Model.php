@@ -86,10 +86,23 @@
 		return $this->db->insert_id();
 	}
 
+	public function actualizarDuracionContenido($obj){
+		$this->load->database(); 
+		$query = "select Fn_ActualizaDuracionEnContenido({$obj->SliderMaestroID}, {$obj->ContenidoID} ) as rt"; 
+
+		$query = $this->db->query($query);
+		$rest = $query->result(); 
+		return $rest;
+
+
+	}
+
 	public function actualizar($obj){
 		$this->load->database();
 
 		$ContenidoEnt = $this->ObtenerPorID($obj["ContenidoID"]);
+
+
 
         	if($ContenidoEnt == null){ 
 		        return false; 
@@ -106,6 +119,9 @@
         	$update["FechaModifica"] = date("Y-m-d H:i:s");
         	$this->db->where("ContenidoID", $obj["ContenidoID"]);
 			$rs = $this->db->update("contenido", $update);
+
+			$this->actualizarDuracionContenido($ContenidoEnt); 
+
 			if($rs){
 				return $ContenidoEnt; 
 			}
@@ -164,15 +180,29 @@
 	public function obtenerProgramaHoyPorGrupoID( $GrupoID ){
 		$this->load->database();
 
+		$this->db->select("HoraInicioBloque, HoraFinBloque, DuracionBloque, time_to_sec(DuracionBloque) DuracionBloqueSegundos, BloqueID, GuidContenido, count(*) as RepeticionContenido, FLOOR( (sum(Duracion)/ count(*))) as DuracionContenido"); 
+
 		$this->db->where("GrupoID", $GrupoID); 
+		$this->db->group_by(array("HoraInicioBloque", "horaFinBloque", "DuracionBloque", "BloqueID", "GuidContenido")); 
 		$result = $this->db->get("vw_rep_programacion_contenido_hoy");
 
 		// Logica para arrmar los contenidos en el Portal.
 		$listaContenido = array();
 		foreach ($result->result() as $row)
 		{
+			if(!array_key_exists($row->BloqueID, $listaContenido)){
+				$listaContenido[$row->BloqueID] = array('BloqueID' => $row->BloqueID, "HoraInicioBloque"=> $row->HoraInicioBloque, "HoraFinBloque"=> $row->HoraFinBloque, "DuracionBloque"=> $row->DuracionBloque, 
+				"DuracionBloqueSegundos" => $row->DuracionBloqueSegundos, "Contenidos" => array()); 			
+			}
 
-			$listaContenido[] = $row; 			
+			$listaContenido[$row->BloqueID]["Contenidos"][]= array(
+				'GuidContenido' => $row->GuidContenido, 
+				"RepeticionContenido"=> $row->RepeticionContenido,
+				"DuracionContenido"=> $row->DuracionContenido
+			 );
+
+
+			
 		}
 
 		return $listaContenido;
@@ -243,14 +273,45 @@ FF.FuenteID;";
 		return $listaContenido;
 	}
 
+	public function getEsquemaSetting( $esquema ){
 
-	public function obtenerContenidoHoyPorGrupoPorGrupoID($id){
+		switch ($esquema) {
+			case '3':
+			// BIshar	bgColor: "#000",
+		    	    						
+
+			return array('bgColor' => "#FFF" , "modulo"=>"datatransformer");			
+				break;
+			case '4':			
+			case '5':
+			// Excel
+			// Power Point	
+			return array('bgColor' => "#FFF" , "modulo"=>"jquery");
+				break;
+
+				case '5':
+				return array('bgColor' => "#000" , "modulo"=>"playerJS");
+				break;
+
+			default:
+			return array('bgColor' => "#000" , "modulo"=>"jquery");
+				
+				break;
+		}
+
+
+
+	}
+
+
+	public function obtenerContenidoHoyPorGrupoPorGrupoID($id, $filtroGuid){
 
 		$this->load->database();
 
-		$sql = "select cc.Guid, cc.Duracion, cc.Descripcion, 
-bcc.GrupoID, bcc.Orden, tp.EsquemaTipo,
+		$sql = "select vwPS.BloqueID, timediff(vwPS.HoraFin, vwPS.HoraInicio) as DuracionBloque, time_to_sec(timediff(vwPS.HoraFin, vwPS.HoraInicio) ) as DuracionBloqueSec, cc.Guid as GuidContenido, cc.Duracion, cc.Descripcion, 
+ bcc.Orden, tp.EsquemaTipo,
 tp.TemplatePagesID,
+ifnull(tp.Posicion, 0) as OrdenTemplate,
 tp.Duracion as DuracionPages, 
 tp.TransicionTipoIni, 
 tp.TransicionTipoFin, 
@@ -258,7 +319,11 @@ tp.MostrarHeader,
 st.Encabezado, 
 st.ContenidoTipo, 
 st.Posicion, 
-FF.FuenteID
+FF.FuenteID, 
+FF.EsManual, 
+FF.Url, 
+FF.FuenteTipo,
+FF.RepresentacionTipo
  from 
 programacion as p 
 inner join vw_programacion_bloque_semana as vwPS 
@@ -272,40 +337,96 @@ and tp.Estado = 1
 inner join seccion_template as st on st.TemplatePagesID = tp.TemplatePagesID
  and st.Estado = 1
 inner join Fuentes as FF on FF.FuenteID = st.FuenteID and FF.Estado = 1
-where p.Estado = 1 and bcc.GrupoID = {$id}
+where p.Estado = 1 and bcc.GrupoID =  {$id}
 and (now() BETWEEN p.FechaEjecutaInicio and p.FechaEjecutaFin)
 AND vwPS.DiaSemana = dayofweek(NOW())
-group by cc.Guid, cc.Duracion, cc.Descripcion, 
-bcc.GrupoID, bcc.Orden, tp.EsquemaTipo,
+group by vwPS.BloqueID, cc.Guid, cc.Duracion, cc.Descripcion, 
+ bcc.Orden, tp.EsquemaTipo,
 tp.TemplatePagesID,
 tp.Duracion, 
 tp.TransicionTipoIni, 
 tp.TransicionTipoFin, 
 tp.MostrarHeader, 
+ifnull(tp.Posicion, 0),
 st.Encabezado, 
 st.ContenidoTipo, 
 st.Posicion, 
-FF.FuenteID;"; 
+FF.FuenteID,
+FF.EsManual, 
+FF.Url, 
+FF.FuenteTipo,
+FF.RepresentacionTipo
+order by bcc.Orden, tp.Posicion, st.Posicion;"; 
 
-		$query = $this->db->query($sql);
-		$listaContenido = array();
+		$query = $this->db->query($sql);		
 
 		// Logica para arrmar los contenidos en el Portal.
 		$listaContenido = array();
 		foreach ($query->result() as $row)
 		{
-			if(!array_key_exists($row->Guid, $listaContenido)){
-				$listaContenido[$row->Guid] = array();
-			}
-			if(!array_key_exists($row->GrupoID, $listaContenido[$row->Guid] )){				
-				$listaContenido[$row->Guid][$row->GrupoID] = array();
+
+			if(!array_key_exists($row->BloqueID, $listaContenido)){
+				$listaContenido[$row->BloqueID] = array(
+					"BloqueID"=> $row->BloqueID,
+					 "DuracionBloque"=>$row->DuracionBloque, 
+					 "DuracionBloqueSec" => $row->DuracionBloqueSec, 
+					 "listaContenido" => array()
+					   );
+
+				$listaContenido[$row->BloqueID]["listaContenido"] = array('objTV'=>array());
 
 			}
-			// GUID->GrupoID			
-			$listaContenido[$row->Guid][$row->GrupoID][] = $row;
+
+			
+
+
+
+			if(!array_key_exists($row->GuidContenido, $listaContenido[$row->BloqueID]["listaContenido"]["objTV"])){			
+				$listaContenido[$row->BloqueID]["listaContenido"]["objTV"][$row->GuidContenido] = array(
+					'Guid' => $row->GuidContenido,
+					'Duracion'=>  $row->Duracion, 
+					'Descripcion'=> $row->Descripcion,
+					'Orden' => $row->Orden, 
+					"slides" => array()
+					);
+			}
+			
+
+		if(!array_key_exists($row->TemplatePagesID, $listaContenido[$row->BloqueID]["listaContenido"]["objTV"][$row->GuidContenido]["slides"]) ){
+
+				$rest = $this->getEsquemaSetting($row->EsquemaTipo); 
+			$listaContenido[$row->BloqueID]["listaContenido"]["objTV"][$row->GuidContenido]["slides"][$row->TemplatePagesID] = array(
+				"EsquemaTipo"=> $row->EsquemaTipo, 
+				"bgColor"=> $rest["bgColor"],
+				"TransicionTipoIni"=> $row->TransicionTipoIni, 
+				"TransicionTipoFin"=> $row->TransicionTipoFin, 
+				"MostrarHeader" =>  $row->TransicionTipoFin,
+				"Posicion" => $row->OrdenTemplate, 
+				"secciones" => array()
+				); 
+		}
+
+
+					if($row->EsManual){
+						
+
+					}
+
+
+		$listaContenido[$row->BloqueID]["listaContenido"]["objTV"][$row->GuidContenido]["slides"][$row->TemplatePagesID]["secciones"][] = array('Encabezado' => $row->Encabezado,
+		 	"Posicion" => $row->Posicion,
+		 	"RepresentacionTipo" =>   $row->RepresentacionTipo,
+		 	"FuenteID" => $row->FuenteID, 
+		 	"EsManual" => $row->EsManual, 
+		 	"url" => $row->Url
+		  );
 
 		}
 		return $listaContenido;
+	}
+
+
+	public function formatoURLSeccion($esManual, $EsquemaTipo){
 
 	}
 

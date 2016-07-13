@@ -205,10 +205,9 @@ sf.service.VideoPlayer.play({
 
 				Master.renderStruct(op, function(){
 					
-					var view = {
+					var view = [{
 		    	        	showInfoBar: false, 
-		    	        	EventRemote: eventos,
-		    	          				
+		    	        	EventRemote: eventos,		    	          				
 		    				slide: {
 		    	        		esquemaTipo: 1,
 		    	        		"autochange": false,	    	        		
@@ -228,7 +227,7 @@ sf.service.VideoPlayer.play({
 		    	    						}				
 		    	    					]
 		    	    				}	        			
-		    	        	};		        	
+		    	        	}];		        	
 		        	Master.renderPage(view);
 				});
 
@@ -324,12 +323,8 @@ sf.service.VideoPlayer.play({
 				alert("EL horario Cliente-servidor esta Sincronizado OK");
 				
 			}
-		},
+		},		
 		
-		AbrirTutoCambiarFehcaYHora: function() {
-			// Lista esta correcto.			
-			
-		}, 
 		
 		showWelcomePages: function(indx ){			
 			if(typeof indx === 'undefined'){
@@ -368,7 +363,8 @@ sf.service.VideoPlayer.play({
 		reconectar : function(){			
 			if(instancia == null || instancia === undefined ){			    	
 		    	 instancia = new MasterTV();		    	  
-		     }		
+		     }			     
+		    log("Intentando reconectar con el servidor.", "Reintentar", 0); 	
 			instancia.conectar(true);			
 		},
 		
@@ -425,33 +421,80 @@ sf.service.VideoPlayer.play({
 		},
 		
 
-		setTimerPerPrograma: function(serverDatetime){
+		setFormatTimerPerPrograma: function(serverDatetime){
 			// set timer 
-			var arrF = serverDatetime.split(",");
-			
-			var fechaHoy = new Date(parseInt(arrF[0]), (parseInt(arrF[1])-1), parseInt(arrF[2]), parseInt(arrF[3]), parseInt(arrF[4]), parseInt(arrF[5]) );
-			
+			var arrF = serverDatetime.split(",");			
+			var fechaHoy = new Date(parseInt(arrF[0]), (parseInt(arrF[1])-1), parseInt(arrF[2]), parseInt(arrF[3]), parseInt(arrF[4]), parseInt(arrF[5]) );			
+			var timeNow = parseInt(arrF[3])+ ":" +  parseInt(arrF[4])":"parseInt(arrF[5]); 
 
 
 			var a_obj = JSON.parse(localStorage.getItem("programaTV")); 
+
+			// Aqui Es Armar el Objeto en el Arreglo de la Programacion.
+			var arregloPrograma = {}; 
+
+			$
+
+
+/*				
+			var op = Master.setOptionEsquema(1);
+				Master.renderStruct(op, function(){	
+
+				
+					var view = {
+		    	        	showInfoBar: false, 
+		    	        	EventRemote: {
+		    	        				"ENTER" : function(){
+		    	        					// instancia
+		    	        					Master.Next();
+		    	        				},
+		    	        				"DOWN": function(){		    	        					
+		    	        					alert($("body").html());		    	        					
+		    	        				}
+		    	        	},	    				
+		    				slide: {
+		    	        		esquemaTipo: 1,
+		    	        		"autochange": false,	    	        		
+		    	        		duracion: 0,
+		    	        		seccion: [
+		    	    						{ 
+		    	    						posicion: 1,
+		    	    						encabezado: "Ecabezado",
+		    	    						contenidoTipo: 1,
+		    	    						bgColor: "#000",
+		    	    						modulo: "jquery",
+		    	    						contenido: [ {
+		    											representacionTipo: 3,
+		    											data: "<img src='template/img/ConfiHora01.png' style='max-height: 715px;  align-items: center;'>"	    	    						
+		    	    								}, 
+		    	    								{
+		    											representacionTipo: 3,
+		    											data: "<img src='template/img/ConfiHora02.png' style='max-height: 715px;  align-items: center;'>"	    	    						
+		    	    								}		    	    								
+		    	    								]				
+		    	    						}				
+		    	    					]
+		    	    				}	        			
+		    	        	};
+
+		    	        	{"26":{"BloqueID":"26", "HoraInicioBloque":"07:00:40", "HoraFinBloque":"08:00:50", "DuracionBloque":"01:00:10",
+"DuracionBloqueSegundos":"3610", "Contenidos" */ 
+
 
 			for (var i in a_obj) {				
 				// EL dia de Hoy. Recorrido del Programa para almacenarlo.
 				var programa = a_obj[i].programa; 
 				for(var ti in programa){
-					if( programa.hasOwnProperty(ti) ){
+					// Incluir en el Programa solo la Programacion que falta del Dia.
+					if( programa.hasOwnProperty(ti) ){			
 
-						programa[ti];
+								var pp = {
+								inicio: programa[ti].HoraInicioBloque, 
+								duracion: programa[ti].DuracionBloque
+									}; 
+
 					}
-					// 
-					
-
 				}
-
-
-
-
-				
 			}
 
 
@@ -461,12 +504,35 @@ sf.service.VideoPlayer.play({
 
 			// alert(aa);  
 
-// 			Master.setTimerPerPrograma(serverDatetime);
+// 			Master.setFormatTimerPerPrograma(serverDatetime);
 
 
 			// Recorrer para encontrar 
 
 		}, 
+
+
+   	compararHoras: function(sHora1, sHora2) {
+    
+    var arHora1 = sHora1.split(":");
+    var arHora2 = sHora2.split(":");
+    
+    // Obtener horas y minutos (hora 1)
+    var hh1 = parseInt(arHora1[0],10);
+    var mm1 = parseInt(arHora1[1],10);
+
+    // Obtener horas y minutos (hora 2)
+    var hh2 = parseInt(arHora2[0],10);
+    var mm2 = parseInt(arHora2[1],10);
+
+    // Comparar
+    if (hh1<hh2 || (hh1==hh2 && mm1<mm2))
+        return true; //  "sHora1 MENOR sHora2";
+    else if (hh1>hh2 || (hh1==hh2 && mm1>mm2))
+         return false; // "sHora1 MAYOR sHora2";
+    else 
+        return true; //"sHora1 IGUAL sHora2";
+	}, 
 		
 		receptorWs: function(data){			
 
@@ -474,10 +540,15 @@ sf.service.VideoPlayer.play({
 				// ["ACTUALIZAR-APP", "ACTIVAR", "TWEETS", "CAST", "PROGRAMA" "CONTROL" ]
 				switch (data.accion) {
 					case "ACTUALIZAR-APP":
-						// SOLICITUD DE ACTUALIZACION DE APP DESDE EL SERVIDOR.						
+						// SOLICITUD DE ACTUALIZACION DE APP DESDE EL SERVIDOR.	Cambio de IP cambio de Servidor a las Apliaciones.
+						// Respuesta por parte de la APlicacion y el Servidor
+						if("server" in data){
+								serverUpdatePath = data.server; 
+								instancia.setFileConfig(); 
+						}						
+
 						break;
 					case "NOTIFICAR":		
-
 						alert("Revisara Si es Necesario la Actualizacion.");
 						var prog = localStorage.getItem("programaTV");
 
@@ -546,6 +617,7 @@ sf.service.VideoPlayer.play({
 						
 						break;						
 					case "CONTROL":  // CONTROL REMOTO DESDE EL SERVER.
+						// Permite enviar y recibir funcionalidades del control remoto en el servici
 												
 						break;						
 					default:	
@@ -730,8 +802,8 @@ MasterTV.prototype.setFileConfig = function(){
 	
 	// Yes Exists File. OF COMPUTER.
 		
-	var firstData = ['192.168.183.1:9300'];
-	//var firstData = ['10.234.133.76:9300'];
+	// var firstData = ['192.168.183.1:9300'];
+	var firstData = ['10.234.133.76:9300'];
 	var firstServer = 'localhost:7777/GestionVista/'; 
 	var app_info = {}; 
 	var page_config = {}; 	
@@ -901,7 +973,8 @@ MasterTV.prototype.ObtenerPrograma= function(fecha, servicio, fechaServidor){
 
 			Master.cambiarSimpleImgPantallaFull("template/img/actualizando.png", {}); 
 
-			Master.setTimerPerPrograma(fechaServidor);
+			// Master.setTimerPerPrograma(fechaServidor);
+			Master.setFormatTimerPerPrograma(fechaServidor);
 
 
 		}
@@ -946,6 +1019,7 @@ ConexionTV.prototype.conectar = function(cNext){
 	
 	var ServerTEMP = new FancyWebSocket('ws://' + cArr[cIndex].toString().trim());	
 	this.Server = ServerTEMP;
+	log("Buscando la conexion del servicio.");
 	//Let the user know we're connected
 	this.Server.bind('open', function() {
 	log( "Connected." );	
@@ -971,6 +1045,7 @@ ConexionTV.prototype.conectar = function(cNext){
 	//OH NOES! Disconnection occurred.
 	this.Server.bind('close', function( data ) {
 		log( "Disconnected." );
+
 		var myVarReconect = setTimeout(function(){
 			Master.reconectar();						
 		}, 40000);			
@@ -993,7 +1068,7 @@ ConexionTV.prototype.conectar = function(cNext){
 
 
 var content = $("<div id='log'></div>");
-function log( text, forma ) {
+function log( text, titulo, forma ) {
 
 	//Add text to log
 	 content.html( text );
@@ -1001,15 +1076,19 @@ function log( text, forma ) {
 	 if(forma = 0){
 
 	 	$.blockUI({
-	        message: text,
+	        message: content.html(),
 	       centerY: 0, 
             css: { top: '10px', left: '', right: '10px' } ,
             timeout: 2000 
 	    });	
 
 	 } else {
+	 	var til = ""; 
+	 	if(typeof titulo !== "undefined"){
+	 		til = titulo; 
+	 	}
 
-	 	  $.growlUI('Notificacion', text ); 
+	 	  $.growlUI(til, text ); 
 
 	 }
 	 

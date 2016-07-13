@@ -33,7 +33,6 @@ class Contenido extends MY_Controller {
         	$data['listTransicionTipoFin'] = $data['listTransicionTipoIni'];
 
         	$data['listFuentesActivas'] = $this->mFuentes->obtenerFuentesActivas(); 
-
         	
 		// Carga de planilla web en general.
 		$this->load->view("web/sm_contenido", $data); 
@@ -235,7 +234,11 @@ public function Actualizar(){
 					// Este es el FIltro.
 
 				$Mac = $this->input->get("Mac"); 
-				$grupoTv = $this->mGrupoTv->obtenerGrupoPorMacTv($Mac); 				
+				$grupoTv = $this->mGrupoTv->obtenerGrupoPorMacTv($Mac); 	
+// {"@Region":"Todos","@Centros":"CND CD Santiago","@Zona":"Todos"}
+				$filtroGuid = $this->mGrupoTv->GenerarFiltroPorMac($Mac);
+
+				
 
 				if(count($grupoTv) == 0 ){
 					//  
@@ -251,34 +254,25 @@ public function Actualizar(){
 
 				// $programaHoy = $this->mContenido->obtenerProgramaHoy();				
 				// $contenidoHoy = $this->mContenido->obtenerContenidoHoyPorGrupo();
-				$programaHoy = $this->mContenido->obtenerProgramaHoyPorGrupoID($idGrupo);	
-
-				if(count($programaHoy)== 0){
-
-					echo "NO NO NO"; exit(); 
-
-				}
-
-				$contenidoHoy = $this->mContenido->obtenerContenidoHoyPorGrupoPorGrupoID($idGrupo);
-				$fuentesHoy = $this->mContenido->ObtenerContenidoHoyFuentesPorGrupoID($idGrupo); 
+				// $programaHoy = $this->mContenido->obtenerProgramaHoyPorGrupoID($idGrupo, $filtroGuid);	
 
 
+				$contenidoHoy = $this->mContenido->obtenerContenidoHoyPorGrupoPorGrupoID($idGrupo, $filtroGuid);
+			//	$fuentesHoy = $this->mContenido->ObtenerContenidoHoyFuentesPorGrupoID($idGrupo); 
 
-				 echo json_encode(array("IsOk"=> true, "programa"=> $programaHoy,
-				 "contenido"=>$contenidoHoy, "fuentes"=>$fuentesHoy			 
-				 ) ); 
+				echo "<pre>";
+
+				print_r($contenidoHoy); 
+
+
+
+				 echo json_encode(array("IsOk"=> true, "programa"=> $contenidoHoy ) ); 
 
 				 return 0; 
 
-				}
-				
+				}				
 
-
-				
-
-				echo json_encode(array("IsOk"=> true, "programa"=> $programaHoy,
-				 "contenido"=>$contenidoHoy				 
-				 ) ); 
+				//echo json_encode(array("IsOk"=> true, "programa"=> $contenidoHoy) ); 
 
 				return true; 
 			}
