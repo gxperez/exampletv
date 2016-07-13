@@ -7,11 +7,9 @@ class AdminBisTV
 	public $dtRefresh = false; 
 	private $db = false; 
 
-
 	public function __construct( $db ){
 		$this->db = $db; 		
 	}
-
 
 	public function setHasRefresh(){
 
