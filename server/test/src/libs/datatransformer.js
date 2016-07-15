@@ -13,6 +13,7 @@
  */
 
 'use strict';
+var prueba;
 
 (function(window, $, math, callback){
 	// Contants
@@ -22,6 +23,11 @@
 
 	// Namespace
 	var _datatransformer = function(){};
+
+	// Visual Interface
+	function visual(){
+		this.render = function(){}
+	}
 
 	// Private variables
 	// Object that contains every visual.
@@ -34,6 +40,21 @@
 		},
 		_events = {};
 
+	// Excepcion Objects
+    function _getCustomErrorBase(name,code, message) {
+	  return function(objErrorKey) {
+	    this.prototype = new Error();
+	    this.prototype.constructor = name;
+	    this.message = message + ', REFERENCE: ' + objErrorKey ;
+	    this.code = code;
+	  }
+	}
+
+	var ERROR = {
+		visualAlreadyExists : _getCustomErrorBase('visualException','01','VISUAL ALREADY EXISTS'),
+		visualNotExists 	: _getCustomErrorBase('visualException','02','VISUAL NOT EXISTS'),
+	}
+
 	// Events Handle
 	_events[_eventName.onVisualAdded] = [];
 
@@ -41,12 +62,10 @@
 			if(typeof eventFunction === "function")
 				_events[_eventName.onVisualAdded].push(eventFunction);
 	}
-
 	// Function that execute a event
 	function _executeEvent(eventName){
 		(_events[eventName] || []).forEach(function(e){ e(); });
 	}
-
 
 	// Private functions
 	// Function that checks if two objects are equivalent
@@ -76,41 +95,6 @@
 			return Math.random();
 		else 
 			return Math.floor((Math.random() * numberEnd) + numberStart); 
-	}
-
-	// Function that give the closest number of a array of number
-	function _getClosestNumber(number, arrayOfNumbers){
-		 return arrayOfNumbers.reduce(function (prev, curr) {
-		  	return (Math.abs(curr - number) < Math.abs(prev - number) ? curr : prev);
-		});
-	}
-
-	/**
-	 *  _round
-	 *
-	 *	Function that round a number.
-	 * 
-	 *	@param 		Number 	a number
-	 *	@param		Number 	the number of digits to appear after the decimal point.
-	 *  @since 		0.1.0
-	 */
-	function _round(number, digits) {
-		  if (typeof digits === 'undefined' || +digits === 0)
-		    return Math.round(number);
-
-		  number = +number;
-		  digits = +digits;
-
-		  if (isNaN(number) || !(typeof digits === 'number' && digits % 1 === 0))
-		    return NaN;
-
-		  // Shift
-		  number = number.toString().split('e');
-		  number = Math.round(+(number[0] + 'e' + (number[1] ? (+number[1] + digits) : digits)));
-
-		  // Shift back
-		  number = number.toString().split('e');
-		  return +(number[0] + 'e' + (number[1] ? (+number[1] - digits) : -digits));
 	}
 
 	// Function that return the columns of a json
@@ -145,7 +129,7 @@
 	 *
 	 *	Function that return a array of the distinct rows of some groups
 	 * 
-	 *	@param 		JSON 	data in json format
+	 *	@param 		array 	data in a array
 	 *	@param		array 	array of column names
 	 *  @since 		0.1.0
 	 */
@@ -168,16 +152,51 @@
 	}
 
 	/**
+	 *  _filterData
+	 *
+	 *	Function that return a data with filter applied
+	 * 
+	 *	@param 		array 	data in a array
+	 *	@param		object 	filter option.
+	 *						interface:
+	 *							{ filterColumn: [ filters ], filterColumn: [ filters ]...  }
+	 *  @since 		0.1.0
+	 */
+	function _filterData(data, optionFilter){
+		var _data = JSON.parse(JSON.stringify(data));;
+
+		function _formatFilter(filter)
+		{
+			return filter.toString().toLowerCase().replace(/\s/g, '');
+		}
+
+		for(var filter in optionFilter){
+			var _filterString = optionFilter[filter];
+
+			if(typeof _filterString['length'] != 'undefined' && _filterString['length']	> 0)
+			{
+				var _filterStringFormat = _filterString.map(function(x){ return _formatFilter(x); });
+
+				_data = _data.filter(function(d){
+					return  _filterStringFormat.indexOf(_formatFilter(d[filter])) > -1; 
+				});
+			}
+		}
+
+		return _data;
+	}
+
+
+	/**
 	 *  _generateDataTransformed
 	 *
 	 *	Function that return a new data with the differents options (filter, group and measure)
 	 *	applied.
 	 * 
-	 *	@param 		JSON 	data in json format
+	 *	@param 		array 	data in a array
 	 *	@param		object 	options for applying to data.
 	 *				interface:
 	 *					{
-	 *						filters: 	{ filterColumn: [ filters ]   },
 	 *						groups : 	[ groupColumns ]
 	 *						measures: 	{ measureName: 'measureExpresion ( sum(_groupColumn_) )'} // measureExpresion variable has to be 
 	 *																							  relate to a column of the data and 
@@ -190,13 +209,6 @@
 		var _dataGenerated = [],
 			_options = options,
 			_data = JSON.parse(JSON.stringify(data));
-
-		// Filter data
-		for(var filter in _options.filters){
-			_data = _data.filter(function(d){
-				return  _options.filters[filter].indexOf(d[filter]) > -1; 
-			})
-		}
 
 		// If options.groups dont have at least a group dont go to next step
 		if(!_options.groups.length)
@@ -256,7 +268,7 @@
 	};
 
 	/**
-	 *  _generateDataOfExpressionn
+	 *  _generateDataOfExpression
 	 *
 	 *	Function that return a object with a data example of an expression.
 	 *	It expression mush have the variable with the datatranformer syntax:
@@ -266,7 +278,7 @@
 	 *						for example: sum(_a_) + sum(_b_)
 	 *  @since 		0.1.0
 	 */
-	function _generateDataOfExpressionn(expression){
+	var _generateDataOfExpression = _datatransformer.prototype.generateDataOfExpression = function (expression){
 		var _variableData = {},
 			_variableOfExpression = expression.match(MEASURE_COLUMN_REGEXP);
 
@@ -291,19 +303,13 @@
 	 *						for example: {a:1, b:2}
 	 *  @since 		0.1.0
 	 */
-	function _getExpressionValue(expression, data){
+	var _getExpressionValue = _datatransformer.prototype.getExpressionValue = function(expression, data){
 		return math.eval(expression, data) || 0;
 	}
 
 	// Generate a Measure Column Valid Attribute For Expression
-	function _generateMeasureColumn(column){
+	var _generateMeasureColumn = _datatransformer.prototype.generateMeasureColumn =  function (column){
 		return MEASURE_COLUMN_PREFIX+column+MEASURE_COLUMN_PREFIX; 
-	}
-
-
-	// Visual Interface
-	function visual(){
-		this.render = function(){}
 	}
 
 	/**
@@ -327,9 +333,20 @@
 	 *
 	 */
 	_datatransformer.prototype.addVisual = function(visualName, visualConfig, visualFunction){
-		_obj.visualNames.push(visualName);
-		_obj.visuals[visualName] = {config: visualConfig , func : visualFunction };
-		_executeEvent(_eventName.onVisualAdded);
+		try{		
+				var _visual = _obj.visuals[visualName];
+
+				if(!(typeof _visual == 'undefined'))
+					throw new ERROR.visualAlreadyExists;
+
+				_obj.visualNames.push(visualName);
+				_obj.visuals[visualName] = {config: visualConfig , func : visualFunction };
+				_executeEvent(_eventName.onVisualAdded);
+		}
+		catch(e)
+		{
+			console.error(e);
+		}
 	}
 
 	// Get all visual Name
@@ -339,7 +356,18 @@
 
 	// Get a visual name with its configuration
 	_datatransformer.prototype.getVisualConfigByName = function(visualName){
-		return _obj.visuals[visualName].config;
+		try{		
+			var _visual = _obj.visuals[visualName];
+
+			if(typeof _visual == 'undefined')
+				throw new ERROR.visualNotExists;
+
+			return _visual.config;	
+		}
+		catch(e)
+		{
+			console.error(e);
+		}
 	}
 
 	// Type Interfaces
@@ -386,19 +414,30 @@
 
 		this.visuals = []
 
-		this.data.data = data || [];
-
+		this.data._data = data || [];
+		this.data._transformed 		= 	[];
+		
 		this.data.options.filters 	= 	('filters'	in (options || {})) ? options.filters 	: {};
 		this.data.options.groups 	= 	('groups' 	in (options || [])) ? options.groups 	: [];
 		this.data.options.measures 	= 	('measures' in (options || {})) ? options.measures 	: {};
-		this.data.columns =  _getColumns(this.data.data);
-		this.data.transformed = _generateDataTransformed(this.data.data, this.data.options);
+		this.data.columns 			=  	_getColumns(this.data._data);
+		this.data.data 				= 	_filterData(this.data._data , this.data.options.filters );
+
+		// get data transformed
+		this.data.getTransformed = function(){
+			if(typeof this['_transformed'] == 'undefined' || this._transformed.length <= 0)
+			{
+				this._transformed  = _generateDataTransformed(this.data, this.options);
+			}
+			return this._transformed;
+		}
 	};
 
 	// Refresh all visuals that have the datatransfome instance
 	_new.prototype.refreshVisuals = function(){
-		this.data.columns =  _getColumns(this.data.data);
-		this.data.transformed = _generateDataTransformed(this.data.data, this.data.options);
+		this.data.columns =  _getColumns(this.data._data);
+		this.data.data 	  = 	_filterData(this.data._data , this.data.options.filters);
+		this.data._transformed = [];
 
 		for(var vl in this.visuals){
 			var _visualObj = this.visuals[vl];
@@ -426,19 +465,17 @@
 			_visualObj.config.elemId = elemId;
 			
 			_visualObj.util  = {
-				round: _round,
-				isEquivalent: _isEquivalent,
-				getRandomNumber : _getRandomNumber,
-				getClosestNumber: _getClosestNumber,
+				filterData: _filterData,
 				getColumns: _getColumns,
 				getGroups : _getGroups,
 				getDistinct : _getDistinct,
 				generateDataTransformed:  _generateDataTransformed,
-				generateDataOfExpressionn: _generateDataOfExpressionn,
+				generateDataOfExpression: _generateDataOfExpression,
 				generateMeasureColumn:  _generateMeasureColumn,
 				getExpressionValue: _getExpressionValue
-			}
+			};
 
+			delete this.visuals[elemId]
 			this.visuals[elemId] =_visualObj;
 
 			return _visualObj;
@@ -447,11 +484,6 @@
 		}
 
 		return new visual();
-	}
-
-	// get data transformed
-	_new.prototype.getDataTransformed = function(){
-		return this.data.transformed;
 	}
 
 	// Public _new contructor
@@ -476,10 +508,14 @@
 		function(){
 			this.render = function(){
 					var _html = "",
-						_dataColumns = Object.keys(this.data.transformed[0]),
+					    _data = this.data.getTransformed(),
+						_dataColumns = Object.keys(_data[0]),
 						_title = "<h3>"+this.config.title+"</h3>",
 						_tableHeader = _title +  "<table border='1' class='table'><thead>",
 						_tableBody = "<tbody>";
+
+
+					console.log(this.data);
 
 					// Table header
 					for(var dc in _dataColumns){
@@ -489,23 +525,24 @@
 					_tableHeader += "</thead>";
 					
 					// Table body
-					for(var d in this.data.transformed){
+					for(var d in _data){
 						var _tableRow = "<tr>";
 
 						for(var dc in _dataColumns){
-							_tableRow += "<td>"+this.data.transformed[d][_dataColumns[dc]]+"</td>";
+							console.log("observacion",_data[d],_dataColumns[dc], _data[d][_dataColumns[dc]])
+
+							_tableRow += "<td>"+String(_data[d][_dataColumns[dc]])+"</td>";
 						}
 
 						_tableRow += "</tr>";
-
 						_tableBody += _tableRow;
 					}
 
 					_tableBody += "</tbody></table>";
 
+
 					$("#"+this.config.elemId).html(_tableHeader+_tableBody);
 			};
-
 	});
 });
 

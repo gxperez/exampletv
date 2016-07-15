@@ -10,15 +10,27 @@ var instancia = null;
 var configFiles = ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ];   //{ 0 = serverURL, 1 = version, 2 = all source }
 var serverUpdatePath = null; 
 var macTV;
-var rr = 0;
+
+var mTimer = {
+	cIndexC: 0, // Contenido.
+	cIndexS: 0, // Slider.
+	TransicionFin: ""
+};
 
 
 Master = {
+	html: {},	
+	curContent: [],
+	excelcollection: {}, 	
+	pptCollection: {},
+	dTransAuto: {},
+	dTransManual: {}, 
+	fn_onShow: [], 
 
-	html: {}, 
 	initt: function(){
 
 			 // widgetAPI.sendReadyEvent();			
+			 Master.setSmartTemplate();
 			 console.log("Se Ejecuta Aquiiii=====> "); 
 			 Master.setLocalHtml("inicio", "inicio_01"); 
 		     document.getElementById("anchor_main").focus();
@@ -28,7 +40,7 @@ Master = {
 		    	 console.log(instancia);
 		     }
 
-		     Master.setSmartTemplate();
+		     
 		     
 
 		     //Master.showWelcomePages();
@@ -84,7 +96,7 @@ Master = {
 						// Devolver la Hora en que se debe configurar.												
 					//	if(data.fecha != null || typeof data.fecha !== 'undefined' )
 						//	Master.confirmDateTime(data.fecha.toString()); 
-						Master.IrVideoTimeOut();						
+					//	Master.IrVideoTimeOut();						
 						
 						break;
 					case "TWEETS":
@@ -167,7 +179,7 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 					// Master.setTimerPerPrograma(fechaServidor);
 					Master.setFormatTimerPerPrograma(fechaServidor);
 				} else {
-
+					alert("Sin Asignacion"); 
 					log(res.Msg);					
 					Master.recorrerProgramaSinAsingacion(); 
 
@@ -219,10 +231,6 @@ recorrerProgramaSinAsingacion: function(){
 		$("#cssApplicationWrapper").html("<style>" + data + "</style>");		
 	});
 	**/	
-}, 
-
-
-setPantallaPropiedad: function(propiedades ){
 
 	var defaultPropertities = {
 	"BloqueID":"0",
@@ -261,7 +269,7 @@ setPantallaPropiedad: function(propiedades ){
 				"TransicionTipoIni":"0",
 				"TransicionTipoFin":"1",
 				"MostrarHeader":"1",
-				"Posicion":"0",
+				"Posicion":"1",
 				"DuracionPage":"00:00:30",
 				"DuracionPageSec":"30",
 				"secciones":[
@@ -271,7 +279,28 @@ setPantallaPropiedad: function(propiedades ){
 					"RepresentacionTipo":"3",
 					"FuenteID":"0",
 					"EsManual":"0",
-					"url":"template/img/contactar.png"
+					"url":"template/img/block01.png" // blueBack
+					}
+				]
+				}, 
+
+				"1":
+			 {"EsquemaTipo":"1",
+				"bgColor":"#000",
+				"TransicionTipoIni":"0",
+				"TransicionTipoFin":"1",
+				"MostrarHeader":"1",
+				"Posicion":"2",
+				"DuracionPage":"00:00:30",
+				"DuracionPageSec":"30",
+				"secciones":[
+					{"Encabezado":"Primero",
+					"Posicion":"1",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"url":"template/img/blueBack.png" // blueBack
 					}
 				]
 				}	
@@ -279,9 +308,286 @@ setPantallaPropiedad: function(propiedades ){
 		}
 	}
 };
+	Master.setPantallaPropiedad(defaultPropertities); 
+
+	Master.renderBloque(); 
+
+},
+
+renderBloque: function(){
+	var totalC = Master.curContent.length; 	
+	if( (mTimer.cIndexC+1) > totalC){
+		mTimer.cIndexC = 0; 
+	}
+	var totalS = Master.curContent[mTimer.cIndexC].slides.length
+	if( (mTimer.cIndexS+1) > totalS ){
+		mTimer.cIndexS = 0; 
+	}
+
+	Master.renderSliderPage(Master.curContent[mTimer.cIndexC].slides[mTimer.cIndexS], totalS); 
+}, 
+
+renderSliderPage: function(config, totalS){
+	// TotalS es la cantidad Maxima de Slider
+	if(totalS == mTimer.cIndexS){
+		mTimer.cIndexC++; 
+	}
+
+	if(mTimer.TransicionFin !== ""){		
+		Master.applyTransicion(mTimer.TransicionFin, "out"); 
+	} else {
+		Master.applyTransicion("", "out"); 
+	}
+
+	var esquemaOculto = Master.getOptionEsquema(config.EsquemaTipo); 
+	esquemaOculto.show(); 
+
+	$("#applicationWrapper").html( esquemaOculto.html() ); 
+
+	// Insertamos los contenidos en cada cuadro.
+
+	Master.fn_onShow = []; 
+
+	Master.dTransAuto = {}; 
+
+	config.secciones.forEach( function(item, indx) {
+		// Determinar por fuente Tipo 
+		// if(item.Posicion)					
+		Master.generateContentByFuenteTipo(item); 
+	}); 
 
 
-} , 
+	mTimer.cIndexS++; 
+	Master.applyTransicion(mTimer.TransicionTipoIni, "in"); 
+	mTimer.TransicionFin = config.TransicionTipoFin; 
+
+
+	mTimer.contenido = setTimeout(function(){
+
+		Master.renderBloque(); 
+	}, config.DuracionPageSec); 
+
+
+
+}, 
+
+generateContentByFuenteTipo: function(item){
+	// Si Fuente tipo es 
+	switch(item.FuenteTipo){
+		case 1: // Imagen 
+		$("#sc-" + item.Posicion).html('<img src="'+ item.Url + '" class="">'); 
+		break; 
+		case 2: // Texto.
+		$("#sc-" + item.Posicion).html("<p>" +  item.Url  +"</p>");
+		break; 
+
+		case 3: // Bischart.
+
+			Master.setLocalCss("white"); 
+
+		if(parseInt(item.EsManual) == 0) {
+
+				$.getJSON(item.Url, function(res){
+                    var responseJSON = res; 
+                    Master.dTransAuto[item.Posicion] ={dt: datatransformer.new( responseJSON.data, responseJSON.config), visuals: responseJSON.config.visuals};
+                	Master.fn_onShow.push({name: "Bischart", type: "auto"});
+                	//
+                });	
+		} else {
+
+			if(item.Url in Master.dTransManual){				
+				Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, url: item.Url});
+			} else {
+				$.getJSON(item.Url, function(res){
+                    var responseJSON = res; 
+                    Master.dTransManual[item.Url] = {dt: datatransformer.new( responseJSON.data, responseJSON.config), visuals: responseJSON.config.visuals};                    
+                	Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, url: item.Url});                	
+                });				
+			}
+		}
+
+		return "";
+		break; 
+		case 4: // OfficeVIewExcel 
+			Master.setLocalCss("white"); 
+
+			if(item.Url in Master.excelcollection){
+				$("#sc-" + item.Posicion).html(Master.excelcollection[item.Url]); 
+			} else {
+
+				$.get(item.Url, function(data){				
+					Master.excelcollection[item.Url] =  data
+					$("#sc-" + item.Posicion ).html(data); 
+				});			
+
+			}
+			return ""; 
+		break; 
+		case 5: // OfficeVIewPowerPoint.
+
+		break; 
+		case 6: // video.
+			return "htmlVIdeo"; 
+		break; 
+
+		default:
+		return "";
+
+		break; 
+
+	}
+}, 
+
+applyTransicion: function(transicionTipo, modo ){
+
+	switch(modo){
+		case "in":
+
+		$("#applicationWrapper").show("fold");
+
+
+
+		// Recorrido Al momento de Visualizar.
+
+		arrBichar = Master.fn_onShow.filter(function(d){			
+				return d.name === "Bischart"; 
+		});
+
+		arrOtr = Master.fn_onShow.filter(function(d){			
+				return d.name !== "Bischart"; 
+		});
+
+
+var hastAutoMatic = false; 
+		arrBichar.forEach(function(it, k){
+			if (it.type == "manual"){
+				Master.dTransManual[it.Url].dt.generateVisual(Master.dTransManual[it.Url].visuals[0].visualType,visuals[0].visualOptions,
+					'sc-' + it.Posicion ).render();
+			} else {	
+			hastAutoMatic = true;				
+			}
+		});
+
+
+		if(hastAutoMatic){
+			for(var it in Master.dTransAuto){
+				if(Master.dTransAuto.hasOwnProperty(it)){					
+					Master.dTransAuto[it].dt.generateVisual(Master.dTransAuto[it].visuals[0].visualType,visuals[0].visualOptions,
+					'sc-' + it ).render();
+				}
+			}
+		}
+
+		return 0; 
+
+		switch(Master.getTransicionTipo(transicionTipo)){
+			case "":
+
+			$("#applicationWrapper").fadeIn(1500);
+			break;
+			case "slide":
+
+			$("#applicationWrapper").show("fold");
+
+			break;
+
+			case "drop":
+
+			$("#applicationWrapper").fadeIn(3000);
+			break;
+		}
+
+			break;
+		case "out":
+
+		switch(Master.getTransicionTipo(transicionTipo)){
+			case  "":
+				$("#applicationWrapper").hide(); 
+			break;
+
+			case  "scale":
+        	options = { percent: 0 }; 
+        	$("#applicationWrapper").hide("scale", options, 2000, function () { });  
+        	break; 
+
+        	default:
+        		options = { percent: 0 }; 
+        		$("#applicationWrapper").hide();  
+        	break; 
+		}
+
+		return 0;		
+    
+			break;
+	}
+
+	return 0; 
+}, 
+
+getTransicionTipo: function(transicionTipo){
+// # Ninguna, slide, drop, blind, scale
+// '0', '1', '2', '3', '4'
+
+	switch(parseInt(transicionTipo) ){
+		case  0:
+		return "";		
+		break; 
+		case  1:
+		return "slide";
+		break;
+		case  2:
+		return "drop";
+		break;
+		case  3:
+		return "blind";
+		break;
+		case  4:
+		return "scale";
+		break;
+	}
+
+	return "fold"; 
+	// var arregloEffect = ['slide', 'drop', 'drop', 'clip', 'slide', 'blind', 'drop', 'drop', 'scale', 'slide', 'slide'];
+	// ("fold", 1000);
+}, 
+
+setPantallaPropiedad: function(propiedades, timer){
+	// Propiedades del Slider show.	
+	Master.curContent = [];
+	var tiempo = parseInt(propiedades.DuracionBloqueSec); 
+	if(typeof timer !== "undefined"){
+		tiempo = timer; 	
+	}
+
+	Master.setCambioBloque(tiempo);
+
+		for(var p in propiedades.listaContenido){
+		 if(propiedades.listaContenido.hasOwnProperty(p) ){
+		 	var currentProperty = {Guid: propiedades.listaContenido[p].Guid, Orden: propiedades.listaContenido[p].Orden, slides: []}; 			
+			for(var q in propiedades.listaContenido[p].slides){
+				if(propiedades.listaContenido[p].slides.hasOwnProperty(q)){
+					currentProperty.slides.push(propiedades.listaContenido[p].slides[q]); 
+				}
+			}
+			currentProperty.slides.sort(function(a, b){ if (parseInt(a.Posicion) > parseInt(b.Posicion) ) return 1; if ( parseInt(a.Posicion) < parseInt(b.Posicion) ) return -1; return 0; }); 
+			Master.curContent.push(currentProperty);
+		 }
+		}
+		Master.curContent.sort(function(a, b){ if (parseInt(a.Orden) > parseInt(b.Orden) ) return 1; if ( parseInt(a.Orden) < parseInt(b.Orden) ) return -1; return 0; });
+}, 
+
+setCambioBloque: function(tmr){  // tmr: tiempo en segundos
+	// Consular al Servidor cual es el Bloque
+	tmr = parseInt(tmr)*1000;
+	mTimer.bloque = setTimeout(function(){
+		Master.cambiarBloque(); 
+	}, tmr );
+}, 
+
+cambiarBloque: function(){
+	// Consular al Servidor cual es el Bloque
+
+}, 
 
 setFormatTimerPerPrograma: function(serverDatetime){
 			// set timer 
@@ -309,74 +615,78 @@ setFormatTimerPerPrograma: function(serverDatetime){
 		}, 		
 
 
-setOptionEsquema: function (esquema){
-	 var id = "#";
-	 var option = {css: "bas.css", url: "template/base.html"};	 
-	 
-	switch(esquema){	
+getOptionEsquema: function (esquema){
+var retorno = {};
+
+	switch (parseInt(esquema)){	
 	case -1:		
-		option.url = "template/inicio.html"; 
-		option.divId = undefined;
-		option.css = "inicio_01.css";
-		break;
-	case 0:		
-		option.url = "template/inicio.html"; 
-		option.divId = undefined;
-		option.css = "inicio_02.css";
-		break;		
-		case 1:  //
-			id = "#aplication-Full";
-			option.divId = id; 
+		break;				
+	case 1:  
+
+			id = "#aplication-01";
+			retorno = Master.html.find(id);
+			retorno.hide();
+
 		break; 			
 		
 		case 2:
 			id = "#aplication-02";
-			option.divId = id; 
+			retorno = Master.html.find(id);
+			retorno.hide();
+			
 		break;
 
 		case 3:
 			id = "#aplication-03";
-			option.divId = id;		 			
+			retorno = Master.html.find(id);
+			retorno.hide();
 		break;
 	case 4:
 	// <div class='cs-div_V1x2'> </div>
 		id = "#aplication-04";
-		option.divId = id;		
+		retorno = Master.html.find(id);
+		retorno.hide();		
 		break;
 		
 	case 5:
 		// 
 		id = "#aplication-05";
-		option.divId = id;
+		retorno = Master.html.find(id);
+		retorno.hide();
 		 
 		break;
 
 		case 6:
 			id = "#aplication-06";
-			option.divId = id;
+			retorno = Master.html.find(id);
+			retorno.hide();
 		break;
 
 		case 7:
 		// baseHtml = "<div class='cs-div_H1x2'>";
 			id = "#aplication-07";
-			option.divId = id;		 
+			retorno = Master.html.find(id);
+			retorno.hide();
 		break;
 
 		case 8:
 			id = "#aplication-08";
-			option.divId = id;
+			retorno = Master.html.find(id);
+			retorno.hide();
 		break;
 
 		case 9:
 			id = "#aplication-09";
-			option.divId = id;			 			 				
+			retorno = Master.html.find(id);
+			retorno.hide();
 		break;
 		default:			
 			option.url = "template/inicio.html"; 
-			option.divId = undefined;
+			retorno = Master.html.find(id);
+			retorno.hide();
 		break;
 	}
-	return option;
+	return retorno;
 },
 
 

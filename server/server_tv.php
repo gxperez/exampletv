@@ -6,26 +6,18 @@ date_default_timezone_set("America/Santo_Domingo");
 require 'class.PHPWebSocket.php';
 require 'class.AdminBisTV.php'; 
 
-
-/* Varivable para solicitude via http. */
-
 $glb_Hash = 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1'; 	
-$integracionConfig = array(
-//	'server' => 'http://192.168.183.1:7777/gestion/server/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1'
-  'server' => "http://10.234.133.76:7777/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1"
-	 );
+$integracionConfig = array('server' => "http://10.234.133.76:7777/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1"
+	//,	'server' => 'http://192.168.183.1:7777/gestion/server/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1'
+);
 
-// when a client sends data to the server
+
 function wsOnMessage($clientID, $message, $messageLength, $binary) {
-
 	global $Server;
 	global $BisGestion; 
 	global $integracionConfig; 
-
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
-	$timeNow =  new DateTime(); 
-	
-	// $confRes = array( "accion"=> "ACTIVAR", "mensaje"=> "Esperando respuestas", "fecha"=> $timeNow->format('Y,m,d,H,i,s') ); 
+	$timeNow =  new DateTime();	
 
 	$Server->log("Recepcion de Mensajes.");
 	$Server->log( $timeNow->format('Y,m,d,H,i,s')  );
@@ -40,7 +32,6 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 	$varible = json_decode($message);		
 
-
 	if(array_key_exists("accion" , $varible ) ){
 
 		switch ($varible->accion) {
@@ -51,29 +42,22 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 				$Server->log("Cliente $clientID Esta conectado."); 						
 				$retornos =	$BisGestion->setHasRefresh(); 
-				$Server->log( print_r($retornos, true) ); 
-
+				// $Server->log( print_r($retornos, true) ); 
 				$Server->wsSend($clientID,  json_encode(array('accion' => "NOTIFICAR", "Msg"=> "El dispositivo confirmara si esta actualizado", "fecha"=> $timeNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"], "fechaActual"=> date("Y-m-d") ) ) );	
-
 				break;
-
-			case "ACTIVAR":
-
-			break; 
 
 			default:
-				# code...
+
+			//	# code...
+
 				break;
-		}
-		
+		}		
 
 		return false; 
 	}
 
-	/// Ya entendí por que pasa Esto.
-
+	
 		foreach ( $Server->wsClients as $id => $client )
-
 			if ( $id != $clientID ) {
 
 			$varible = json_decode($message);
@@ -98,17 +82,11 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 					   if(array_key_exists("FechaPrograma" , $varible ) ){
 
-					  //  	$varible["FechaPrograma"]
-
-					   	// Validar que el Televisor envio 
-
 					   } else {
-					   	// Enviar la Actualizacion. 
-
+					   	
 					   }
 				}
 			}
-
 
 			$confRes["mensaje"] = "Visitor $clientID ($ip) said \"$message\"" ;
 				// $Server->wsSend($id, "Visitor $clientID ($ip) said \"$message\"" .  "=>: ". $varible);
