@@ -216,7 +216,7 @@
 	public function GenerarFiltroPorMac($mac){
 
 		$this->load->database();
-		$filtrosDefinidos = array("@Region"=>"Todos","@Centros"=>"Todos","@Zona"=>"Zona 110");
+		$filtrosDefinidos = array("@Region"=>"Todos","@Centro"=>"Todos","@Zona"=>"Todos");
 
 
 		$sql = "select CASE when (fv.Nivel = 1) then '@Region' 
@@ -241,13 +241,11 @@
 			$res = current($query->result()); 
 
 			if(array_key_exists($res->Variable, $filtrosDefinidos)){				
-				// 				
-				$filtrosDefinidos[$res->Variable] = $res->Nombre; 
+				$filtrosDefinidos[$res->Variable] = $res->Nombre;
 			}
+			return array("Existe"=> true, "getString"=> json_encode($filtrosDefinidos) ); 
 		}
-
-		return json_encode($filtrosDefinidos); 
-
+		return array("Existe"=> false, "getString"=> json_encode($filtrosDefinidos) ); 
 
 	}
 
@@ -257,16 +255,13 @@
 		$sql = "select gt.GrupoTvID, GrupoID, gt.DispositivoID, d.Nombre, Fn_ObtenerFuerzaGUIDFVPorDispositivo(gt.DispositivoID) as GUID   from grupo_Tv as gt
 inner join dispositivo as d
 on d.DispositivoID = gt.DispositivoID
- where gt.Estado = 1 and Mac = '{$mac}';"; 
+ where gt.Estado = 1 and Mac ='{$mac}';"; 
 
  		$query = $this->db->query($sql);
 
  		// Este es el Resultado final del sistema.
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;
-
-
-
 
 	}
 

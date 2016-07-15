@@ -54,13 +54,16 @@ Class ConexionDB{
 
    /*Método para obtener una fila de resultados de la sentencia sql*/
    public function obtener_fila($stmt,$fila){
+      
+
       if ($fila==0){
-       //  $this->array=mysql_fetch_array($stmt);
-		  $this->array=mysqli_fetch_array($stmt);
+       //  $this->array=mysql_fetch_array($stmt);         
+
+		  $this->array=mysqli_fetch_array($stmt, MYSQLI_ASSOC);
 		 
       }else{
        //  mysqli_data_seek($stmt,$fila);
-         $this->array=mysqli_fetch_array($stmt);
+         $this->array=mysqli_fetch_array($stmt, MYSQLI_ASSOC);
       }
       return $this->array;
    }

@@ -312,7 +312,8 @@ FF.FuenteID;";
  bcc.Orden, tp.EsquemaTipo,
 tp.TemplatePagesID,
 ifnull(tp.Posicion, 0) as OrdenTemplate,
-tp.Duracion as DuracionPages, 
+tp.Duracion as DuracionPages,
+time_to_sec(tp.Duracion) as DuracionPageSec, 
 tp.TransicionTipoIni, 
 tp.TransicionTipoFin, 
 tp.MostrarHeader, 
@@ -373,7 +374,7 @@ order by bcc.Orden, tp.Posicion, st.Posicion;";
 					 "listaContenido" => array()
 					   );
 
-				$listaContenido[$row->BloqueID]["listaContenido"] = array('objTV'=>array());
+				
 
 			}
 
@@ -381,8 +382,8 @@ order by bcc.Orden, tp.Posicion, st.Posicion;";
 
 
 
-			if(!array_key_exists($row->GuidContenido, $listaContenido[$row->BloqueID]["listaContenido"]["objTV"])){			
-				$listaContenido[$row->BloqueID]["listaContenido"]["objTV"][$row->GuidContenido] = array(
+			if(!array_key_exists($row->GuidContenido, $listaContenido[$row->BloqueID]["listaContenido"])){			
+				$listaContenido[$row->BloqueID]["listaContenido"][$row->GuidContenido] = array(
 					'Guid' => $row->GuidContenido,
 					'Duracion'=>  $row->Duracion, 
 					'Descripcion'=> $row->Descripcion,
@@ -392,34 +393,40 @@ order by bcc.Orden, tp.Posicion, st.Posicion;";
 			}
 			
 
-		if(!array_key_exists($row->TemplatePagesID, $listaContenido[$row->BloqueID]["listaContenido"]["objTV"][$row->GuidContenido]["slides"]) ){
+		if(!array_key_exists($row->TemplatePagesID, $listaContenido[$row->BloqueID]["listaContenido"][$row->GuidContenido]["slides"]) ){
 
-				$rest = $this->getEsquemaSetting($row->EsquemaTipo); 
-			$listaContenido[$row->BloqueID]["listaContenido"]["objTV"][$row->GuidContenido]["slides"][$row->TemplatePagesID] = array(
+				$rest = $this->getEsquemaSetting($row->FuenteTipo); 
+			$listaContenido[$row->BloqueID]["listaContenido"][$row->GuidContenido]["slides"][$row->TemplatePagesID] = array(
 				"EsquemaTipo"=> $row->EsquemaTipo, 
 				"bgColor"=> $rest["bgColor"],
 				"TransicionTipoIni"=> $row->TransicionTipoIni, 
 				"TransicionTipoFin"=> $row->TransicionTipoFin, 
 				"MostrarHeader" =>  $row->TransicionTipoFin,
 				"Posicion" => $row->OrdenTemplate, 
+				"DuracionPage"=> $row->DuracionPages,
+				"DuracionPageSec" => $row->DuracionPageSec, 
 				"secciones" => array()
 				); 
 		}
 
+					$url = $row->Url;
 
-					if($row->EsManual){
+					if($row->EsManual == 0){
+						// Es Automatica. BIsCharConfiguracion.
+						if($row->FuenteTipo == 3){
+							$url = $row->Url . $filtroGuid; 	
 
+						}
 					}
 
-
-		$listaContenido[$row->BloqueID]["listaContenido"]["objTV"][$row->GuidContenido]["slides"][$row->TemplatePagesID]["secciones"][] = array('Encabezado' => $row->Encabezado,
+		$listaContenido[$row->BloqueID]["listaContenido"][$row->GuidContenido]["slides"][$row->TemplatePagesID]["secciones"][] = array('Encabezado' => $row->Encabezado,
 		 	"Posicion" => $row->Posicion,
+		 	"FuenteTipo" => $row->FuenteTipo, 
 		 	"RepresentacionTipo" =>   $row->RepresentacionTipo,
 		 	"FuenteID" => $row->FuenteID, 
 		 	"EsManual" => $row->EsManual, 
-		 	"url" => $row->Url
+		 	"url" => $url
 		  );
-
 		}
 		return $listaContenido;
 	}

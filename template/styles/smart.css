@@ -1,0 +1,107 @@
+
+html {
+  font-family: sans-serif;
+  -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+
+.row {
+margin-right: -15px;
+margin-left: -15px;
+}
+
+.row:before,
+.row:after {
+  display: table;
+  content: " ";
+}
+
+.row:after {
+  clear: both;
+}
+
+.corporate {
+min-height: 710px;
+
+padding-right: 15px;
+padding-bottom: 15px;
+width: 100%;
+}
+
+.white-panel {
+background: #ffffff;		
+}
+
+.pn {	
+height: 721px;
+box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+.container img {
+height: 100%;
+align-items: center;
+}
+
+
+
+/****  Tranbando los temas *****/
+
+.enbase {
+	height: 100%;
+	width: 100%;
+}
+
+
+.cs-div_2x2 {	
+	width: 50%;
+	height: 355px;
+	float: left;
+	position: relative;
+	min-height: 1px;	
+	z-index: 2;
+	overflow: hidden;
+ }
+
+ .cs-div_2x2>div>img,  .cs-div_3x3>div>img, .cs-div_H1>div>img, .cs-div_H1x3>div>img{
+ 	width: 100%
+ }
+
+ .cs-div_3x3 {	
+	width: 33.3331%;
+	height: 355px;
+	float: left;
+	position: relative;
+	min-height: 1px;	
+	z-index: 2;
+	overflow: hidden;
+ }
+
+ .cs-div_V1 {
+ 	width: 100%;
+	height: 355px;
+	float: left;
+	position: relative;
+	min-height: 340px;
+	overflow: hidden;
+ }
+
+.cs-div_H1 { 	
+ 	height: 710px;
+ 	width: 50%;
+ 	float: left;
+	position: relative;
+ }
+
+ .cs-div_H1x3 {
+	width: 100%;
+	height: 33.3333331%;
+	float: left;
+	position: relative;
+	min-height: 1px;		
+	overflow: hidden;
+ }

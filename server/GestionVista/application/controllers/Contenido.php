@@ -33,6 +33,7 @@ class Contenido extends MY_Controller {
         	$data['listTransicionTipoFin'] = $data['listTransicionTipoIni'];
 
         	$data['listFuentesActivas'] = $this->mFuentes->obtenerFuentesActivas(); 
+
         	
 		// Carga de planilla web en general.
 		$this->load->view("web/sm_contenido", $data); 
@@ -235,44 +236,30 @@ public function Actualizar(){
 
 				$Mac = $this->input->get("Mac"); 
 				$grupoTv = $this->mGrupoTv->obtenerGrupoPorMacTv($Mac); 	
-// {"@Region":"Todos","@Centros":"CND CD Santiago","@Zona":"Todos"}
 				$filtroGuid = $this->mGrupoTv->GenerarFiltroPorMac($Mac);
 
-				
+				if( $filtroGuid["Existe"] === false){
+					// NO Tiene Fuerza de venta Asignada.
+					echo json_encode(array("IsOk"=> false, "programa"=> array(), "Msg"=>"Este Dispositivo no esta vinculado a un Grupo o a una clasificacion en la fuerza de Venta." ));
 
-				if(count($grupoTv) == 0 ){
-					//  
+					return false; 
+				}
+
+
+				if(count($grupoTv) == 0 ){	
 					$idGrupo = $defualGrupoID;
-
 				} else {
-
 					$idGrupo = current($grupoTv)->GrupoID;
 				}
 
-					// Mac  FIltro por Grupo Especifico
-				
 
-				// $programaHoy = $this->mContenido->obtenerProgramaHoy();				
-				// $contenidoHoy = $this->mContenido->obtenerContenidoHoyPorGrupo();
-				// $programaHoy = $this->mContenido->obtenerProgramaHoyPorGrupoID($idGrupo, $filtroGuid);	
+				$contenidoHoy = $this->mContenido->obtenerContenidoHoyPorGrupoPorGrupoID($idGrupo, $filtroGuid["getString"]);
 
-
-				$contenidoHoy = $this->mContenido->obtenerContenidoHoyPorGrupoPorGrupoID($idGrupo, $filtroGuid);
-			//	$fuentesHoy = $this->mContenido->ObtenerContenidoHoyFuentesPorGrupoID($idGrupo); 
-
-				echo "<pre>";
-
-				print_r($contenidoHoy); 
-
-
-
-				 echo json_encode(array("IsOk"=> true, "programa"=> $contenidoHoy ) ); 
-
+			
+				 echo json_encode(array("IsOk"=> true, "programa"=> $contenidoHoy ) );
 				 return 0; 
 
 				}				
-
-				//echo json_encode(array("IsOk"=> true, "programa"=> $contenidoHoy) ); 
 
 				return true; 
 			}
