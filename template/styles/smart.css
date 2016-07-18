@@ -2,13 +2,13 @@
 html {
   font-family: sans-serif;
   -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
+
 
 body {
   margin: 0;
 }
-
 
 .row {
 margin-right: -15px;
@@ -27,9 +27,8 @@ margin-left: -15px;
 
 .corporate {
 min-height: 710px;
-
-padding-right: 15px;
-padding-bottom: 15px;
+padding-right: 5px;
+padding-bottom: 5px;
 width: 100%;
 }
 

@@ -1,39 +1,68 @@
-var copy = {}; 
-
-/**  here is the class extension for master.js*/
 alert('master.js loaded');
 
+var widgetAPI = new Common.API.Widget();
+var tvKey = new Common.API.TVKeyValue();
+var pluginAPI = new Common.API.Plugin();
+var fileSystemObj = new FileSystem();
 
-
+var copy = {}; 
 var fileObj = {};  
 var instancia = null;
-
-var configFiles = ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ];   //{ 0 = serverURL, 1 = version, 2 = all source }
+var configFiles = ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ]; //{ 0 = serverURL, 1 = version, 2 = all source }
 var serverUpdatePath = null; 
 var macTV;
-var rr = 0;
 
+var mTimer = {
+	cIndexC: 0, // Contenido.
+	cIndexS: 0, // Slider.
+	TransicionFin: ""
+};
 
 Master = {
+	html: {},	
+	curContent: [],
+	excelcollection: {}, 	
+	pptCollection: {},
+	dTransAuto: {},
+	dTransManual: {}, 
+	fn_onShow: [], 
 	initt: function(){
 
-			 // widgetAPI.sendReadyEvent();			
-			 console.log("Se Ejecuta Aquiiii=====> "); 
-		     document.getElementById("anchor_main").focus();
+		alert("Initt"); 
+			  widgetAPI.sendReadyEvent();			
+			 document.getElementById("anchor_main").focus();
 
-		     if(instancia == null || instancia === undefined ){			    	
-		    	 instancia = new MasterTV();
+			 Master.setSmartTemplate(function(){			 	
 
-		    	 console.log("@@@@@@@@@@@@ Instancia"); 		    	  
-		    	 console.log(instancia); 		    	  
+			 	alert("Initt: Set LOcal Html"); 
 
-		     }
-		     Master.showWelcomePages();
+			 	Master.setLocalHtml("inicio", "inicio_01"); 	
+
+			 	if(instancia == null || instancia === undefined ){			    	
+		    	  instancia = new MasterTV();
+		    	 // // console.log(instancia);
+		     	}
+			 });
+
+		     
+		     
+		     //Master.showWelcomePages();
 // 		     Master.inittVideo(); 		     
+	},
+
+	KeyDown: function(){	
+			
+		var keyCode = event.keyCode;		
+			    if(instancia == null || instancia === undefined ){			    	
+			    	instancia = new MasterTV();			    	
+			    	instancia.handleKeyDown(keyCode);
+			    }else{			    	
+			    	instancia.handleKeyDown(keyCode);			        
+			    }
 		},
 
 		receptorWs: function(data){	
-			console.log("Aqui Llego. Receptor");
+			// console.log("Aqui Llego. Receptor");
 				// ["ACTUALIZAR-APP", "ACTIVAR", "TWEETS", "CAST", "PROGRAMA" "CONTROL" ]
 				switch (data.accion) {
 					case "ACTUALIZAR-APP":
@@ -46,26 +75,27 @@ Master = {
 
 						break;
 					case "NOTIFICAR":		
-						console.log("Revisara Si es Necesario la Actualizacion.");
+						// console.log("Revisara Si es Necesario la Actualizacion.");
 						var prog = localStorage.getItem("programaTV");
 						if(prog == null || typeof prog == "undefined" || typeof prog == "string" ){
 								prog = {}; 
 						}
 
 						for (var i in data ) {
-							console.log(i + "===> " + data[i]); 
+							// console.log(i + "===> " + data[i]); 
 						}
 
-					console.log(data.fechaActual); 
-					console.log("Fecha Actualizada:-::: ^^"); 
+					// console.log(data.fechaActual); 
+					// console.log("Fecha Actualizada:-::: ^^"); 
 
 					if(!(data.fechaActual in prog) ){
 						localStorage.setItem("programaTV", null); 	
 
-						Master.ObtenerPrograma(data.fechaActual, data.server, data.fecha); 
+						alert("Obtener Programa.... "); 
 
+						Master.ObtenerPrograma(data.fechaActual, data.server, data.fecha); 
 							log(data.Msg); 
-						alert("En espera de la Programacion");
+
 						return true; 
 
 					} else {
@@ -73,19 +103,17 @@ Master = {
 						alert("Ya he Configurado Incorrectamente el programaTV...."); 
 					}
 
-					console.log("El contenido ya ha sido actualizado.");
+					// console.log("El contenido ya ha sido actualizado.");
 					log(data.Msg); 
 					// Master.IrVideoTimeOut();
 
 					break;
 
 					case "ACTIVAR":
-						// Devolver la Hora en que se debe configurar.
-						alert("Entro a Activar");
-						
+						// Devolver la Hora en que se debe configurar.												
 					//	if(data.fecha != null || typeof data.fecha !== 'undefined' )
 						//	Master.confirmDateTime(data.fecha.toString()); 
-						Master.IrVideoTimeOut();						
+					//	Master.IrVideoTimeOut();						
 						
 						break;
 					case "TWEETS":
@@ -148,16 +176,12 @@ Master = {
 				});
 		}, 
 
-		ObtenerPrograma: function(fecha, servicio, fechaServidor){	
+ObtenerPrograma: function(fecha, servicio, fechaServidor){	
 		
 			localStorage.setItem("server", servicio); 
 			var alt = {};
 			var url = servicio + "&Mac=" + macTV;	
-
-			url = url.replace("10.234.133.76", "localhost");
-
-			alert(servicio); 	
-			alert("Aqui Hara un Envio."); 
+		//	url = url.replace("10.234.133.76", "localhost");
 
 			$.getJSON(url, function(res){
 				if(res.IsOk){
@@ -169,8 +193,601 @@ Master = {
 					Master.cambiarSimpleImgPantallaFull("template/img/actualizando.png", {}); 
 					// Master.setTimerPerPrograma(fechaServidor);
 					Master.setFormatTimerPerPrograma(fechaServidor);
+				} else {
+				//	alert("Sin Asignacion"); 
+					log(res.Msg);					
+					Master.recorrerProgramaSinAsingacion(); 
+
 				}
 	});	
+}, 
+
+showWelcomePages: function(indx ){			
+			if(typeof indx === 'undefined'){
+				indx = 0; 
+			}
+			if(indx > 0){
+				indx = -1;
+			}
+			var op = Master.setOptionEsquema(indx);		            	
+        	Master.renderStruct(op);        	
+},
+
+
+setSmartTemplate: function(callBack){	
+	Master.html = {};
+	$.get("template/esquemas.html", function( data ) {
+		// Carga del Html puro; 		
+		Master.html = data; 
+		// $("#applicationWrapper").html(data);				
+		callBack(); 
+	});
+
+}, 
+
+setLocalCss: function(css){	
+	$.get("template/styles/" + css +".css", function( data ) {		
+			$("#cssApplicationWrapper").html("<style>" + data + "</style>");		
+	});
+}, 
+
+setLocalHtml: function(html, css){
+	if(typeof css !== "undefined" ){
+		// EL template de Espera Pantalla de Bloqueo.
+		$.get("template/styles/" + css + ".css", function( data ) {
+			$("#cssApplicationWrapper").html("<style>" + data + "</style>");					
+		});
+	}			
+
+	$.get("template/" + html + ".html", function( data ) {
+			$("#applicationWrapper").html(data);					
+	});
+}, 
+
+recorrerProgramaSinAsingacion: function(){	
+	// Paso 1. setTheme
+	/**
+	$.get("template/styles/smart.css", function( data ) {		
+		$("#cssApplicationWrapper").html("<style>" + data + "</style>");		
+	});
+	**/	
+
+	/*
+
+	var defaultPropertities = {
+		"BloqueID":"0",
+	"DuracionBloque":"00:03:30",
+	"DuracionBloqueSec":"210",
+	"listaContenido":
+	{"8D054484-6682-984F-D906-BD051334641E":
+	{"Guid":"8D054484-6682-984F-D906-BD051334641E",
+		"Duracion":"00:17:10",
+		"Descripcion":"Recorrido Sin Asignar",
+		"Orden":"1",
+		"slides": {
+		 "1":
+			 {"EsquemaTipo":"1",
+				"bgColor":"#000",
+				"TransicionTipoIni":"0",
+				"TransicionTipoFin":"1",
+				"MostrarHeader":"1",
+				"Posicion":"1",
+				"DuracionPage":"00:00:30",
+				"DuracionPageSec":"6",
+				"secciones":[
+					{"Encabezado":"Primero",
+					"Posicion":"1",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/block01.png" // blueBack
+					}
+				]
+				}
+			}
+		}
+	}
+}; 
+
+*/
+
+
+	var defaultPropertities = {
+	"BloqueID":"0",
+	"DuracionBloque":"00:03:30",
+	"DuracionBloqueSec":"210",
+	"listaContenido":
+	{"TemporalContenido":
+		{"Guid":"8D054484-6682-984F-D906-BD051334641E",
+		"Duracion":"00:17:10",
+		"Descripcion":"Recorrido Sin Asignar",
+		"Orden":"1",
+		"slides":
+			{"0":
+				{"EsquemaTipo":"2",
+				"bgColor":"#000",
+				"TransicionTipoIni":"0",
+				"TransicionTipoFin":"1",
+				"MostrarHeader":"2",
+				"Posicion":"0",
+				"DuracionPage":"00:00:06",
+				"DuracionPageSec":"6",
+				"secciones":[					 
+					{"Encabezado":"Segundo",
+					"Posicion":"1",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/block01.png"
+					},
+
+					{"Encabezado":"Primero",
+					"Posicion":"2",
+					"FuenteTipo":"3",
+					"RepresentacionTipo":"1",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"http://cnddosdobis:8090/WebServices/api.asmx/ObtenerDocumentoJSON?docCode=530b62e4-19d3-4e34-8f0c-9d007f27f55a&queryParametroValores="
+					},
+
+					{"Encabezado":"Tres",
+					"Posicion":"3",
+					"FuenteTipo":"3",
+					"RepresentacionTipo":"1",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"http://cnddosdobis:8090/WebServices/api.asmx/ObtenerDocumentoJSON?docCode=530b62e4-19d3-4e34-8f0c-9d007f27f55a&queryParametroValores="
+					}, 
+					{"Encabezado":"Primero",
+					"Posicion":"3",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/blueBack.png" // blueBack
+					}, 
+					{"Encabezado":"Segundo",
+					"Posicion":"4",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/ConfiHora01.png"
+					}, 
+					{"Encabezado":"Segundo",
+					"Posicion":"5",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/indice.jpg"
+					},
+					{"Encabezado":"Segundo",
+					"Posicion":"6",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/ConfiHora02.png"
+					}
+				]
+				}, 
+			 "1":
+			 {"EsquemaTipo":"1",
+				"bgColor":"#000",
+				"TransicionTipoIni":"0",
+				"TransicionTipoFin":"1",
+				"MostrarHeader":"1",
+				"Posicion":"1",
+				"DuracionPage":"00:00:30",
+				"DuracionPageSec":"6",
+				"secciones":[
+					{"Encabezado":"Primero",
+					"Posicion":"1",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/block01.png" // blueBack
+					}
+				]
+				}, 
+
+				"2":
+			 {"EsquemaTipo":"1",
+				"bgColor":"#000",
+				"TransicionTipoIni":"0",
+				"TransicionTipoFin":"1",
+				"MostrarHeader":"1",
+				"Posicion":"2",
+				"DuracionPage":"00:00:30",
+				"DuracionPageSec":"30",
+				"secciones":[
+					{"Encabezado":"Primero",
+					"Posicion":"1",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/actualizando.png" // blueBack
+					}
+				]
+				}	
+			}
+		}
+	}
+};
+
+
+	Master.setPantallaPropiedad(defaultPropertities); 
+	Master.renderBloque(); 
+
+},
+
+renderBloque: function(){
+	var totalC = Master.curContent.length; 	
+	if( (mTimer.cIndexC+1) > totalC){
+		mTimer.cIndexC = 0; 
+	}
+	var totalS = Master.curContent[mTimer.cIndexC].slides.length
+	if( (mTimer.cIndexS+1) > totalS ){
+		mTimer.cIndexS = 0; 
+	}
+
+	alert("Antes del Css de la aplicacion.   renderBloque"); 
+
+	$("#cssApplicationWrapper").html(""); 
+
+	Master.renderSliderPage(Master.curContent[mTimer.cIndexC].slides[mTimer.cIndexS], totalS); 
+}, 
+
+renderSliderPage: function(config, totalS){
+	// TotalS es la cantidad Maxima de Slider
+	if(totalS == mTimer.cIndexS){
+		mTimer.cIndexC++; 
+	}
+
+	if(mTimer.TransicionFin !== ""){		
+		Master.applyTransicion(mTimer.TransicionFin, "out"); 
+	} else {
+		Master.applyTransicion("", "out"); 
+	}
+
+	var esquemaOculto = Master.getOptionEsquema(config.EsquemaTipo); 
+	esquemaOculto.show(); 	
+
+	$("#applicationWrapper").html( esquemaOculto.html() ); 
+
+	// Insertamos los contenidos en cada cuadro.
+	mTimer.TransicionTipoIni = config.TransicionTipoIni; 
+
+	Master.fn_onShow = []; 
+	Master.dTransAuto = {}; 
+
+	Master.setLocalCss("white"); 
+
+	try{
+		Master.generateContentByFuenteTipoSimple(config); 
+	}catch(e){
+		console.error(e); 
+	}
+
+
+	mTimer.cIndexS++; 	
+	mTimer.TransicionFin = config.TransicionTipoFin; 
+	mTimer.contenido = setTimeout(function(){
+		Master.renderBloque(); 
+	}, parseInt(config.DuracionPageSec) * 1000 ); 
+	// 
+
+
+
+}, 
+
+generateContentByFuenteTipoSimple: function(config){
+	// Si Fuente tipo es 
+		var hasRequest = false; 
+		var requestList = []; 		
+
+	config.secciones.forEach(function(item, indx) {		
+		switch(parseInt(item.FuenteTipo)){
+		case 1: // Imagen 
+		$("#sc-" + item.Posicion).html('<img src="'+ item.Url + '" class="">'); 
+		break; 
+		case 2: // Texto.
+		$("#sc-" + item.Posicion).html("<p>" +  item.Url  +"</p>");
+		break; 
+		case 3: // Bischart.
+
+		if(parseInt(item.EsManual) == 0) {
+
+			hasRequest= true; 
+			requestList.push({Url: item.Url, Type:"JSON", methodCallRequest: function(res){
+
+				try{
+
+					var responseJSON = res; 
+                    Master.dTransAuto[item.Posicion] ={dt: datatransformer.new( responseJSON.data, responseJSON.config), visuals: responseJSON.config.visuals};
+                	Master.fn_onShow.push({name: "Bischart", type: "auto"});
+
+
+				} catch(e){
+					console.log("Solo el Transformer");
+					console.error(e);
+				}
+
+                    
+                } }); 
+				
+		} else {
+
+			if(item.Url in Master.dTransManual){				
+				Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, url: item.Url});				
+			} else {
+
+				requestList.push({Url: item.Url, Type:"JSON",  methodCallRequest: function(res){
+
+                    var responseJSON = res; 
+                    Master.dTransManual[item.Url] = {dt: datatransformer.new( responseJSON.data, responseJSON.config), visuals: responseJSON.config.visuals};                    
+                	Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, Url: item.Url});                	
+                } }); 
+			}
+		}
+		break; 
+		case 4: // OfficeVIewExcel 
+
+			Master.setLocalCss("white"); 
+			if(item.Url in Master.excelcollection){
+				$("#sc-" + item.Posicion).html(Master.excelcollection[item.Url]); 
+				
+			} else {
+
+				requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){					
+					Master.excelcollection[item.Url] =  data
+					$("#sc-" + item.Posicion ).html(data); 
+				} }); 
+			}			
+		break; 
+		case 5: // OfficeVIewPowerPoint.				
+
+		break; 
+
+		case 6: // video.
+		// 	return "htmlVIdeo"; 
+		break; 
+
+		case 7: // Simple HTML Renderizado.
+		requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){					
+					$("#sc-" + item.Posicion ).html(data); 
+
+				} }); 
+
+		// 	return "htmlVIdeo"; 
+		break;
+
+		default:		
+		break; 
+	}
+	}); 
+
+
+	if(requestList.length == 0){
+		Master.applyTransicion(mTimer.TransicionTipoIni, "in"); 
+			return 1; 		
+	} else {
+		Master.nextRequest(requestList, 0, requestList.length); 
+	}
+}, 
+
+nextRequest: function(arreglo, index, len){
+
+	var i = index; 
+
+	if(index >= len){		
+		Master.applyTransicion(mTimer.TransicionTipoIni, "in"); 
+		return true; 
+	}
+
+	if(arreglo[i].Type == "get"){
+		$.get( arreglo[i].Url, function(dta) {
+		 arreglo[i].methodCallRequest(dta); 
+		 i++; 
+		 Master.nextRequest(arreglo, i, len); 
+
+		}  ); 
+	} 
+
+	if(arreglo[index].Type == "JSON"){
+		$.getJSON( arreglo[i].Url, function(dta) { 
+			arreglo[i].methodCallRequest(dta);
+			i++;
+			Master.nextRequest(arreglo, i, len);  
+			// console.log("Escenario #1"); 			
+		}); 
+	} 
+
+
+
+
+
+
+
+}, 
+
+generateContentByFuenteTipoRequest: function(){
+	// Si Fuente tipo es 
+	
+
+	config.secciones.forEach(function(item, indx) {
+
+								
+	}); 
+
+	
+
+	if((parseInt(itx)+1) == numRow){
+		callBack(); 
+	}
+
+	return ""; 
+}, 
+
+applyTransicion: function(transicionTipo, modo ){
+
+	switch(modo){
+		case "in":
+
+		$("#applicationWrapper").show("fold");
+
+
+
+		// Recorrido Al momento de Visualizar.
+
+		arrBichar = Master.fn_onShow.filter(function(d){			
+				return d.name === "Bischart"; 
+		});
+
+		arrOtr = Master.fn_onShow.filter(function(d){			
+				return d.name !== "Bischart"; 
+		});
+
+
+var hastAutoMatic = false; 
+		arrBichar.forEach(function(it, k){
+			if (it.type == "manual"){
+				Master.dTransManual[it.Url].dt.generateVisual(Master.dTransManual[it.Url].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
+					'sc-' + it.Posicion ).render();
+			} else {	
+			hastAutoMatic = true;				
+			}
+		});
+
+
+		if(hastAutoMatic){
+			for(var it in Master.dTransAuto){
+				if(Master.dTransAuto.hasOwnProperty(it)){					
+				//	// console.log(Master.dTransAuto[it]); 
+
+					Master.dTransAuto[it].dt.generateVisual(Master.dTransAuto[it].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
+					'sc-' + it ).render();
+				}
+			}
+		}
+
+		return 0; 
+
+		switch(Master.getTransicionTipo(transicionTipo)){
+			case "":
+
+			$("#applicationWrapper").fadeIn(1500);
+			break;
+			case "slide":
+
+			$("#applicationWrapper").show("fold");
+
+			break;
+
+			case "drop":
+
+			$("#applicationWrapper").fadeIn(3000);
+			break;
+		}
+
+			break;
+		case "out":
+
+		switch(Master.getTransicionTipo(transicionTipo)){
+			case  "":
+				$("#applicationWrapper").hide(); 
+			break;
+
+			case  "scale":
+        	options = { percent: 0 }; 
+        	$("#applicationWrapper").hide("scale", options, 2000, function () { });  
+        	break; 
+
+        	default:
+        		options = { percent: 0 }; 
+        		$("#applicationWrapper").hide();  
+        	break; 
+		}
+
+		return 0;		
+    
+			break;
+	}
+
+	return 0; 
+}, 
+
+getTransicionTipo: function(transicionTipo){
+// # Ninguna, slide, drop, blind, scale
+// '0', '1', '2', '3', '4'
+
+	switch(parseInt(transicionTipo) ){
+		case  0:
+		return "";		
+		break; 
+		case  1:
+		return "slide";
+		break;
+		case  2:
+		return "drop";
+		break;
+		case  3:
+		return "blind";
+		break;
+		case  4:
+		return "scale";
+		break;
+	}
+
+	return "fold"; 
+	// var arregloEffect = ['slide', 'drop', 'drop', 'clip', 'slide', 'blind', 'drop', 'drop', 'scale', 'slide', 'slide'];
+	// ("fold", 1000);
+}, 
+
+setPantallaPropiedad: function(propiedades, timer){
+	// Propiedades del Slider show.	
+	Master.curContent = [];
+	var tiempo = parseInt(propiedades.DuracionBloqueSec); 
+	if(typeof timer !== "undefined"){
+		tiempo = timer; 	
+	}
+
+	Master.setCambioBloque(tiempo);
+
+		for(var p in propiedades.listaContenido){
+		 if(propiedades.listaContenido.hasOwnProperty(p) ){
+		 	var currentProperty = {Guid: propiedades.listaContenido[p].Guid, Orden: propiedades.listaContenido[p].Orden, slides: []}; 			
+			for(var q in propiedades.listaContenido[p].slides){
+				if(propiedades.listaContenido[p].slides.hasOwnProperty(q)){
+					currentProperty.slides.push(propiedades.listaContenido[p].slides[q]); 
+				}
+			}
+			currentProperty.slides.sort(function(a, b){ if (parseInt(a.Posicion) > parseInt(b.Posicion) ) return 1; if ( parseInt(a.Posicion) < parseInt(b.Posicion) ) return -1; return 0; }); 
+			Master.curContent.push(currentProperty);
+		 }
+		}
+		Master.curContent.sort(function(a, b){ if (parseInt(a.Orden) > parseInt(b.Orden) ) return 1; if ( parseInt(a.Orden) < parseInt(b.Orden) ) return -1; return 0; });
+}, 
+
+setCambioBloque: function(tmr){  // tmr: tiempo en segundos
+	// Consular al Servidor cual es el Bloque
+	// console.log("El bloque cambiara en: " +  tmr); 
+
+	tmr = parseInt(tmr)*1000;
+	mTimer.bloque = setTimeout(function(){
+		Master.cambiarBloque(); 
+	}, tmr );
+}, 
+
+cambiarBloque: function(){
+	// Consular al Servidor cual es el Bloque
+	alert("Consulta para Cambiar el Bloque. "); 
+
 }, 
 
 setFormatTimerPerPrograma: function(serverDatetime){
@@ -196,26 +813,95 @@ setFormatTimerPerPrograma: function(serverDatetime){
 				}
 			}
 			alert(serverDatetime); 
-		}, 
+		}, 		
 
-		showWelcomePages: function(indx ){			
-			if(typeof indx === 'undefined'){
-				indx = 0; 
-			}
-			if(indx > 0){
-				indx = -1;
-			}
-			var op = Master.setOptionEsquema(indx);		            	
-        	Master.renderStruct(op);        	
-		} 
 
+getOptionEsquema: function (esquema){
+var retorno = {};
+
+	switch (parseInt(esquema)){	
+	case -1:		
+		break;				
+	case 1:  
+
+			id = "#aplication-01";
+			retorno = $(Master.html).find(id);
+			retorno.hide();
+
+		break; 			
+		
+		case 2:
+			id = "#aplication-02";
+			retorno = $(Master.html).find(id);
+			retorno.hide();
+			
+		break;
+
+		case 3:
+			id = "#aplication-03";
+			retorno = $(Master.html).find(id);
+			retorno.hide();
+		break;
+	case 4:
+	// <div class='cs-div_V1x2'> </div>
+		id = "#aplication-04";
+		retorno = $(Master.html).find(id);
+		retorno.hide();		
+		break;
+		
+	case 5:
+		// 
+		id = "#aplication-05";
+		retorno = $(Master.html).find(id);
+		retorno.hide();
+		 
+		break;
+
+		case 6:
+			id = "#aplication-06";
+			retorno = $(Master.html).find(id);
+			retorno.hide();
+		break;
+
+		case 7:
+		// baseHtml = "<div class='cs-div_H1x2'>";
+			id = "#aplication-07";
+			retorno = $(Master.html).find(id);
+			retorno.hide();
+		break;
+
+		case 8:
+			id = "#aplication-08";
+			retorno = $(Master.html).find(id);
+			retorno.hide();
+		break;
+
+		case 9:
+			id = "#aplication-09";
+			retorno = $(Master.html).find(id);
+			retorno.hide();
+		break;
+		default:			
+			option.Url = "template/inicio.html"; 
+			retorno = $(Master.html).find(id);
+			retorno.hide();
+		break;
+	}
+	return retorno;
+},
+
+
+renderStruct: function(option, callfunctionBack){	
+	Master.setTheme(option.css);
+	Master.setPage(option, callfunctionBack); 	
+}
 };
 
 
 // Master TV
 MasterTV = function() {	
 	this.page_config = {};	
-	this.app_info = {server: "", version: "", serverRequest: ""};	
+	this.app_info = {server: "", version: "", serverRequest: ""};
 
 	this.ManagerPages = {
 			showInfoBar: false,
@@ -229,18 +915,17 @@ MasterTV = function() {
 	var content_img = [];
 	var title_txt = [];	
 	var sessionesPAG = ["applicationWrapper"];
-	
+
 	if(this.setFileConfig()){
 		this.conn = new ConexionTV(this.app_info.server);
 	}
-	widgetAPI.sendReadyEvent();
+// 	widgetAPI.sendReadyEvent();
 	
 };
 
 MasterTV.prototype.setFileConfig = function(){	
 	
-	// Yes Exists File. OF COMPUTER.
-		
+	// Yes Exists File. OF COMPUTER.		
 	// var firstData = ['192.168.183.1:9300'];
 	var firstData = ['10.234.133.76:9300'];
 	var firstServer = 'localhost:7777/GestionVista/'; 
@@ -248,7 +933,7 @@ MasterTV.prototype.setFileConfig = function(){
 	var page_config = {}; 	
 
 this.app_info.server = firstData; 
- return true; 
+ // return true; 
 
 	
 	configFiles.forEach(function (item, index, array) {		
@@ -433,12 +1118,12 @@ ConexionTV.prototype.conectar = function(cNext){
 	this.Server.bind('open', function() {
 	log( "Connected." );	
 	var networkPlugin = document.getElementById('pluginNetwork');
-	// var mac = networkPlugin.GetMAC(0) || networkPlugin.GetMAC(1);
-	// macTV = mac;  
+	 var mac = networkPlugin.GetMAC(0) || networkPlugin.GetMAC(1);
+	 macTV = mac;  
 
 	// Provicional
-	macTV = '222-222-2222'; 
-	mac = macTV; 
+	// macTV = '222-222-2222'; 
+	// mac = macTV; 
 
 	
 	current_TV = {

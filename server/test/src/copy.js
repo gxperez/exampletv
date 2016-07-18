@@ -1,13 +1,7 @@
 var copy = {}; 
-
-/**  here is the class extension for master.js*/
-
-
-
 var fileObj = {};  
 var instancia = null;
-
-var configFiles = ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ];   //{ 0 = serverURL, 1 = version, 2 = all source }
+var configFiles = ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ]; //{ 0 = serverURL, 1 = version, 2 = all source }
 var serverUpdatePath = null; 
 var macTV;
 
@@ -17,7 +11,6 @@ var mTimer = {
 	TransicionFin: ""
 };
 
-
 Master = {
 	html: {},	
 	curContent: [],
@@ -26,26 +19,25 @@ Master = {
 	dTransAuto: {},
 	dTransManual: {}, 
 	fn_onShow: [], 
-
 	initt: function(){
-
 			 // widgetAPI.sendReadyEvent();			
-			 Master.setSmartTemplate();
-			 console.log("Se Ejecuta Aquiiii=====> "); 
-			 Master.setLocalHtml("inicio", "inicio_01"); 
-		     document.getElementById("anchor_main").focus();
+			 document.getElementById("anchor_main").focus();
 
-		     if(instancia == null || instancia === undefined ){			    	
-		    	 instancia = new MasterTV();
-		    	 console.log(instancia);
-		     }
+			 Master.setSmartTemplate(function(){			 	
+
+			 	Master.setLocalHtml("inicio", "inicio_01"); 	
+
+			 	if(instancia == null || instancia === undefined ){			    	
+		    	  instancia = new MasterTV();
+		    	  console.log(instancia);
+		     	}
+			 });
 
 		     
 		     
-
 		     //Master.showWelcomePages();
 // 		     Master.inittVideo(); 		     
-		},
+	},
 
 		receptorWs: function(data){	
 			console.log("Aqui Llego. Receptor");
@@ -89,7 +81,6 @@ Master = {
 					console.log("El contenido ya ha sido actualizado.");
 					log(data.Msg); 
 					// Master.IrVideoTimeOut();
-
 					break;
 
 					case "ACTIVAR":
@@ -164,9 +155,7 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 			localStorage.setItem("server", servicio); 
 			var alt = {};
 			var url = servicio + "&Mac=" + macTV;	
-
 			url = url.replace("10.234.133.76", "localhost");
-
 
 			$.getJSON(url, function(res){
 				if(res.IsOk){
@@ -179,7 +168,7 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 					// Master.setTimerPerPrograma(fechaServidor);
 					Master.setFormatTimerPerPrograma(fechaServidor);
 				} else {
-					alert("Sin Asignacion"); 
+				//	alert("Sin Asignacion"); 
 					log(res.Msg);					
 					Master.recorrerProgramaSinAsingacion(); 
 
@@ -199,13 +188,15 @@ showWelcomePages: function(indx ){
 },
 
 
-setSmartTemplate: function(){
-
+setSmartTemplate: function(callBack){	
 	Master.html = {};
 	$.get("template/esquemas.html", function( data ) {
-		Master.html = $(data); 
-		// $("#applicationWrapper").html(data);		
+		// Carga del Html puro; 		
+		Master.html = data; 
+		// $("#applicationWrapper").html(data);				
+		callBack(); 
 	});
+
 }, 
 
 setLocalCss: function(css){	
@@ -217,11 +208,14 @@ setLocalCss: function(css){
 setLocalHtml: function(html, css){
 	if(typeof css !== "undefined" ){
 		// EL template de Espera Pantalla de Bloqueo.
-		$.get("template/" + html + ".html", function( data ) {
-			$("#applicationWrapper").html(data);					
+		$.get("template/styles/" + css + ".css", function( data ) {
+			$("#cssApplicationWrapper").html("<style>" + data + "</style>");					
 		});
+	}			
 
-	}	
+	$.get("template/" + html + ".html", function( data ) {
+			$("#applicationWrapper").html(data);					
+	});
 }, 
 
 recorrerProgramaSinAsingacion: function(){	
@@ -231,6 +225,8 @@ recorrerProgramaSinAsingacion: function(){
 		$("#cssApplicationWrapper").html("<style>" + data + "</style>");		
 	});
 	**/	
+
+	alert("Programa de Asignar"); 
 
 	var defaultPropertities = {
 	"BloqueID":"0",
@@ -244,7 +240,7 @@ recorrerProgramaSinAsingacion: function(){
 		"Orden":"1",
 		"slides":
 			{"0":
-				{"EsquemaTipo":"1",
+				{"EsquemaTipo":"4",
 				"bgColor":"#000",
 				"TransicionTipoIni":"0",
 				"TransicionTipoFin":"1",
@@ -255,11 +251,60 @@ recorrerProgramaSinAsingacion: function(){
 				"secciones":[
 					{"Encabezado":"Primero",
 					"Posicion":"1",
+					"FuenteTipo":"3",
+					"RepresentacionTipo":"1",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"http://cnddosdobis:8090/WebServices/api.asmx/ObtenerDocumentoJSON?docCode=530b62e4-19d3-4e34-8f0c-9d007f27f55a&queryParametroValores="
+					}, 
+					{"Encabezado":"Segundo",
+					"Posicion":"2",
 					"FuenteTipo":"1",
 					"RepresentacionTipo":"3",
 					"FuenteID":"0",
 					"EsManual":"0",
-					"url":"template/img/contactar.png"
+					"Url":"template/img/block01.png"
+					},
+
+					{"Encabezado":"Tres",
+					"Posicion":"3",
+					"FuenteTipo":"3",
+					"RepresentacionTipo":"1",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"http://cnddosdobis:8090/WebServices/api.asmx/ObtenerDocumentoJSON?docCode=530b62e4-19d3-4e34-8f0c-9d007f27f55a&queryParametroValores="
+					}, 
+					{"Encabezado":"Primero",
+					"Posicion":"3",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/blueBack.png" // blueBack
+					}, 
+					{"Encabezado":"Segundo",
+					"Posicion":"4",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/ConfiHora01.png"
+					}, 
+					{"Encabezado":"Segundo",
+					"Posicion":"5",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/indice.jpg"
+					},
+					{"Encabezado":"Segundo",
+					"Posicion":"6",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/karthic.c.d.jpg"
 					}
 				]
 				}, 
@@ -279,12 +324,12 @@ recorrerProgramaSinAsingacion: function(){
 					"RepresentacionTipo":"3",
 					"FuenteID":"0",
 					"EsManual":"0",
-					"url":"template/img/block01.png" // blueBack
+					"Url":"template/img/block01.png" // blueBack
 					}
 				]
 				}, 
 
-				"1":
+				"2":
 			 {"EsquemaTipo":"1",
 				"bgColor":"#000",
 				"TransicionTipoIni":"0",
@@ -296,11 +341,11 @@ recorrerProgramaSinAsingacion: function(){
 				"secciones":[
 					{"Encabezado":"Primero",
 					"Posicion":"1",
-					"FuenteTipo":"1",
+					"FuenteTipo":"4",
 					"RepresentacionTipo":"3",
 					"FuenteID":"0",
 					"EsManual":"0",
-					"url":"template/img/blueBack.png" // blueBack
+					"Url":"http://cnddosdobis:8090/WebServices/api.asmx/ObtenerDocumentoHTML?docCode=df980dea-5ec3-4849-bdb9-54e2d0f2adab" // blueBack
 					}
 				]
 				}	
@@ -324,6 +369,8 @@ renderBloque: function(){
 		mTimer.cIndexS = 0; 
 	}
 
+	$("#cssApplicationWrapper").html(""); 
+
 	Master.renderSliderPage(Master.curContent[mTimer.cIndexC].slides[mTimer.cIndexS], totalS); 
 }, 
 
@@ -340,102 +387,170 @@ renderSliderPage: function(config, totalS){
 	}
 
 	var esquemaOculto = Master.getOptionEsquema(config.EsquemaTipo); 
-	esquemaOculto.show(); 
+	esquemaOculto.show(); 	
 
 	$("#applicationWrapper").html( esquemaOculto.html() ); 
 
 	// Insertamos los contenidos en cada cuadro.
+	mTimer.TransicionTipoIni = config.TransicionTipoIni; 
 
 	Master.fn_onShow = []; 
-
 	Master.dTransAuto = {}; 
 
-	config.secciones.forEach( function(item, indx) {
-		// Determinar por fuente Tipo 
-		// if(item.Posicion)					
-		Master.generateContentByFuenteTipo(item); 
-	}); 
+	Master.setLocalCss("white"); 
+
+	Master.generateContentByFuenteTipoSimple(config); 
 
 
-	mTimer.cIndexS++; 
-	Master.applyTransicion(mTimer.TransicionTipoIni, "in"); 
+	mTimer.cIndexS++; 	
 	mTimer.TransicionFin = config.TransicionTipoFin; 
-
-
 	mTimer.contenido = setTimeout(function(){
-
 		Master.renderBloque(); 
-	}, config.DuracionPageSec); 
+	}, parseInt(config.DuracionPageSec) * 1000 ); 
+	// 
 
 
 
 }, 
 
-generateContentByFuenteTipo: function(item){
+generateContentByFuenteTipoSimple: function(config){
 	// Si Fuente tipo es 
-	switch(item.FuenteTipo){
+		var hasRequest = false; 
+		var requestList = []; 		
+
+	config.secciones.forEach(function(item, indx) {		
+		switch(parseInt(item.FuenteTipo)){
 		case 1: // Imagen 
 		$("#sc-" + item.Posicion).html('<img src="'+ item.Url + '" class="">'); 
 		break; 
 		case 2: // Texto.
 		$("#sc-" + item.Posicion).html("<p>" +  item.Url  +"</p>");
 		break; 
-
 		case 3: // Bischart.
-
-			Master.setLocalCss("white"); 
 
 		if(parseInt(item.EsManual) == 0) {
 
-				$.getJSON(item.Url, function(res){
+			hasRequest= true; 
+			requestList.push({Url: item.Url, Type:"JSON", methodCallRequest: function(res){
+
                     var responseJSON = res; 
                     Master.dTransAuto[item.Posicion] ={dt: datatransformer.new( responseJSON.data, responseJSON.config), visuals: responseJSON.config.visuals};
                 	Master.fn_onShow.push({name: "Bischart", type: "auto"});
-                	//
-                });	
+                } }); 
+				
 		} else {
 
 			if(item.Url in Master.dTransManual){				
-				Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, url: item.Url});
+				Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, url: item.Url});				
 			} else {
-				$.getJSON(item.Url, function(res){
+
+				requestList.push({Url: item.Url, Type:"JSON",  methodCallRequest: function(res){
+
                     var responseJSON = res; 
                     Master.dTransManual[item.Url] = {dt: datatransformer.new( responseJSON.data, responseJSON.config), visuals: responseJSON.config.visuals};                    
-                	Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, url: item.Url});                	
-                });				
+                	Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, Url: item.Url});                	
+                } }); 
 			}
 		}
-
-		return "";
 		break; 
 		case 4: // OfficeVIewExcel 
-			Master.setLocalCss("white"); 
 
+			Master.setLocalCss("white"); 
 			if(item.Url in Master.excelcollection){
 				$("#sc-" + item.Posicion).html(Master.excelcollection[item.Url]); 
+				
 			} else {
 
-				$.get(item.Url, function(data){				
+				requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){					
 					Master.excelcollection[item.Url] =  data
 					$("#sc-" + item.Posicion ).html(data); 
-				});			
-
-			}
-			return ""; 
+				} }); 
+			}			
 		break; 
-		case 5: // OfficeVIewPowerPoint.
+		case 5: // OfficeVIewPowerPoint.				
 
 		break; 
+
 		case 6: // video.
-			return "htmlVIdeo"; 
+		// 	return "htmlVIdeo"; 
 		break; 
 
-		default:
-		return "";
+		case 7: // Simple HTML Renderizado.
+		requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){					
+					$("#sc-" + item.Posicion ).html(data); 
 
+				} }); 
+
+		// 	return "htmlVIdeo"; 
+		break;
+
+		default:		
 		break; 
-
 	}
+	}); 
+
+
+	if(requestList.length == 0){
+		Master.applyTransicion(mTimer.TransicionTipoIni, "in"); 
+			return 1; 		
+	} else {
+		Master.nextRequest(requestList, 0, requestList.length); 
+	}
+}, 
+
+nextRequest: function(arreglo, index, len){
+
+	var i = index; 
+
+	if(index >= len){		
+		Master.applyTransicion(mTimer.TransicionTipoIni, "in"); 
+		return true; 
+	}
+
+	if(arreglo[i].Type == "get"){
+		$.get( arreglo[i].Url, function(dta) {
+		 arreglo[i].methodCallRequest(dta); 
+		 i++; 
+		 Master.nextRequest(arreglo, i, len); 
+
+		}  ); 
+	} 
+
+	if(arreglo[index].Type == "JSON"){
+		$.getJSON( arreglo[i].Url, function(dta) { 
+			arreglo[i].methodCallRequest(dta);
+			i++;
+			Master.nextRequest(arreglo, i, len);  
+
+			console.log("Escenario #1"); 
+			console.log(arreglo); 
+		}); 
+	} 
+
+
+
+
+
+
+
+}, 
+
+generateContentByFuenteTipoRequest: function(){
+	// Si Fuente tipo es 
+	
+
+	config.secciones.forEach(function(item, indx) {
+
+								
+	}); 
+
+	
+
+	if((parseInt(itx)+1) == numRow){
+		callBack(); 
+	}
+
+	return ""; 
 }, 
 
 applyTransicion: function(transicionTipo, modo ){
@@ -461,7 +576,7 @@ applyTransicion: function(transicionTipo, modo ){
 var hastAutoMatic = false; 
 		arrBichar.forEach(function(it, k){
 			if (it.type == "manual"){
-				Master.dTransManual[it.Url].dt.generateVisual(Master.dTransManual[it.Url].visuals[0].visualType,visuals[0].visualOptions,
+				Master.dTransManual[it.Url].dt.generateVisual(Master.dTransManual[it.Url].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
 					'sc-' + it.Posicion ).render();
 			} else {	
 			hastAutoMatic = true;				
@@ -472,7 +587,9 @@ var hastAutoMatic = false;
 		if(hastAutoMatic){
 			for(var it in Master.dTransAuto){
 				if(Master.dTransAuto.hasOwnProperty(it)){					
-					Master.dTransAuto[it].dt.generateVisual(Master.dTransAuto[it].visuals[0].visualType,visuals[0].visualOptions,
+					console.log(Master.dTransAuto[it]); 
+
+					Master.dTransAuto[it].dt.generateVisual(Master.dTransAuto[it].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
 					'sc-' + it ).render();
 				}
 			}
@@ -578,6 +695,8 @@ setPantallaPropiedad: function(propiedades, timer){
 
 setCambioBloque: function(tmr){  // tmr: tiempo en segundos
 	// Consular al Servidor cual es el Bloque
+	console.log("El bloque cambiara en: " +  tmr); 
+
 	tmr = parseInt(tmr)*1000;
 	mTimer.bloque = setTimeout(function(){
 		Master.cambiarBloque(); 
@@ -586,6 +705,7 @@ setCambioBloque: function(tmr){  // tmr: tiempo en segundos
 
 cambiarBloque: function(){
 	// Consular al Servidor cual es el Bloque
+	alert("Consulta para Cambiar el Bloque. "); 
 
 }, 
 
@@ -624,65 +744,65 @@ var retorno = {};
 	case 1:  
 
 			id = "#aplication-01";
-			retorno = Master.html.find(id);
+			retorno = $(Master.html).find(id);
 			retorno.hide();
 
 		break; 			
 		
 		case 2:
 			id = "#aplication-02";
-			retorno = Master.html.find(id);
+			retorno = $(Master.html).find(id);
 			retorno.hide();
 			
 		break;
 
 		case 3:
 			id = "#aplication-03";
-			retorno = Master.html.find(id);
+			retorno = $(Master.html).find(id);
 			retorno.hide();
 		break;
 	case 4:
 	// <div class='cs-div_V1x2'> </div>
 		id = "#aplication-04";
-		retorno = Master.html.find(id);
+		retorno = $(Master.html).find(id);
 		retorno.hide();		
 		break;
 		
 	case 5:
 		// 
 		id = "#aplication-05";
-		retorno = Master.html.find(id);
+		retorno = $(Master.html).find(id);
 		retorno.hide();
 		 
 		break;
 
 		case 6:
 			id = "#aplication-06";
-			retorno = Master.html.find(id);
+			retorno = $(Master.html).find(id);
 			retorno.hide();
 		break;
 
 		case 7:
 		// baseHtml = "<div class='cs-div_H1x2'>";
 			id = "#aplication-07";
-			retorno = Master.html.find(id);
+			retorno = $(Master.html).find(id);
 			retorno.hide();
 		break;
 
 		case 8:
 			id = "#aplication-08";
-			retorno = Master.html.find(id);
+			retorno = $(Master.html).find(id);
 			retorno.hide();
 		break;
 
 		case 9:
 			id = "#aplication-09";
-			retorno = Master.html.find(id);
+			retorno = $(Master.html).find(id);
 			retorno.hide();
 		break;
 		default:			
-			option.url = "template/inicio.html"; 
-			retorno = Master.html.find(id);
+			option.Url = "template/inicio.html"; 
+			retorno = $(Master.html).find(id);
 			retorno.hide();
 		break;
 	}
@@ -700,7 +820,7 @@ renderStruct: function(option, callfunctionBack){
 // Master TV
 MasterTV = function() {	
 	this.page_config = {};	
-	this.app_info = {server: "", version: "", serverRequest: ""};	
+	this.app_info = {server: "", version: "", serverRequest: ""};
 
 	this.ManagerPages = {
 			showInfoBar: false,
@@ -714,18 +834,17 @@ MasterTV = function() {
 	var content_img = [];
 	var title_txt = [];	
 	var sessionesPAG = ["applicationWrapper"];
-	
+
 	if(this.setFileConfig()){
 		this.conn = new ConexionTV(this.app_info.server);
 	}
-	widgetAPI.sendReadyEvent();
+// 	widgetAPI.sendReadyEvent();
 	
 };
 
 MasterTV.prototype.setFileConfig = function(){	
 	
-	// Yes Exists File. OF COMPUTER.
-		
+	// Yes Exists File. OF COMPUTER.		
 	// var firstData = ['192.168.183.1:9300'];
 	var firstData = ['10.234.133.76:9300'];
 	var firstServer = 'localhost:7777/GestionVista/'; 
