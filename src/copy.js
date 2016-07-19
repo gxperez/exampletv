@@ -32,6 +32,21 @@ Master = {
 			  widgetAPI.sendReadyEvent();			
 			 document.getElementById("anchor_main").focus();
 
+			 $.get("http://10.234.51.99:8079/GestionVista/webApp/img/esqm_TresxTres.png", function(dt){
+			 	log(dt); 
+			 }).done(function(dt) {
+    alert( "second success" );
+    log("Exito:" + dt); 
+  })
+  .fail(function(dt) {
+  	log("Fallo:" + dt); 
+
+    alert( "error" );
+  });
+  
+
+
+return 0; 
 			 Master.setSmartTemplate(function(){			 	
 
 			 	alert("Initt: Set LOcal Html"); 
@@ -304,15 +319,36 @@ recorrerProgramaSinAsingacion: function(){
 		"Descripcion":"Recorrido Sin Asignar",
 		"Orden":"1",
 		"slides":
-			{"0":
+		{
+		"0":
+			{"EsquemaTipo":"1",
+				"bgColor":"#000",
+				"TransicionTipoIni":"0",
+				"TransicionTipoFin":"1",
+				"MostrarHeader":"1",
+				"Posicion":"0",
+				"DuracionPage":"00:00:30",
+				"DuracionPageSec":"6",
+				"secciones":[
+					{"Encabezado":"Primero",
+					"Posicion":"1",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/blueBack.png" // blueBack
+					}
+				]
+				}, 
+			"1":
 				{"EsquemaTipo":"2",
 				"bgColor":"#000",
 				"TransicionTipoIni":"0",
 				"TransicionTipoFin":"1",
 				"MostrarHeader":"2",
-				"Posicion":"0",
+				"Posicion":"1",
 				"DuracionPage":"00:00:06",
-				"DuracionPageSec":"6",
+				"DuracionPageSec":"15",
 				"secciones":[					 
 					{"Encabezado":"Segundo",
 					"Posicion":"1",
@@ -320,7 +356,7 @@ recorrerProgramaSinAsingacion: function(){
 					"RepresentacionTipo":"3",
 					"FuenteID":"0",
 					"EsManual":"0",
-					"Url":"template/img/block01.png"
+					"Url":"http://10.234.51.99:8079/GestionVista/webApp/img/esqm_TresxTres.png"
 					},
 
 					{"Encabezado":"Primero",
@@ -330,26 +366,10 @@ recorrerProgramaSinAsingacion: function(){
 					"FuenteID":"0",
 					"EsManual":"0",
 					"Url":"http://cnddosdobis:8090/WebServices/api.asmx/ObtenerDocumentoJSON?docCode=530b62e4-19d3-4e34-8f0c-9d007f27f55a&queryParametroValores="
-					},
+					},					
 
-					{"Encabezado":"Tres",
-					"Posicion":"3",
-					"FuenteTipo":"3",
-					"RepresentacionTipo":"1",
-					"FuenteID":"0",
-					"EsManual":"0",
-					"Url":"http://cnddosdobis:8090/WebServices/api.asmx/ObtenerDocumentoJSON?docCode=530b62e4-19d3-4e34-8f0c-9d007f27f55a&queryParametroValores="
-					}, 
-					{"Encabezado":"Primero",
-					"Posicion":"3",
-					"FuenteTipo":"1",
-					"RepresentacionTipo":"3",
-					"FuenteID":"0",
-					"EsManual":"0",
-					"Url":"template/img/blueBack.png" // blueBack
-					}, 
 					{"Encabezado":"Segundo",
-					"Posicion":"4",
+					"Posicion":"3",
 					"FuenteTipo":"1",
 					"RepresentacionTipo":"3",
 					"FuenteID":"0",
@@ -357,15 +377,16 @@ recorrerProgramaSinAsingacion: function(){
 					"Url":"template/img/ConfiHora01.png"
 					}, 
 					{"Encabezado":"Segundo",
-					"Posicion":"5",
+					"Posicion":"4",
 					"FuenteTipo":"1",
-					"RepresentacionTipo":"3",
+					"RepresentacionTipo":"1",
 					"FuenteID":"0",
 					"EsManual":"0",
-					"Url":"template/img/indice.jpg"
+					"Url":"template/img/ConfiHora02.png"
 					},
+
 					{"Encabezado":"Segundo",
-					"Posicion":"6",
+					"Posicion":"4",
 					"FuenteTipo":"1",
 					"RepresentacionTipo":"3",
 					"FuenteID":"0",
@@ -373,45 +394,25 @@ recorrerProgramaSinAsingacion: function(){
 					"Url":"template/img/ConfiHora02.png"
 					}
 				]
-				}, 
-			 "1":
-			 {"EsquemaTipo":"1",
-				"bgColor":"#000",
-				"TransicionTipoIni":"0",
-				"TransicionTipoFin":"1",
-				"MostrarHeader":"1",
-				"Posicion":"1",
-				"DuracionPage":"00:00:30",
-				"DuracionPageSec":"6",
-				"secciones":[
-					{"Encabezado":"Primero",
-					"Posicion":"1",
-					"FuenteTipo":"1",
-					"RepresentacionTipo":"3",
-					"FuenteID":"0",
-					"EsManual":"0",
-					"Url":"template/img/block01.png" // blueBack
-					}
-				]
-				}, 
+				},
 
 				"2":
-			 {"EsquemaTipo":"1",
+			{"EsquemaTipo":"1",
 				"bgColor":"#000",
 				"TransicionTipoIni":"0",
 				"TransicionTipoFin":"1",
 				"MostrarHeader":"1",
 				"Posicion":"2",
 				"DuracionPage":"00:00:30",
-				"DuracionPageSec":"30",
+				"DuracionPageSec":"5",
 				"secciones":[
 					{"Encabezado":"Primero",
 					"Posicion":"1",
-					"FuenteTipo":"1",
+					"FuenteTipo":"4",
 					"RepresentacionTipo":"3",
 					"FuenteID":"0",
 					"EsManual":"0",
-					"Url":"template/img/actualizando.png" // blueBack
+					"Url":"http://cnddosdobis:8090/WebServices/api.asmx/ObtenerDocumentoHTML?docCode=df980dea-5ec3-4849-bdb9-54e2d0f2adab" // blueBack
 					}
 				]
 				}	
@@ -466,13 +467,9 @@ renderSliderPage: function(config, totalS){
 	Master.fn_onShow = []; 
 	Master.dTransAuto = {}; 
 
-	Master.setLocalCss("white"); 
+//	Master.setLocalCss("white"); 
 
-	try{
-		Master.generateContentByFuenteTipoSimple(config); 
-	}catch(e){
-		console.error(e); 
-	}
+Master.generateContentByFuenteTipoSimple(config); 
 
 
 	mTimer.cIndexS++; 	
@@ -506,17 +503,12 @@ generateContentByFuenteTipoSimple: function(config){
 			hasRequest= true; 
 			requestList.push({Url: item.Url, Type:"JSON", methodCallRequest: function(res){
 
-				try{
+				alert("SOLO YEGARA AQUI SIIIIIIIIII.."); 
 
 					var responseJSON = res; 
                     Master.dTransAuto[item.Posicion] ={dt: datatransformer.new( responseJSON.data, responseJSON.config), visuals: responseJSON.config.visuals};
                 	Master.fn_onShow.push({name: "Bischart", type: "auto"});
-
-
-				} catch(e){
-					console.log("Solo el Transformer");
-					console.error(e);
-				}
+				
 
                     
                 } }); 
@@ -538,7 +530,9 @@ generateContentByFuenteTipoSimple: function(config){
 		break; 
 		case 4: // OfficeVIewExcel 
 
-			Master.setLocalCss("white"); 
+		//	Master.setLocalCss("white"); 
+		
+
 			if(item.Url in Master.excelcollection){
 				$("#sc-" + item.Posicion).html(Master.excelcollection[item.Url]); 
 				
@@ -549,6 +543,8 @@ generateContentByFuenteTipoSimple: function(config){
 					$("#sc-" + item.Posicion ).html(data); 
 				} }); 
 			}			
+
+						
 		break; 
 		case 5: // OfficeVIewPowerPoint.				
 
@@ -560,9 +556,15 @@ generateContentByFuenteTipoSimple: function(config){
 
 		case 7: // Simple HTML Renderizado.
 		requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){					
-					$("#sc-" + item.Posicion ).html(data); 
+			
 
-				} }); 
+				$("#sc-" + item.Posicion ).html(data); 
+			
+
+				} 
+			}); 
+			
+					
 
 		// 	return "htmlVIdeo"; 
 		break;
@@ -581,26 +583,42 @@ generateContentByFuenteTipoSimple: function(config){
 	}
 }, 
 
-nextRequest: function(arreglo, index, len){
+nextRequest: function(arreglo, index, len){	
 
 	var i = index; 
 
-	if(index >= len){		
+	if(index >= len){
+	
+
 		Master.applyTransicion(mTimer.TransicionTipoIni, "in"); 
+		alert("Entrada Apply"); 
 		return true; 
 	}
-
+	alert("Siguiente Paso renderizar"); 
 	if(arreglo[i].Type == "get"){
 		$.get( arreglo[i].Url, function(dta) {
 		 arreglo[i].methodCallRequest(dta); 
 		 i++; 
-		 Master.nextRequest(arreglo, i, len); 
+		 log("Ha regresado el Get" + dta ); 
 
+		 Master.nextRequest(arreglo, i, len); 
 		}  ); 
+
 	} 
 
 	if(arreglo[index].Type == "JSON"){
+		alert("Siguiente Paso Get del JSON"); 
+
+		alert(arreglo[i].Url); 
+		log(arreglo[i].Url); 
+
 		$.getJSON( arreglo[i].Url, function(dta) { 
+
+			alert("Aqui Quiere LLegar Pero"); 
+			alert(dta); 
+			log("HTTP: " + JSON.stringify(dta) ); 
+			alert("****************************"); 			
+
 			arreglo[i].methodCallRequest(dta);
 			i++;
 			Master.nextRequest(arreglo, i, len);  
@@ -642,16 +660,16 @@ applyTransicion: function(transicionTipo, modo ){
 		$("#applicationWrapper").show("fold");
 
 
-
 		// Recorrido Al momento de Visualizar.
 
-		arrBichar = Master.fn_onShow.filter(function(d){			
+	var arrBichar = Master.fn_onShow.filter(function(d){			
 				return d.name === "Bischart"; 
 		});
 
 		arrOtr = Master.fn_onShow.filter(function(d){			
 				return d.name !== "Bischart"; 
 		});
+
 
 
 var hastAutoMatic = false; 
@@ -665,15 +683,41 @@ var hastAutoMatic = false;
 		});
 
 
+
 		if(hastAutoMatic){
 			for(var it in Master.dTransAuto){
 				if(Master.dTransAuto.hasOwnProperty(it)){					
 				//	// console.log(Master.dTransAuto[it]); 
+				alert("@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"); 
 
-					Master.dTransAuto[it].dt.generateVisual(Master.dTransAuto[it].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
+					alert("NO Existe fold"); 
+					alert(Master.dTransAuto[it].dt); 										
+
+					alert( JSON.stringify(Master.dTransAuto[it].visuals[0].visualType) ); 
+
+
+										alert("/*********************/"); 
+										alert(math.eval("b * a", {a: 2, b:4})); 
+										alert("/*******************/"); 
+
+										alert(typeof Master.dTransAuto[it].dt.generateVisual); 
+
+										
+Master.dTransAuto[it].dt.generateVisual(Master.dTransAuto[it].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
 					'sc-' + it ).render();
+										
+
+
+					
+
+
+
+					alert("Paso el Renderizado. "); 
 				}
 			}
+
+			
+
 		}
 
 		return 0; 
@@ -927,7 +971,11 @@ MasterTV.prototype.setFileConfig = function(){
 	
 	// Yes Exists File. OF COMPUTER.		
 	// var firstData = ['192.168.183.1:9300'];
-	var firstData = ['10.234.133.76:9300'];
+
+	// var firstData = ['10.234.133.76:9300'];
+	// For Producction SERVER
+
+	var firstData = ['10.234.51.99:9300'];
 	var firstServer = 'localhost:7777/GestionVista/'; 
 	var app_info = {}; 
 	var page_config = {}; 	
@@ -1113,18 +1161,23 @@ ConexionTV.prototype.conectar = function(cNext){
 	
 	var ServerTEMP = new FancyWebSocket('ws://' + cArr[cIndex].toString().trim());	
 	this.Server = ServerTEMP;
-	log("Buscando la conexion del servicio.");
+	 log("Buscando la conexion del servicio.");
+
+	log( "Server : " + cArr[cIndex].toString().trim() ); 
+
 	//Let the user know we're connected
 	this.Server.bind('open', function() {
 	log( "Connected." );	
-	var networkPlugin = document.getElementById('pluginNetwork');
+
+//	try{
+
+		var networkPlugin = document.getElementById('pluginNetwork');
 	 var mac = networkPlugin.GetMAC(0) || networkPlugin.GetMAC(1);
 	 macTV = mac;  
 
 	// Provicional
 	// macTV = '222-222-2222'; 
 	// mac = macTV; 
-
 	
 	current_TV = {
 			clienteSessionID: 0,
@@ -1139,6 +1192,14 @@ ConexionTV.prototype.conectar = function(cNext){
 		};
 
 		ServerTEMP.send("message", JSON.stringify(current_TV) );
+
+/*	} catch(err){
+		log(err); 
+		alert("Error en la Conexion del Documento."); 
+		alert(err); 
+	}
+	*/
+	
 	});
 	
 	//OH NOES! Disconnection occurred.

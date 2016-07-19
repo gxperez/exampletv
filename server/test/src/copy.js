@@ -155,7 +155,7 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 			localStorage.setItem("server", servicio); 
 			var alt = {};
 			var url = servicio + "&Mac=" + macTV;	
-			url = url.replace("10.234.133.76", "localhost");
+			// url = url.replace("10.234.133.76", "localhost");
 
 			$.getJSON(url, function(res){
 				if(res.IsOk){
@@ -247,7 +247,7 @@ recorrerProgramaSinAsingacion: function(){
 				"MostrarHeader":"1",
 				"Posicion":"0",
 				"DuracionPage":"00:00:30",
-				"DuracionPageSec":"30",
+				"DuracionPageSec":"50",
 				"secciones":[
 					{"Encabezado":"Primero",
 					"Posicion":"1",
@@ -846,7 +846,9 @@ MasterTV.prototype.setFileConfig = function(){
 	
 	// Yes Exists File. OF COMPUTER.		
 	// var firstData = ['192.168.183.1:9300'];
-	var firstData = ['10.234.133.76:9300'];
+	'10.234.51.99:9300'
+	var firstData = ['10.234.51.99:9300'];
+// 	var firstData = ['10.234.133.76:9300'];
 	var firstServer = 'localhost:7777/GestionVista/'; 
 	var app_info = {}; 
 	var page_config = {}; 	
