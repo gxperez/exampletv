@@ -29,8 +29,10 @@ Master = {
 	initt: function(){
 
 		alert("Initt"); 
-			  widgetAPI.sendReadyEvent();			
+			  widgetAPI.sendReadyEvent();
 			 document.getElementById("anchor_main").focus();
+
+			 /*
 
 			 $.get("http://10.234.51.99:8079/GestionVista/webApp/img/esqm_TresxTres.png", function(dt){
 			 	log(dt); 
@@ -43,10 +45,8 @@ Master = {
 
     alert( "error" );
   });
-  
-
-
 return 0; 
+*/
 			 Master.setSmartTemplate(function(){			 	
 
 			 	alert("Initt: Set LOcal Html"); 
@@ -198,7 +198,7 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 			var url = servicio + "&Mac=" + macTV;	
 		//	url = url.replace("10.234.133.76", "localhost");
 
-			$.getJSON(url, function(res){
+			getRqst(url, function(res){
 				if(res.IsOk){
 					// Estuvo OK el asunto
 					alt[fecha] = {programa: res.programa, contenido: res.contenido}; 
@@ -214,7 +214,7 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 					Master.recorrerProgramaSinAsingacion(); 
 
 				}
-	});	
+	}, "json");	
 }, 
 
 showWelcomePages: function(indx ){			
@@ -596,13 +596,13 @@ nextRequest: function(arreglo, index, len){
 	}
 	alert("Siguiente Paso renderizar"); 
 	if(arreglo[i].Type == "get"){
-		$.get( arreglo[i].Url, function(dta) {
+		getRqst( arreglo[i].Url, function(dta) {
 		 arreglo[i].methodCallRequest(dta); 
 		 i++; 
-		 log("Ha regresado el Get" + dta ); 
+		 // log("Ha regresado el Get" + dta ); 
 
 		 Master.nextRequest(arreglo, i, len); 
-		}  ); 
+		}, "html" ); 
 
 	} 
 
@@ -612,18 +612,18 @@ nextRequest: function(arreglo, index, len){
 		alert(arreglo[i].Url); 
 		log(arreglo[i].Url); 
 
-		$.getJSON( arreglo[i].Url, function(dta) { 
+		getRqst( arreglo[i].Url, function(dta) { 
 
 			alert("Aqui Quiere LLegar Pero"); 
 			alert(dta); 
-			log("HTTP: " + JSON.stringify(dta) ); 
+		//	log("HTTP: " + JSON.stringify(dta) ); 
 			alert("****************************"); 			
 
 			arreglo[i].methodCallRequest(dta);
 			i++;
 			Master.nextRequest(arreglo, i, len);  
 			// console.log("Escenario #1"); 			
-		}); 
+		}, "json"); 
 	} 
 
 
@@ -1225,6 +1225,24 @@ ConexionTV.prototype.conectar = function(cNext){
 	this.Server.connect();
 	this.cIndex = cIndex;
 };
+
+function getRqst(url, callback, typeS){
+
+	var tipo = typeS; 
+	if(typeof typeS == "undefined" ){
+		tipo = "text"; 
+	}
+
+	$.ajax({
+			  url: url,
+			  dataType: tipo, 
+			  async: true,
+			  success: function(dt){				  
+				 callback(dt); 									  
+			  }
+			});
+
+}
 
 
 var content = $("<div id='log'></div>");
