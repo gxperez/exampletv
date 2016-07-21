@@ -27,6 +27,11 @@
                    "infographic", "macarons", "macarons2", "mint", "red",
                    "roma", "sakura", "shine"
         ],
+        _echartPosition = ["top_left","top_center", "top_right","center_left", "center_center", "center_right","bottom_left", "bottom_center", "bottom_right"],
+        _echartPositionWithNone = ["top_left","top_center", "top_right","center_left", "center_center", "center_right","bottom_left", "bottom_center", "bottom_right", "none"],
+        _titlePositionDefault =  "top_left",
+        _leyendPositionDefault = "top_center",
+        _toolboxPositionDefault = "center_right",
         _formulas = ['sum', 'max', 'min'],
         _featureLabels = {
             restoreTitle: "restore",
@@ -91,6 +96,57 @@
         return +(number[0] + 'e' + (number[1] ? (+number[1] - digits) : -digits));
     }
 
+    function _getEchartOptionsPosition(positionEnum){
+    	var position = {x: "", y: ""};
+
+    	switch(positionEnum){
+    		case "top_left":
+    			position.x = "left";
+    			position.y = "top";
+    			break;
+    		case "top_center":
+    			position.x = "center";
+    			position.y = "top";
+    			break;
+    		case "top_right":
+    			position.x = "right";
+    			position.y = "top";
+    			break;
+    		case "center_left":
+    			position.x = "left";
+    			position.y = "center";
+    			break;
+    		case "center_center":
+    			position.x = "center";
+    			position.y = "center";
+    			break;
+    		case "center_right":
+    			position.x = "right";
+    			position.y = "center";
+    			break;
+    		case "bottom_left":
+    			position.x = "left";
+    			position.y = "bottom";
+    			break;
+    		case "bottom_center":
+    			position.x = "center";
+    			position.y = "bottom";
+    			break;
+    		case "bottom_right":
+    			position.x = "right";
+    			position.y = "bottom";
+    			break;
+    		default:
+    			position = null;
+    	}
+
+    	return position;
+    }
+
+    function _getEchartOptionOrient(isVertical){
+    	return isVertical? "vertical": "horizontal";
+    }
+
     /**
      *  echart-pie
      *
@@ -101,15 +157,26 @@
     datatransformer.addVisual("echart-pie",
     {
 
-        'subtitle': { label: "subtitle", type: String, required: false, order: 2 },
-        'title': { label: "title", type: String, required: true, order: 1 },
-        'group': { label: "group", type: datatransformer.typeGroup, required: true, order: 3 },
-        'measure': { label: "measure", type: datatransformer.typeMeasure, required: true, order: 4 },
-        'theme': { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 }
+        subtitle: { label: "subtitle", type: String, required: false, order: 2 },
+        title: { label: "title", type: String, required: true, order: 1 },
+        group: { label: "group", type: datatransformer.typeGroup, required: true, order: 3 },
+        measure: { label: "measure", type: datatransformer.typeMeasure, required: true, order: 4 },
+        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 6 },
+        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 7 },
+        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 8},
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 9 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 10},
+        renderAsImage: { label: "render as image", type: Boolean, order: 11}
     },
     function () {
+    	this.renderOptions= {
+    		echartObj: null,
+    		echartOptions: {}
+    	};
+
         this.render = function () {
-            var _echartObj = echarts.init(document.getElementById(this.config.elemId)),
+            var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
 				_data = this.data.data,
 				_measureObj = {},
 				_dataOptionsObj = {},
@@ -141,28 +208,39 @@
 
             _measureMaxvalue = Math.max.apply(null, _measureValues);
 
-            var optionForPie = {
-                title: {
+            var titlePosition = _getEchartOptionsPosition(this.config.titlePosition || _titlePositionDefault);
+            var leyendPosition = _getEchartOptionsPosition(this.config.leyendPosition || _leyendPositionDefault);
+            var toolboxPosition = _getEchartOptionsPosition(this.config.toolboxPosition || _toolboxPositionDefault);
+
+            this.renderOptions.echartOptions = {
+                title: (titlePosition == null)? {} : {
                     text: this.config.title,
                     subtext: this.config.subtitle,
-                    x: "left"/*,
+                    x: titlePosition.x,
+                    y: titlePosition.y,
+                    /*"left",
                     itemGap: -15*/
                 },
                 tooltip: {
                     trigger: "item",
                     formatter: "{a} <br/>{b} : {c}"
                 },
-                legend: {
-                    orient: "horizontal",
-                    x: "center",
+                legend: (leyendPosition == null)? {} : {
+                    orient: this.config.leyendVertical? "vertical":"horizontal",
+                    //x: "center",
+                    x: leyendPosition.x,
+                    y: leyendPosition.y,
                     data: _leyends
                 },
                 calculable: true,
-                toolbox: {
+                renderAsImage : (this.config.renderAsImage == true)? true: false,
+                toolbox: (toolboxPosition == null)? {} :{
                     show: true,
-                    orient: 'vertical',
-                    x: 'right',
-                    y: 'top',
+                    orient: this.config.toolboxHorizontal? "horizontal":"vertical" ,//'vertical',
+                    x: toolboxPosition.x,
+                    y: toolboxPosition.y,
+                   /* x: 'right',
+                    y: 'top',*/
                     color: ['#1e90ff', '#22bb22', '#4b0082', '#d2691e'],
                     backgroundColor: 'rgba(0,0,0,0)',
                     borderColor: '#ccc',
@@ -216,9 +294,14 @@
             };
 
             _echartObj.setTheme(_themes[this.config.theme]);
-            _echartObj.setOption(optionForPie);
+            _echartObj.setOption(this.renderOptions.echartOptions);
             _echartObj.hideLoading();
         }
+
+        this.refreshRender = function(){
+	    	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+	        this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
+	    }	
     });
 
     /**
@@ -236,10 +319,22 @@
         measures: { label: "measures", type: datatransformer.typeMultipleMeasures, required: true, order: 4 },
         theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
         horizontal: { label: "horizontal", type: Boolean, order: 6 },
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 7},
+        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 8 },
+        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 9},
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 10 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 11},
+        renderAsImage: { label: "render as image", type: Boolean, order: 12}
     },
     function () {
+    	this.renderOptions= {
+    		echartObj: null,
+    		echartOptions: {}
+    	};
+
+
         this.render = function () {
-            var _echartObj = echarts.init(document.getElementById(this.config.elemId)),
+           var  _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
 				_data = this.data.data,
 				_group = this.config.group,
 				_measuresObj = {},
@@ -309,30 +404,37 @@
                 xAxisOption = [{ type: "category", data: _categories }];
             }
 
-            var optionForBar = {
-                title: {
+           var titlePosition = _getEchartOptionsPosition(this.config.titlePosition || _titlePositionDefault);
+           var leyendPosition = _getEchartOptionsPosition(this.config.leyendPosition || _leyendPositionDefault);
+           var toolboxPosition = _getEchartOptionsPosition(this.config.toolboxPosition || _toolboxPositionDefault);
+
+           this.renderOptions.echartOptions = {
+                title: (titlePosition == null)? {} :  {
                     text: this.config.title,
                     subtext: this.config.subtitle,
-                    x: "left"/*,
+                    x: titlePosition.x,
+                    y: titlePosition.y/*,
                     itemGap: -15*/
                 },
                 tooltip: {
                     trigger: "item",
                     formatter: "{a} <br/>{b} : {c}"
                 },
-                legend: {
-                    orient: "horizontal",
-                    x: "center",
+                legend:  (leyendPosition == null)? {} :{
+                    orient: this.config.leyendVertical? "vertical":"horizontal",
+                    x: leyendPosition.x,
+                    y: leyendPosition.y,
                     data: _leyends
                 },
                 yAxis: yAxisOption,
                 xAxis: xAxisOption,
                 calculable: true,
-                toolbox: {
+                renderAsImage : (this.config.renderAsImage == true)? true: false,
+                toolbox: (toolboxPosition == null)? {} :{
                     show: true,
-                    orient: 'vertical',
-                    x: 'right',
-                    y: 'center',
+                    orient: this.config.toolboxHorizontal? "horizontal":"vertical" ,//'vertical',
+                    x: toolboxPosition.x,
+                    y: toolboxPosition.y,
                     color: ['#1e90ff', '#22bb22', '#4b0082', '#d2691e'],
                     backgroundColor: 'rgba(0,0,0,0)',
                     borderColor: '#ccc',
@@ -386,9 +488,14 @@
             };
 
             _echartObj.setTheme(_themes[this.config.theme]);
-            _echartObj.setOption(optionForBar);
+            _echartObj.setOption(this.renderOptions.echartOptions);
             _echartObj.hideLoading();
         }
+
+        this.refreshRender = function(){
+	    	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+	        this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
+	    }	
     });
 
 
@@ -406,11 +513,22 @@
         group: { label: "group", type: datatransformer.typeGroup, required: true, order: 3 },
         measures: { label: "measures", type: datatransformer.typeMultipleMeasures, required: true, order: 4 },
         theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
-        shadow: { label: "shadow", type: Boolean, order: 6 }
+        shadow: { label: "shadow", type: Boolean, order: 6 },
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 7},
+        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 8 },
+        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 9},
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 10 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 11},
+        renderAsImage: { label: "render as image", type: Boolean, order: 12}
     },
     function () {
+		this.renderOptions= {
+    		echartObj: null,
+    		echartOptions: {}
+    	};
+
         this.render = function () {
-            var _echartObj = echarts.init(document.getElementById(this.config.elemId)),
+            var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
 				_data = this.data.data,
 				_group = this.config.group,
 				_measuresObj = {},
@@ -494,20 +612,28 @@
                 }
             }
 
-            var optionForBar = {
-                title: {
+            var titlePosition = _getEchartOptionsPosition(this.config.titlePosition || _titlePositionDefault);
+            var leyendPosition = _getEchartOptionsPosition(this.config.leyendPosition || _leyendPositionDefault);
+            var toolboxPosition = _getEchartOptionsPosition(this.config.toolboxPosition || _toolboxPositionDefault);
+
+            this.renderOptions.echartOptions = {
+                title: (titlePosition == null)? {} : {
                     text: this.config.title,
                     subtext: this.config.subtitle,
-                    x: "left"/*,
+                    x: titlePosition.x,
+                    y: titlePosition.y
+
+                    /*,
                     itemGap: -15*/
                 },
                 tooltip: {
                     trigger: "item",
                     formatter: "{a} <br/>{b} : {c}"
                 },
-                legend: {
-                    orient: "horizontal",
-                    x: "center",
+                legend:  (leyendPosition == null)? {} :{
+                    orient: this.config.leyendVertical? "vertical":"horizontal",
+                    x: leyendPosition.x,
+                    y: leyendPosition.y,
                     data: _leyends
                 },
                 yAxis: {
@@ -518,11 +644,12 @@
                 },
                 xAxis: [{ type: "category", boundaryGap: false, data: _categories }],
                 calculable: true,
-                toolbox: {
+                renderAsImage : (this.config.renderAsImage == true)? true: false,
+                toolbox: (toolboxPosition == null)? {} :{
                     show: true,
-                    orient: 'vertical',
-                    x: 'right',
-                    y: 'center',
+                    orient: this.config.toolboxHorizontal? "horizontal":"vertical" ,//'vertical',
+                    x: toolboxPosition.x,
+                    y: toolboxPosition.y,
                     color: ['#1e90ff', '#22bb22', '#4b0082', '#d2691e'],
                     backgroundColor: 'rgba(0,0,0,0)',
                     borderColor: '#ccc',
@@ -576,9 +703,14 @@
             };
 
             _echartObj.setTheme(_themes[this.config.theme]);
-            _echartObj.setOption(optionForBar);
+            _echartObj.setOption(this.renderOptions.echartOptions);
             _echartObj.hideLoading();
         }
+
+        this.refreshRender = function(){
+	    	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+	        this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
+	    }	
     });
 
 
@@ -599,11 +731,20 @@
         measure: { label: "measure", type: datatransformer.typeMeasure, required: true, order: 5 },
         min: { label: "min", type: Number, order: 6 },
         max: { label: "max", type: Number, order: 7 },
-        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 8 }
+        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 8 },
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 8},
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 9 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 10},
+        renderAsImage: { label: "render as image", type: Boolean, order: 11}
     },
     function () {
+    	this.renderOptions= {
+    		echartObj: null,
+    		echartOptions: {}
+    	};
+
         this.render = function () {
-            var _echartObj = echarts.init(document.getElementById(this.config.elemId)),
+            var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
 				_data = this.data.data,
 				_group = this.config.group,
 				_filter = this.config.filter,
@@ -651,22 +792,27 @@
 
             _serieS.push(_serieDatas);
 
-            var optionForGauge = {
-                title: {
+            var titlePosition = _getEchartOptionsPosition(this.config.titlePosition || _titlePositionDefault);
+            var toolboxPosition = _getEchartOptionsPosition(this.config.toolboxPosition || _toolboxPositionDefault);
+
+            this.renderOptions.echartOptions = {
+                title: (titlePosition == null)? {} : {
                     text: this.config.title,
                     subtext: this.config.subtitle,
-                    x: "left"/*,
+                    x: titlePosition.x,
+                    y: titlePosition.y/*,
                     itemGap: -15*/
                 },
                 tooltip: {
                     trigger: "item",
                     formatter: "{a} <br/>{b} : {c}"
                 },
-                toolbox: {
+                renderAsImage : (this.config.renderAsImage == true)? true: false,
+                toolbox:(toolboxPosition == null)? {} : {
                     show: true,
-                    orient: 'horizontal',
-                    x: 'right',
-                    y: 'top',
+                    orient: this.config.toolboxHorizontal? "horizontal":"vertical" ,//'vertical',
+                    x: toolboxPosition.x,
+                    y: toolboxPosition.y,
                     color: ['#1e90ff', '#22bb22', '#4b0082', '#d2691e'],
                     backgroundColor: 'rgba(0,0,0,0)',
                     borderColor: '#ccc',
@@ -690,9 +836,15 @@
             };
 
             _echartObj.setTheme(_themes[this.config.theme]);
-            _echartObj.setOption(optionForGauge, true);
+            _echartObj.setOption(this.renderOptions.echartOptions, true);
             _echartObj.hideLoading();
         }
+
+
+        this.refreshRender = function(){
+	    	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+	        this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions, true);
+	    }	
     });
 
 
@@ -715,11 +867,20 @@
         colors: { label: "color (red,#ff4500)", type: String, order: 8 },
         split: { label: "split", type: Number, required: true, order: 9 },
         horizontal: { label: "horizontal", type: Boolean, order: 10 },
-        horRadius: { label: "horizontal radius", type: Number, order: 11 }
+        horRadius: { label: "horizontal radius", type: Number, order: 11 },
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 12},
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 13 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 14},
+        renderAsImage: { label: "render as image", type: Boolean, order: 15}
     },
     function () {
+    	this.renderOptions= {
+    		echartObj: null,
+    		echartOptions: {}
+    	};
+
         this.render = function () {
-            var _echartObj = echarts.init(document.getElementById(this.config.elemId)),
+            var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
 				_util = this.util,
 				_data = this.data.data,
 				_group = this.config.group,
@@ -986,22 +1147,27 @@
                 }
             }
 
-            var optionForGauge = {
-                title: {
+            var titlePosition = _getEchartOptionsPosition(this.config.titlePosition || _titlePositionDefault);
+            var toolboxPosition = _getEchartOptionsPosition(this.config.toolboxPosition || _toolboxPositionDefault);
+
+            this.renderOptions.echartOptions =  {
+                title: (titlePosition == null)? {} : {
                     text: this.config.title,
                     subtext: this.config.subtitle,
-                    x: "left"/*,
+                    x: titlePosition.x,
+                    y: titlePosition.y/*,
                     itemGap: -15*/
                 },
                 tooltip: {
                     trigger: "item",
                     formatter: "{a} <br/>{b} : {c}"
                 },
-                toolbox: {
+                renderAsImage : (this.config.renderAsImage == true)? true: false,
+                toolbox: (toolboxPosition == null)? {} :{
                     show: true,
-                    orient: 'horizontal',
-                    x: 'right',
-                    y: 'top',
+                    orient: this.config.toolboxHorizontal? "horizontal":"vertical" ,//'vertical',
+                    x: toolboxPosition.x,
+                    y: toolboxPosition.y,
                     color: ['#1e90ff', '#22bb22', '#4b0082', '#d2691e'],
                     backgroundColor: 'rgba(0,0,0,0)',
                     borderColor: '#ccc',
@@ -1024,10 +1190,17 @@
                 series: [_serie]
             };
 
-            _echartObj.setTheme(_themes[this.config.theme]);
-            _echartObj.setOption(optionForGauge, true);
+
+			_echartObj.setTheme(_themes[this.config.theme]);
+            _echartObj.setOption(this.renderOptions.echartOptions,true);
             _echartObj.hideLoading();
         }
+
+        
+        this.refreshRender = function(){
+	    	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+	        this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions,true);
+	    }	
     });
 
 
