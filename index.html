@@ -5,88 +5,138 @@
 		<title>Gestion a la Vista Master</title>
 
 		<link href="template/styles/smart.css" rel="stylesheet">
-		<link href="src/caph.min.css" rel="stylesheet">
+		<link href="src/caph-2.1.1.1080.min.css" rel="stylesheet">
+		<link href="src/caph.theme.stripe-2.1.1-150302.min.css" rel="stylesheet">
 
-<style type="text/css">		
+<style type="text/css">
+.newsticker{
+	position: absolute;	
+	padding: 0px;
+	margin: 0px;
+}
 
+.newsticker li {
+color: #f2f2f2;
+white-space: nowrap;
+height: 39px;
+padding-top: 8px; 
+line-height: 10px;
+list-style: none;
+font-size: 22px;
+text-align: left;
+}
 </style>		
 
 	<!-- TODO : Common API -->
 	<script type="text/javascript" language="javascript" src="$MANAGER_WIDGET/Common/af/2.0.0/loader.js"></script>
 	<script type="text/javascript" language="javascript" src="$MANAGER_WIDGET/Common/af/2.0.0/extlib/jquery.js"></script>
-	<script type="text/javascript" language="javascript" src="src/caph-2.0.0.min.js"></script>	
+	<script type="text/javascript" language="javascript" src="src/caph-2.1.1.min.js"></script>
+	<script type="text/javascript" language="javascript" src="src/caph.theme.stripe-2.1.1-15.min.js"></script>
+
+	
 	<script type="text/javascript" src="$MANAGER_WIDGET/Common/API/Widget.js"></script>	
 	<script type="text/javascript" src="$MANAGER_WIDGET/Common/API/TVKeyValue.js"></script>
-    <script type='text/javascript' src='$MANAGER_WIDGET/Common/API/Plugin.js'></script>   
-
+    <script type='text/javascript' src='$MANAGER_WIDGET/Common/API/Plugin.js'></script>
     	<!-- TODO : ExtApis API -->    			
-		<!-- TODO : SRC LIBS EXT -->		
-		
+		<!-- TODO : SRC LIBS EXT -->
 	<script type="text/javascript" src="src/libs/jquery-ui.js"></script>
-	<script type="text/javascript" src="src/libs/fancywebsocket.js"></script>
-	<script type="text/javascript" src="src/libs/jquery.blockUI.js"></script>	
-
+	<script type="text/javascript" src="src/libs/jquery.blockUI.js"></script>
+	<script type="text/javascript" src="src/libs/fancywebsocket.js"></script>	
+	<script type='text/javascript' language='javascript' src='src/libs/jquery.newsTicker.min.js'></script>	
 	<script type="text/javascript" src="src/libs/math.min.js"></script>
 	<script type="text/javascript" src="src/libs/echarts-all.js"></script>
 	<script type="text/javascript" src="src/libs/datatransformer.js"></script>
 	<script type="text/javascript" src="src/libs/datatransformer_echart.js"></script>
+	<script type="text/javascript" language="javascript" src="src/master_all.js"></script>
 	</head>
-	
-	<body>	
-	<a href="javascript:void(0);" id="anchor_main" onkeydown="Master.KeyDown();"></a>
-	
-	<object id='pluginNetwork' classid='clsid:SAMSUNG-INFOLINK-NETWORK'></object>
-	<object id="pluginObjectTV" classid="clsid:SAMSUNG-INFOLINK-TV"></object>
-	<object id="pluginObjectWindow" border=0 classid="clsid:SAMSUNG-INFOLINK-WINDOW"></object>
-	<object id="pluginObjectAppCommon" border=0 classid="clsid:SAMSUNG-INFOLINK-APPCOMMON"></object>
-	<object id="plugin" classid="clsid:SAMSUNG-INFOLINK-SEF" style="width:0px; height:0px;"></object>			
-<div>	
+<body>	
 
-	<div id="cssApplicationWrapper">	
-	</div>	
-	
-	<div id="applicationWrapper" style="top: 0px; position: absolute;">		
-	</div>	
-</div>	
-	
-
-<div id="marqueBar">
-
-</div>
-	
-<div id="footer-gvapp">
- <div id="svecKeyHelp_5i7izkurjr5r4" class="sf-ui-keyhelp sf-ui-keyhelp-black">   
-   <table cellpadding="0px" cellspacing="0px" border="0px" valign="middle" style="width:100%;height:100%;">
-   <tbody>
-   <tr>
-	<td class="sf-ui-keyhelp-margin-left"></td>
-	<td style="text-align:right;">
-	<table cellpadding="0px" cellspacing="0px" border="0px" style="table-layout:fixed;" align="right" class="sf-ui-keyhelp-items">
-	<tbody>
-	<tr><td class="sf-ui-keyhelp-icon sf-ui-keyhelp-icon-updown" key="UPDOWN"></td>
-	<td class="sf-ui-keyhelp-margin-icon" key="UPDOWN"></td>
-	<td class="sf-ui-keyhelp-text" key="UPDOWN">Up/Down</td></tr>
-	</tbody>
-	</table>
-	</td>
-	<td class="sf-ui-keyhelp-margin-right">
-	</td>
-	</tr>
-	</tbody>
-	</table>
-   </div>
- </div>
- 
- 
- <script type="text/javascript">
- </script>
- 
- <script type="text/javascript" language="javascript" src="src/master_all.js"></script>
- 
- <script type="text/javascript"> 
- $("#footer-gvapp").hide(); 
-
-
- </script> 	
 </body>
+
+<script type="text/javascript">
+
+/* http.get('body.html', function(res){
+
+	alert("Esto Funciono"); 
+	alert("******************"); 
+
+	alert("he inyectamos al body"); 
+	$("body").html(res); 
+	Msg.log(res); 
+}); 
+
+*/
+
+alert("************ Inicio **********");
+
+Msg.log("Muestra"); 
+
+caph.app(); 
+
+caph.app.addScene('VideoPlayerScene',{    
+	oncreate : function(){
+
+		alert("Crete"); 
+	var VideoPlayer = caph.require('stripe.ui.widget.VideoPlayer');
+
+	alert("*********************Cretes***********"); 
+    var options = {
+    		'items' : [{
+				url : 'server/test/template/Peces.mp4',
+						title : 'Video 1[local]',
+						duration:'00:40',						
+						formart : 'MP4',
+						size : '3.1MB',
+						resolution : '1080i',
+						location : 'Folder location',
+						fullScreen : true,
+					}
+		   
+	], 'viewType' : 'full'};
+
+	alert("Crete 2"); 
+
+   var videoPlayer = VideoPlayer.getPlayerInstance(options);
+   alert("Crete 3"); 
+   this.addChild(videoPlayer);
+
+   alert("Crete 4"); 
+
+}}).run();
+
+ 
+
+/* 
+			    	// Require video Player class
+			var VideoPlayer = caph.require('stripe.ui.widget.videoPlayer');		
+			// Assign & create the video files that need to be play with information in options.
+			var options = {
+			    		'items' : [{
+							url : 'server/test/template/Peces.mp4',
+							title : 'Video 1[local]',
+							duration:'00:40',
+							date : '11-05-2014',
+							formart : 'MP4',
+							size : '3.15MB',
+							resolution : '1080i',
+							location : 'Folder location',
+							fullScreen : true,
+							}],
+			 				'viewType' : 'full', //viewType:'none' for API page
+			 			'callback' : function(){alert("aa"); } // "callbackFn" is a user defined callback function, will be called automatically when user call "exit()" on videoplayer instance
+			   };    		
+
+			// Get player instance
+			var videoPlayer = VideoPlayer.getPlayerInstance(options);
+
+			// append player to current scene
+			this.addChild(videoPlayer);
+
+			*/
+
+
+
+
+	
+</script>
 </html>
