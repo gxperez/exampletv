@@ -49,92 +49,36 @@ text-align: left;
 	<script type="text/javascript" src="src/libs/datatransformer_echart.js"></script>
 	<script type="text/javascript" language="javascript" src="src/master_all.js"></script>
 	</head>
-<body>	
+
+<body onkeydown="Master.KeyDown();">	
+<div>
+	<a href="javascript:void(0);" id="anchor_main" onkeydown="Master.KeyDown();"></a>	
+	<object id='pluginNetwork' classid='clsid:SAMSUNG-INFOLINK-NETWORK'></object>
+	<object id="pluginObjectTV" classid="clsid:SAMSUNG-INFOLINK-TV"></object>
+	<object id="pluginObjectWindow" border=0 classid="clsid:SAMSUNG-INFOLINK-WINDOW"></object>
+	<object id="pluginObjectAppCommon" border=0 classid="clsid:SAMSUNG-INFOLINK-APPCOMMON"></object>
+	<object id="plugin" classid="clsid:SAMSUNG-INFOLINK-SEF" style="width:0px; height:0px;"></object>	
+
+		
+
+	</div>
+
+<div id="mybody">
+
+
+</div>
 
 </body>
 
 <script type="text/javascript">
 
-/* http.get('body.html', function(res){
+function queseso(){ alert("Que ha Basado Noooo"); }; 
 
-	alert("Esto Funciono"); 
-	alert("******************"); 
+ $(document).ready(function(){
+	alert("Termino de Cargar"); 
 
-	alert("he inyectamos al body"); 
-	$("body").html(res); 
-	Msg.log(res); 
-}); 
-
-*/
-
-alert("************ Inicio **********");
-
-Msg.log("Muestra"); 
-
-caph.app(); 
-
-caph.app.addScene('VideoPlayerScene',{    
-	oncreate : function(){
-
-		alert("Crete"); 
-	var VideoPlayer = caph.require('stripe.ui.widget.VideoPlayer');
-
-	alert("*********************Cretes***********"); 
-    var options = {
-    		'items' : [{
-				url : 'server/test/template/Peces.mp4',
-						title : 'Video 1[local]',
-						duration:'00:40',						
-						formart : 'MP4',
-						size : '3.1MB',
-						resolution : '1080i',
-						location : 'Folder location',
-						fullScreen : true,
-					}
-		   
-	], 'viewType' : 'full'};
-
-	alert("Crete 2"); 
-
-   var videoPlayer = VideoPlayer.getPlayerInstance(options);
-   alert("Crete 3"); 
-   this.addChild(videoPlayer);
-
-   alert("Crete 4"); 
-
-}}).run();
-
- 
-
-/* 
-			    	// Require video Player class
-			var VideoPlayer = caph.require('stripe.ui.widget.videoPlayer');		
-			// Assign & create the video files that need to be play with information in options.
-			var options = {
-			    		'items' : [{
-							url : 'server/test/template/Peces.mp4',
-							title : 'Video 1[local]',
-							duration:'00:40',
-							date : '11-05-2014',
-							formart : 'MP4',
-							size : '3.15MB',
-							resolution : '1080i',
-							location : 'Folder location',
-							fullScreen : true,
-							}],
-			 				'viewType' : 'full', //viewType:'none' for API page
-			 			'callback' : function(){alert("aa"); } // "callbackFn" is a user defined callback function, will be called automatically when user call "exit()" on videoplayer instance
-			   };    		
-
-			// Get player instance
-			var videoPlayer = VideoPlayer.getPlayerInstance(options);
-
-			// append player to current scene
-			this.addChild(videoPlayer);
-
-			*/
-
-
+	 Master.initt(); 
+ }); 
 
 
 	

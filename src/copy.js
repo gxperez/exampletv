@@ -1120,11 +1120,6 @@ MasterTV.prototype.handleKeyDown = function (keyCode) {
 	}
 };
 
-MasterTV.prototype.ValidarPrograma= function(dt){
-
-}; 
-
-
 var ConexionTV = function(listIp){	
 	alert("Instancia de la Conxion del Servidor");
 	this.fechaJson = new Date();	
