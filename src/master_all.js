@@ -8,8 +8,6 @@ var pluginAPI = {};
 var fileSystemObj = {};
 
 
-
-
 alert("Cargaron COnfiguraciones Loaded master_all.js"); 
 
 ConfigSetting = {
@@ -19,7 +17,6 @@ ConfigSetting = {
 }; 
 
 // EL aplicativo Completo. MAster controlador
-
 var copy = {}; 
 var fileObj = {};  
 var instancia = null;
@@ -28,9 +25,11 @@ var serverUpdatePath = null;
 var macTV;
 
 var mTimer = {
+	hasRuntime: false,
 	cIndexC: 0, // Contenido.
 	cIndexS: 0, // Slider.
-	TransicionFin: ""
+	TransicionFin: "", 
+	contenido: 0
 };
 
 var pptMaster = {
@@ -86,6 +85,12 @@ Master = {
 		}); 		
 	},
 
+	reconectar : function(){	
+
+
+		     
+		},
+
 	KeyDown: function(){				
 		var keyCode = event.keyCode;		
 
@@ -116,6 +121,7 @@ alert("El BOron es " + keyCode + " == "  + 29443);
 
 		receptorWs: function(data){				
 				// ["ACTUALIZAR-APP", "ACTIVAR", "TWEETS", "CAST", "PROGRAMA" "CONTROL" ]
+				localStorage.setItem("programaTV", null); 	
 				switch (data.accion) {
 					case "ACTUALIZAR-APP":
 						// SOLICITUD DE ACTUALIZACION DE APP DESDE EL SERVIDOR.	Cambio de IP cambio de Servidor a las Apliaciones.						
@@ -124,19 +130,31 @@ alert("El BOron es " + keyCode + " == "  + 29443);
 								instancia.setFileConfig(); 
 						}
 						break;
-					case "NOTIFICAR":		
-						// console.log("Revisara Si es Necesario la Actualizacion.");
-						var prog = localStorage.getItem("programaTV");
+					case "ACTUALIZAR-PROG":
+
+						localStorage.setItem("programaTV", null);
+						mTimer.hasRuntime = false; 
+						Master.cambiarBloque(); 
+
+					break; 
+					case "NOTIFICAR":	
+
+					alert("NOtificar desde la Respuesta del Servidor en el Servicio SIPP"); 							
+
+						var prog = JSON.parse(localStorage.getItem("programaTV"));
+
+						alert(prog); 
+						alert("**************** Progrmacion ***********************");  // Hay que Hacerle Parser.
 						if(prog == null || typeof prog == "undefined" || typeof prog == "string" ){
 								prog = {}; 
 						}
 
-						for (var i in data ) {
-							// console.log(i + "===> " + data[i]); 
-						}
+						localStorage.setItem("base_url", data.base_url); 
+						localStorage.setItem("getFullBloque", data.server); 
+						localStorage.setItem("fechaActual_APP", data.fechaActual); 
+						localStorage.setItem("fecha_APP", data.fecha); 					
 
-					// console.log(data.fechaActual); 
-					// console.log("Fecha Actualizada:-::: ^^"); 
+
 
 					if(!(data.fechaActual in prog) ){
 						localStorage.setItem("programaTV", null); 	
@@ -146,7 +164,41 @@ alert("El BOron es " + keyCode + " == "  + 29443);
 						Master.ObtenerPrograma(data.fechaActual, data.server, data.fecha); 
 						return true; 
 					} else {
+
 						Msg.log("La progrmacion esta actualizada."); 
+
+						hasProBloq = false; 
+
+Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**************"); 
+
+						for (var i in prog[data.fechaActual].programa) {
+							if(prog[data.fechaActual].programa.hasOwnProperty(i)){
+								prog[data.fechaActual].programa
+							alert(i + "==> " + prog[data.fechaActual].programa[i])
+							hasProBloq = true; 
+							}
+							
+						}
+
+					//	alert("Despues del blucle"); 
+				//		alert(hasProBloq); 
+
+						alert("Lo detendre Jusnto Aqui */***********************"); 
+
+			//			return true; 
+
+
+
+
+
+
+						if( prog[data.fechaActual].programa )
+
+						mTimer.hasRuntime = true; 
+						Fondo.setBodyPage();						
+						Master.getBloqueIDAndTimer(); 
+
+
 					}
 
 					// console.log("El contenido ya ha sido actualizado.");					
@@ -228,14 +280,18 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 		//	url = url.replace("10.234.133.76", "localhost");
 
 			http.get(url, function(res){
+
 				if(res.IsOk){
 					// Estuvo OK el asunto
-					alt[fecha] = {programa: res.programa, contenido: res.contenido}; 
-
+					alt[fecha] = {programa: res.programa, contenido: [] }; 
 					localStorage.setItem("programaTV", JSON.stringify(alt) );
-					Msg.log("Configurando programa."); 
+						Msg.log("Configurando programa."); 
 
-					Fondo.setBodyPage(); 
+						mTimer.hasRuntime = true; 
+						Fondo.setBodyPage();
+						alert("Envio de la Aplicacion"); 
+						Master.getBloqueIDAndTimer(); 
+						alert("Despues del BLoqueIDAndTImer"); 
 
 					// Master.cambiarSimpleImgPantallaFull("template/img/actualizando.png", {}); 
 					// Master.setTimerPerPrograma(fechaServidor);
@@ -244,12 +300,11 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 				} else {
 				//	alert("Sin Asignacion"); 
 				Fondo.setBodyPage(function(){
-
 					alert("Set Body Pages off recorrer programa"); 
 					Master.recorrerProgramaSinAsingacion(); 
 
 				}); 
-					log(res.Msg);					
+					Msg.log(res.Msg);					
 					
 
 				}
@@ -298,18 +353,125 @@ setLocalHtml: function(html, css){
 	});
 }, 
 
-recorrerProgramaSinAsingacion: function(){	
-	// Paso 1. setTheme	
+recorrerProgramaOff: function(){
+
 	var defaultPropertities = {
 	"BloqueID":"0",
 	"DuracionBloque":"00:03:30",
-	"DuracionBloqueSec":"210",
+	"DuracionBloqueSec":"182",
 	"listaContenido":
 	{"TemporalContenido":
 		{"Guid":"8D054484-6682-984F-D906-BD051334641E",
 		"Duracion":"00:17:10",
 		"Descripcion":"Recorrido Sin Asignar",
 		"Orden":"1",
+		"SincroGrupo": false,
+		"slides":
+		{
+		"0":
+			{"EsquemaTipo":"1",
+				"bgColor":"#000",
+				"TransicionTipoIni":"0",
+				"TransicionTipoFin":"1",
+				"MostrarHeader":"1",
+				"Posicion":"0",
+				"DuracionPage":"00:00:30",
+				"DuracionPageSec":"10",
+				"secciones":[
+					{"Encabezado":"Primero",
+					"Posicion":"1",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/block01.png" // blueBack
+					}
+				]
+				}, 
+
+			"2": {"EsquemaTipo":"1",
+				"bgColor":"#000",
+				"TransicionTipoIni":"0",
+				"TransicionTipoFin":"1",
+				"MostrarHeader":"1",
+				"Posicion":"2",
+				"DuracionPage":"00:00:30",
+				"DuracionPageSec":"10",
+				"secciones":[
+					{"Encabezado":"Primero",
+					"Posicion":"1",
+					"FuenteTipo":"6",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"resource/intro_finalCND.mp4" // blueBack
+					}
+				]
+				}, 
+
+				"4": {"EsquemaTipo":"1",
+				"bgColor":"#000",
+				"TransicionTipoIni":"0",
+				"TransicionTipoFin":"1",
+				"MostrarHeader":"1",
+				"Posicion":"4",
+				"DuracionPage":"00:00:30",
+				"DuracionPageSec":"10",
+				"secciones":[
+					{"Encabezado":"Primero",
+					"Posicion":"1",
+					"FuenteTipo":"6",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"resource/Preludios.mp4" // blueBack
+					}
+				]
+				}, 
+
+				"3":
+			{"EsquemaTipo":"1",
+				"bgColor":"#000",
+				"TransicionTipoIni":"0",
+				"TransicionTipoFin":"1",
+				"MostrarHeader":"1",
+				"Posicion":"3",
+				"DuracionPage":"00:00:30",
+				"DuracionPageSec":"90",
+				"secciones":[
+					{"Encabezado":"Primero",
+					"Posicion":"1",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/block01.png" // blueBack
+					}
+				]
+				}
+			}
+		}
+	}
+};
+	Master.setPantallaPropiedad(defaultPropertities); 
+	Master.renderBloque(); 
+
+
+}, 
+
+recorrerProgramaSinAsingacion: function(){	
+	// Paso 1. setTheme	
+	var defaultPropertities = {
+	"BloqueID":"0",
+	"DuracionBloque":"00:03:30",
+	"DuracionBloqueSec":"10",
+	"listaContenido":
+	{"TemporalContenido":
+		{"Guid":"8D054484-6682-984F-D906-BD051334641E",
+		"Duracion":"00:17:10",
+		"Descripcion":"Recorrido Sin Asignar",
+		"Orden":"1",
+		"SincroGrupo": false,
 		"slides":
 		{
 		"0":
@@ -870,38 +1032,120 @@ setCambioBloque: function(tmr){  // tmr: tiempo en segundos
 	}, tmr );
 }, 
 
-cambiarBloque: function(){
-	// Consular al Servidor cual es el Bloque
-	alert("Consulta para Cambiar el Bloque. "); 
+
+getBloqueIDAndTimer: function(callback){
+
+	alert("Los Locales son: " + macTV); 
+
+	alert(mTimer.contenido);
+
+	var base_urlT = localStorage.getItem("base_url"); 
+	var getFullBloque = localStorage.getItem("getFullBloque"); 
+	var fechaActual_APP = localStorage.getItem("fechaActual_APP"); 
+	var fecha_APP = localStorage.getItem("fecha_APP"); 
+
+	alert("Buscando el Contenido:: " +base_urlT +"_" + macTV); 
+
+		http.get(base_urlT + "Contenido/httpObtenerIDBloqueNow?Mac=" + macTV, function(res){
+			// La Progranacion Que nos corresponde es.
+
+			alert("?Cual le tocara El contenido que tendrá????????"); 
+
+			alert(res.IsOk); 
+			if(res.IsOk){
+
+				var dt = res.data; 
+				if(dt !== false){
+
+					for(var r in dt){
+						alert(r + "===>>" + dt[r] + " )))"); 
+					}
+
+					var rt = Master.getSelectedBloque(dt.data.BloqueID, fechaActual_APP); 
+
+
+					if(rt !== false){
+
+						alert("El bloque cambiara en "+ dt.data.TiempoRestante + "Segundos SIp"); 
+						if(typeof dt.data.TiempoRestante !== "undefined" ){
+							rt.DuracionBloqueSec = dt.data.TiempoRestante; 	
+						}						
+
+						Master.setPantallaPropiedad(rt); 						
+						Master.renderBloque(); 
+
+						if(typeof callback == "function"){
+							callback(); 
+						}
+						return true; 
+					}
+				}
+				// En el caso de que no encuentre Ningun bloque para recorrer.
+				Master.recorrerProgramaOff(); 	
+
+			} else {
+				Fondo.setBodyPage(function(){
+						alert("Set Body Pages off recorrer programa Desde el Runtime"); 
+						Master.recorrerProgramaOff(); 
+					}); 				
+
+			}
+			
+		}, "JSON"); 
 
 }, 
 
-setFormatTimerPerPrograma: function(serverDatetime){
-			// set timer 
-			var arrF = serverDatetime.split(",");			
-			var fechaHoy = new Date(parseInt(arrF[0]), (parseInt(arrF[1])-1), parseInt(arrF[2]), parseInt(arrF[3]), parseInt(arrF[4]), parseInt(arrF[5]) );
-			var timeNow = parseInt(arrF[3])+ ":" +  parseInt(arrF[4]) + ":" + parseInt(arrF[5]); 
+cambiarBloque: function(){
+	// Consular al Servidor cual es el Bloque
+	// alert("Consulta para Cambiar el Bloque. "); 
 
-			var a_obj = JSON.parse(localStorage.getItem("programaTV")); 
-			var arregloPrograma = {}; 
+	alert("************************** CAMBIO BLOQUES ********************"); 	
+	alert("************************** CAMBIO BLOQUES ********************"); 	
+	alert("************************** CAMBIO BLOQUES ********************");
 
-			for (var i in a_obj) {				
-				// EL dia de Hoy. Recorrido del Programa para almacenarlo.
-				var programa = a_obj[i].programa; 
-				for(var ti in programa){
-					// Incluir en el Programa solo la Programacion que falta del Dia.
-					if( programa.hasOwnProperty(ti) ){			
+	alert("************************** CAMBIO BLOQUES ********************"); 	
+	alert("************************** CAMBIO BLOQUES ********************"); 	
+	alert("************************** CAMBIO BLOQUES ********************");
 
-								var pp = {
-								inicio: programa[ti].HoraInicioBloque, 
-								duracion: programa[ti].DuracionBloque
-									}; 
-					}
-				}
-			}
-			alert(serverDatetime); 
-		}, 		
+	alert(mTimer.contenido);
 
+	var base_urlT = localStorage.getItem("base_url");
+	var getFullBloque = localStorage.getItem("getFullBloque");
+	var fechaActual_APP = localStorage.getItem("fechaActual_APP");
+	var fecha_APP = localStorage.getItem("fecha_APP");
+
+	 clearTimeout(mTimer.contenido);
+	 // Fondo.setFullMp4Video("resource/Preludios.mp4", function(){
+	 // }); 
+	if(!mTimer.hasRuntime){
+		// NO ha corrido.
+		// Solicitar al Serviodor la Consultar la fecha y Hora del Servidor.
+		Master.ObtenerPrograma(fechaActual_APP, getFullBloque, fecha_APP); 			
+	} else {
+		// Obtener La EL Bloque Correspondiente.
+		Master.getBloqueIDAndTimer(); 
+	}
+}, 
+
+getSelectedBloque: function($idBloque, dt){
+
+	alert("Estoamos Aqui Para ver Que pasa"); 
+	alert($idBloque); 
+	alert(dt); 
+
+	alert("------yyyyy------------------****"); 
+
+	var a_obj = JSON.parse(localStorage.getItem("programaTV")); 
+
+	if(dt in a_obj){
+		var arregloPrograma = {}; 
+		if($idBloque in a_obj[dt].programa){
+			return a_obj[dt].programa[$idBloque]; 
+			// alert("Encontro el Asunto sii"); 
+		} 
+	}
+		return false; 
+}, 
 
 getOptionEsquema: function (esquema){
 var retorno = {};
@@ -984,31 +1228,73 @@ renderStruct: function(option, callfunctionBack){
 };
 //*********************************** Final del Master controlador. **********************/
 
-var Msg = {
-	content: $("<div id='log'></div>"), 			
-	log: function( text, titulo, forma ) {
-
-		alert(text); 
-
-	 return 0;	
-
-		alert("Log ha Hablado"); 
-		 Msg.content.html( text );
-		 if(forma == 0){
-		 	$.blockUI({
-		        message: Msg.content.html(),
-		       centerY: 0, 
-	            css: { top: '10px', left: '', right: '10px' } ,
-	            timeout: 2000 
-		    });	
-		 } else {		 	
-		 	var til = ""; 
-		 	if(typeof titulo !== "undefined"){
+var Msg = {	
+	log: function( text, titulo) {
+			alert(text); 	 
+		 	var til = ""; 		 	
+		 	if(typeof titulo === "string"){
 		 		til = titulo; 
 		 	}
+		 	var dtnim = new Date();
+		 	var id = (dtnim.getTime()- 9539934202);
 
-		 	  $.growlUI(til, text ); 
-		 }
+		 	var htmlgw = '<div id="divvGrowls'+ id + '"> <div class="growl growl-default growl-medium"><div class="growl-close"></div><div class="growl-title">' + til + ' </div><div class="growl-message">' + text + '</div></div> </div>'; 
+		 	$("#growls").append(htmlgw); 		 			 		 
+
+		 	setTimeout(function(){		 		
+		 		$("#divvGrowls" + id ).remove(); 		 		
+		 	}, 4500); 
+	},
+
+	notice: function( text, titulo) {
+			alert(text); 	 
+		 	var til = ""; 		 	
+		 	if(typeof titulo === "string"){
+		 		til = titulo; 
+		 	}
+		 	var dtnim = new Date();
+		 	var id = (dtnim.getTime()- 9539934202);
+
+		 	var htmlgw = '<div id="divGrowls'+ id + '"> <div class="growl growl-notice growl-medium"><div class="growl-close"></div><div class="growl-title">' + til + ' </div><div class="growl-message">' + text + '</div></div> </div>'; 
+		 	$("#growls").append(htmlgw); 		 			 		 
+
+		 	setTimeout(function(){		 		
+		 		$("#divGrowls" + id ).remove(); 		 		
+		 	}, 4500); 
+	},
+
+	error: function( text, titulo) {
+			alert(text); 	 
+		 	var til = ""; 		 	
+		 	if(typeof titulo === "string"){
+		 		til = titulo; 
+		 	}
+		 	var dtnim = new Date();
+		 	var id = (dtnim.getTime()- 9539934202);
+
+		 	var htmlgw = '<div id="divGrowls'+ id + '"> <div class="growl growl-error growl-medium"><div class="growl-close"></div><div class="growl-title">' + til + ' </div><div class="growl-message">' + text + '</div></div> </div>'; 
+		 	$("#growls").append(htmlgw); 		 			 		 
+
+		 	setTimeout(function(){		 		
+		 		$("#divGrowls" + id ).remove(); 		 		
+		 	}, 4500); 
+	},
+
+	warning: function( text, titulo) {
+			alert(text); 	 
+		 	var til = ""; 		 	
+		 	if(typeof titulo === "string"){
+		 		til = titulo; 
+		 	}
+		 	var dtnim = new Date();
+		 	var id = (dtnim.getTime()- 9539934202);
+
+		 	var htmlgw = '<div id="divGrowls'+ id + '"> <div class="growl growl-warning growl-medium"><div class="growl-close"></div><div class="growl-title">' + til + ' </div><div class="growl-message">' + text + '</div></div> </div>'; 
+		 	$("#growls").append(htmlgw); 		 			 		 
+
+		 	setTimeout(function(){		 		
+		 		$("#divGrowls" + id ).remove(); 		 		
+		 	}, 4500); 
 	},
 
 	textBlock: function(htmlcontent){
@@ -1325,11 +1611,14 @@ var ConexionTV = function(listIp){
 
 ConexionTV.prototype.conectar = function(cNext){
 
+	alert("EN la Conexion ***************"); 
+
 	var cLen = this.ListIp.length;
 	var cArr = this.ListIp;
 	var cIndex = this.cIndex;	
 	var fechaJson = this.fechaJson.toJSON();
 
+alert("Buscando el Conector")
 	if(cNext){
 		cIndex++;		
 		if(cIndex >= cLen ){
@@ -1337,13 +1626,15 @@ ConexionTV.prototype.conectar = function(cNext){
 		}
 	}	
 
+	alert("Despues de Next"); 
+
 	// Conxion con el seridor para la INstalacion y envio de Informacion	
 	var ServerTEMP = new FancyWebSocket('ws://' + cArr[cIndex].toString().trim());	
 	this.Server = ServerTEMP;
 	Msg.log("Buscando la conexion del servicio.");
 
 	this.Server.bind('open', function() {
-		Msg.log( "Conectado correctamente." );	
+		Msg.notice( "Conectado correctamente.!" );	
 		var networkPlugin = document.getElementById('pluginNetwork');
 		var mac = networkPlugin.GetMAC(0) || networkPlugin.GetMAC(1);
 		macTV = mac;  
@@ -1361,12 +1652,20 @@ ConexionTV.prototype.conectar = function(cNext){
 		};		
 		ServerTEMP.send("message", JSON.stringify(current_TV) );
 	});
+
+	var miInstancia = this; 
 	
 	//OH NOES! Disconnection occurred.
 	this.Server.bind('close', function( data ) {
-		Msg.log( "Disconnected." );
+		Msg.error( "Disconnected.");
 		var myVarReconect = setTimeout(function(){
-			Master.reconectar();						
+
+			alert(miInstancia); 	     			     
+		    Msg.warning("Reintentar", "Espere un momento... <br> Intentando reconectar con el servidor."); 	
+		    alert("Buscando Reconectar"); 
+			miInstancia.conectar(true);			
+			alert("Buscando Reconectar"); 
+			
 		}, 40000);
 	});
 

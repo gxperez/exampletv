@@ -42,7 +42,7 @@
 		$stored_procedure = "call sp_PaginarResultQuery( ?, ?, ?);";
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaContenido = $query->result();
- 		return $listaDispositivo;
+ 		return $listaContenido;
  	}
 
  	public function obtenerContenidoPaginado($limit, $row, $condicion = " Estado != -1"){
@@ -298,8 +298,37 @@ FF.FuenteID;";
 				
 				break;
 		}
+	}
 
 
+	public function ObtenerBloqueCorrespondienteHoraPorGrupoId( $idGrupo){
+
+		$this->load->database();
+
+		$sql = "select distinct vwPS.BloqueID, time_to_sec(TIMEDIFF(vwPS.HoraFin, vwPS.HoraInicio)) as TiempoBloque,
+	 		time_to_sec( TIMEDIFF(vwPS.HoraFin, DATE_FORMAT(now(), '%H:%i')) )  as TiempoRestante 
+  		from 
+		vw_programacion_bloque_semana as vwPS 
+			inner join bloque_contenido as bcc on bcc.BloqueID = vwPS.BloqueID
+		where bcc.GrupoID = {$idGrupo} AND vwPS.DiaSemana = dayofweek(NOW())
+		and DATE_FORMAT(now(), '%H:%i')  between vwPS.horaInicio and vwPS.horaFin"; 
+
+		$query = $this->db->query($sql);		
+		// Logica para arrmar los contenidos en el Portal.
+		$bloquePorHorario = array();
+
+		$idBloque = 0; 
+
+		if($query->num_rows() > 0){			
+			$bloque =  current($query->result()); 
+			$idBloque = $bloque->BloqueID; 
+			return array('data' => $bloque, "Msg"=> "Bloque correspodiente a :" . date("Y-m-d H:i:s")); 
+		} else {
+			// BLoque Por Defecto
+			return array('data' => false, "Msg"=> "No hay bloque configurado a :" . date("Y-m-d H:i:s")); 
+		}
+
+		return false; 
 
 	}
 
@@ -387,7 +416,8 @@ order by bcc.Orden, tp.Posicion, st.Posicion;";
 					'Guid' => $row->GuidContenido,
 					'Duracion'=>  $row->Duracion, 
 					'Descripcion'=> $row->Descripcion,
-					'Orden' => $row->Orden, 
+					'Orden' => $row->Orden,
+					"SincroGrupo" => false, // Aqui Es la Propiedad si el contenido esta Sincronizado con el Grupo. Para el caso de los Slide Show. 
 					"slides" => array()
 					);
 			}
@@ -425,7 +455,7 @@ order by bcc.Orden, tp.Posicion, st.Posicion;";
 		 	"RepresentacionTipo" =>   $row->RepresentacionTipo,
 		 	"FuenteID" => $row->FuenteID, 
 		 	"EsManual" => $row->EsManual, 
-		 	"url" => $url
+		 	"Url" => $url
 		  );
 		}
 		return $listaContenido;

@@ -219,6 +219,42 @@ public function Actualizar(){
 		} 
 	}
 
+	public function httpObtenerIDBloqueNow(){
+
+		if( $this->input->get("Mac")){
+			$this->load->model("Contenido_Model", "mContenido");
+			$this->load->model("GrupoTv_Model", "mGrupoTv");
+
+			$defualGrupoID = 1; 
+
+			// Ajustes por la Ips que esta configurando.
+			$Mac = $this->input->get("Mac"); 
+				$grupoTv = $this->mGrupoTv->obtenerGrupoPorMacTv($Mac); 	
+				$filtroGuid = $this->mGrupoTv->GenerarFiltroPorMac($Mac);
+
+				if( $filtroGuid["Existe"] === false){
+					// NO Tiene Fuerza de venta Asignada.
+					echo json_encode(array("IsOk"=> false, "data"=> array(), "Msg"=>"Este Dispositivo no esta vinculado a un Grupo o a una clasificacion en la fuerza de Venta." ));
+					return false; 
+				}
+
+
+				if(count($grupoTv) == 0 ){	
+					$idGrupo = $defualGrupoID;
+				} else {
+					$idGrupo = current($grupoTv)->GrupoID;
+				}
+
+				$currentBloque = $this->mContenido->ObtenerBloqueCorrespondienteHoraPorGrupoId($idGrupo); 
+
+
+			echo json_encode(array("IsOk"=> true, "data"=> $currentBloque, "Msg"=>"Trasfiriendo Bloque" ));
+
+
+
+		}	
+	}
+
 	public function httpQuitsObtenerPrograma(){
 
 		// ?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1
