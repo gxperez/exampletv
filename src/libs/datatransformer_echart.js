@@ -27,9 +27,9 @@
                    "infographic", "macarons", "macarons2", "mint", "red",
                    "roma", "sakura", "shine"
         ],
-        _echartPosition = ["top_left","top_center", "top_right","center_left", "center_center", "center_right","bottom_left", "bottom_center", "bottom_right"],
-        _echartPositionWithNone = ["top_left","top_center", "top_right","center_left", "center_center", "center_right","bottom_left", "bottom_center", "bottom_right", "none"],
-        _titlePositionDefault =  "top_left",
+        _echartPosition = ["top_left", "top_center", "top_right", "center_left", "center_center", "center_right", "bottom_left", "bottom_center", "bottom_right"],
+        _echartPositionWithNone = ["top_left", "top_center", "top_right", "center_left", "center_center", "center_right", "bottom_left", "bottom_center", "bottom_right", "none"],
+        _titlePositionDefault = "top_left",
         _leyendPositionDefault = "top_center",
         _toolboxPositionDefault = "center_right",
         _formulas = ['sum', 'max', 'min'],
@@ -96,55 +96,51 @@
         return +(number[0] + 'e' + (number[1] ? (+number[1] - digits) : -digits));
     }
 
-    function _getEchartOptionsPosition(positionEnum){
-    	var position = {x: "", y: ""};
+    function _getEchartOptionsPosition(positionEnum) {
+        var position = { x: "", y: "" };
 
-    	switch(positionEnum){
-    		case "top_left":
-    			position.x = "left";
-    			position.y = "top";
-    			break;
-    		case "top_center":
-    			position.x = "center";
-    			position.y = "top";
-    			break;
-    		case "top_right":
-    			position.x = "right";
-    			position.y = "top";
-    			break;
-    		case "center_left":
-    			position.x = "left";
-    			position.y = "center";
-    			break;
-    		case "center_center":
-    			position.x = "center";
-    			position.y = "center";
-    			break;
-    		case "center_right":
-    			position.x = "right";
-    			position.y = "center";
-    			break;
-    		case "bottom_left":
-    			position.x = "left";
-    			position.y = "bottom";
-    			break;
-    		case "bottom_center":
-    			position.x = "center";
-    			position.y = "bottom";
-    			break;
-    		case "bottom_right":
-    			position.x = "right";
-    			position.y = "bottom";
-    			break;
-    		default:
-    			position = null;
-    	}
+        switch (positionEnum) {
+            case "top_left":
+                position.x = "left";
+                position.y = "top";
+                break;
+            case "top_center":
+                position.x = "center";
+                position.y = "top";
+                break;
+            case "top_right":
+                position.x = "right";
+                position.y = "top";
+                break;
+            case "center_left":
+                position.x = "left";
+                position.y = "center";
+                break;
+            case "center_center":
+                position.x = "center";
+                position.y = "center";
+                break;
+            case "center_right":
+                position.x = "right";
+                position.y = "center";
+                break;
+            case "bottom_left":
+                position.x = "left";
+                position.y = "bottom";
+                break;
+            case "bottom_center":
+                position.x = "center";
+                position.y = "bottom";
+                break;
+            case "bottom_right":
+                position.x = "right";
+                position.y = "bottom";
+                break;
+            default:
+                position = null;
+        }
 
-    	return position;
-    }
-
-    function _getEchartOptionOrient(isVertical){
-    	return isVertical? "vertical": "horizontal";
+        return position;
     }
 
     /**
@@ -164,16 +160,16 @@
         theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
         titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 6 },
         leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 7 },
-        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 8},
+        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 8 },
         toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 9 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 10},
-        renderAsImage: { label: "render as image", type: Boolean, order: 11}
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 10 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 11 }
     },
     function () {
-    	this.renderOptions= {
-    		echartObj: null,
-    		echartOptions: {}
-    	};
+        this.renderOptions = {
+            echartObj: null,
+            echartOptions: {}
+        }
 
         this.render = function () {
             var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
@@ -213,7 +209,7 @@
             var toolboxPosition = _getEchartOptionsPosition(this.config.toolboxPosition || _toolboxPositionDefault);
 
             this.renderOptions.echartOptions = {
-                title: (titlePosition == null)? {} : {
+                title: (titlePosition == null) ? {} : {
                     text: this.config.title,
                     subtext: this.config.subtitle,
                     x: titlePosition.x,
@@ -225,22 +221,22 @@
                     trigger: "item",
                     formatter: "{a} <br/>{b} : {c}"
                 },
-                legend: (leyendPosition == null)? {} : {
-                    orient: this.config.leyendVertical? "vertical":"horizontal",
+                legend: (leyendPosition == null) ? {} : {
+                    orient: this.config.leyendVertical ? "vertical" : "horizontal",
                     //x: "center",
                     x: leyendPosition.x,
                     y: leyendPosition.y,
                     data: _leyends
                 },
                 calculable: true,
-                renderAsImage : (this.config.renderAsImage == true)? true: false,
-                toolbox: (toolboxPosition == null)? {} :{
+                renderAsImage: (this.config.renderAsImage == true) ? true : false,
+                toolbox: (toolboxPosition == null) ? {} : {
                     show: true,
-                    orient: this.config.toolboxHorizontal? "horizontal":"vertical" ,//'vertical',
+                    orient: this.config.toolboxHorizontal ? "horizontal" : "vertical",//'vertical',
                     x: toolboxPosition.x,
                     y: toolboxPosition.y,
-                   /* x: 'right',
-                    y: 'top',*/
+                    /* x: 'right',
+                     y: 'top',*/
                     color: ['#1e90ff', '#22bb22', '#4b0082', '#d2691e'],
                     backgroundColor: 'rgba(0,0,0,0)',
                     borderColor: '#ccc',
@@ -298,10 +294,10 @@
             _echartObj.hideLoading();
         }
 
-        this.refreshRender = function(){
-	    	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
-	        this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
-	    }	
+        this.refreshRender = function () {
+            this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+            this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
+        }
     });
 
     /**
@@ -319,30 +315,30 @@
         measures: { label: "measures", type: datatransformer.typeMultipleMeasures, required: true, order: 4 },
         theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
         horizontal: { label: "horizontal", type: Boolean, order: 6 },
-        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 7},
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 7 },
         leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 8 },
-        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 9},
+        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 9 },
         toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 10 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 11},
-        renderAsImage: { label: "render as image", type: Boolean, order: 12}
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 11 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 12 }
     },
     function () {
-    	this.renderOptions= {
-    		echartObj: null,
-    		echartOptions: {}
-    	};
+        this.renderOptions = {
+            echartObj: null,
+            echartOptions: {}
+        }
 
 
         this.render = function () {
-           var  _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
-				_data = this.data.data,
-				_group = this.config.group,
-				_measuresObj = {},
-				_dataOptionsObj = {},
-				_generateData = [],
-				_dataForBar = [],
-				_categories = [],
-				_leyends = [];
+            var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
+                 _data = this.data.data,
+                 _group = this.config.group,
+                 _measuresObj = {},
+                 _dataOptionsObj = {},
+                 _generateData = [],
+                 _dataForBar = [],
+                 _categories = [],
+                 _leyends = [];
 
             _echartObj.showLoading({ text: _message.loading });
 
@@ -404,12 +400,12 @@
                 xAxisOption = [{ type: "category", data: _categories }];
             }
 
-           var titlePosition = _getEchartOptionsPosition(this.config.titlePosition || _titlePositionDefault);
-           var leyendPosition = _getEchartOptionsPosition(this.config.leyendPosition || _leyendPositionDefault);
-           var toolboxPosition = _getEchartOptionsPosition(this.config.toolboxPosition || _toolboxPositionDefault);
+            var titlePosition = _getEchartOptionsPosition(this.config.titlePosition || _titlePositionDefault);
+            var leyendPosition = _getEchartOptionsPosition(this.config.leyendPosition || _leyendPositionDefault);
+            var toolboxPosition = _getEchartOptionsPosition(this.config.toolboxPosition || _toolboxPositionDefault);
 
-           this.renderOptions.echartOptions = {
-                title: (titlePosition == null)? {} :  {
+            this.renderOptions.echartOptions = {
+                title: (titlePosition == null) ? {} : {
                     text: this.config.title,
                     subtext: this.config.subtitle,
                     x: titlePosition.x,
@@ -420,8 +416,8 @@
                     trigger: "item",
                     formatter: "{a} <br/>{b} : {c}"
                 },
-                legend:  (leyendPosition == null)? {} :{
-                    orient: this.config.leyendVertical? "vertical":"horizontal",
+                legend: (leyendPosition == null) ? {} : {
+                    orient: this.config.leyendVertical ? "vertical" : "horizontal",
                     x: leyendPosition.x,
                     y: leyendPosition.y,
                     data: _leyends
@@ -429,10 +425,10 @@
                 yAxis: yAxisOption,
                 xAxis: xAxisOption,
                 calculable: true,
-                renderAsImage : (this.config.renderAsImage == true)? true: false,
-                toolbox: (toolboxPosition == null)? {} :{
+                renderAsImage: (this.config.renderAsImage == true) ? true : false,
+                toolbox: (toolboxPosition == null) ? {} : {
                     show: true,
-                    orient: this.config.toolboxHorizontal? "horizontal":"vertical" ,//'vertical',
+                    orient: this.config.toolboxHorizontal ? "horizontal" : "vertical",//'vertical',
                     x: toolboxPosition.x,
                     y: toolboxPosition.y,
                     color: ['#1e90ff', '#22bb22', '#4b0082', '#d2691e'],
@@ -487,15 +483,18 @@
                 series: _dataForBar
             };
 
+            console.log(this.renderOptions.echartOptions);
+            console.log(_themes[this.config.theme]);
+
             _echartObj.setTheme(_themes[this.config.theme]);
             _echartObj.setOption(this.renderOptions.echartOptions);
             _echartObj.hideLoading();
         }
 
-        this.refreshRender = function(){
-	    	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
-	        this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
-	    }	
+        this.refreshRender = function () {
+            this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+            this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
+        }
     });
 
 
@@ -514,18 +513,18 @@
         measures: { label: "measures", type: datatransformer.typeMultipleMeasures, required: true, order: 4 },
         theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
         shadow: { label: "shadow", type: Boolean, order: 6 },
-        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 7},
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 7 },
         leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 8 },
-        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 9},
+        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 9 },
         toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 10 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 11},
-        renderAsImage: { label: "render as image", type: Boolean, order: 12}
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 11 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 12 }
     },
     function () {
-		this.renderOptions= {
-    		echartObj: null,
-    		echartOptions: {}
-    	};
+        this.renderOptions = {
+            echartObj: null,
+            echartOptions: {}
+        }
 
         this.render = function () {
             var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
@@ -617,7 +616,7 @@
             var toolboxPosition = _getEchartOptionsPosition(this.config.toolboxPosition || _toolboxPositionDefault);
 
             this.renderOptions.echartOptions = {
-                title: (titlePosition == null)? {} : {
+                title: (titlePosition == null) ? {} : {
                     text: this.config.title,
                     subtext: this.config.subtitle,
                     x: titlePosition.x,
@@ -630,8 +629,8 @@
                     trigger: "item",
                     formatter: "{a} <br/>{b} : {c}"
                 },
-                legend:  (leyendPosition == null)? {} :{
-                    orient: this.config.leyendVertical? "vertical":"horizontal",
+                legend: (leyendPosition == null) ? {} : {
+                    orient: this.config.leyendVertical ? "vertical" : "horizontal",
                     x: leyendPosition.x,
                     y: leyendPosition.y,
                     data: _leyends
@@ -644,10 +643,10 @@
                 },
                 xAxis: [{ type: "category", boundaryGap: false, data: _categories }],
                 calculable: true,
-                renderAsImage : (this.config.renderAsImage == true)? true: false,
-                toolbox: (toolboxPosition == null)? {} :{
+                renderAsImage: (this.config.renderAsImage == true) ? true : false,
+                toolbox: (toolboxPosition == null) ? {} : {
                     show: true,
-                    orient: this.config.toolboxHorizontal? "horizontal":"vertical" ,//'vertical',
+                    orient: this.config.toolboxHorizontal ? "horizontal" : "vertical",//'vertical',
                     x: toolboxPosition.x,
                     y: toolboxPosition.y,
                     color: ['#1e90ff', '#22bb22', '#4b0082', '#d2691e'],
@@ -707,10 +706,10 @@
             _echartObj.hideLoading();
         }
 
-        this.refreshRender = function(){
-	    	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
-	        this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
-	    }	
+        this.refreshRender = function () {
+            this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+            this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
+        }
     });
 
 
@@ -732,16 +731,16 @@
         min: { label: "min", type: Number, order: 6 },
         max: { label: "max", type: Number, order: 7 },
         theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 8 },
-        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 8},
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 8 },
         toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 9 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 10},
-        renderAsImage: { label: "render as image", type: Boolean, order: 11}
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 10 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 11 }
     },
     function () {
-    	this.renderOptions= {
-    		echartObj: null,
-    		echartOptions: {}
-    	};
+        this.renderOptions = {
+            echartObj: null,
+            echartOptions: {}
+        }
 
         this.render = function () {
             var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
@@ -796,7 +795,7 @@
             var toolboxPosition = _getEchartOptionsPosition(this.config.toolboxPosition || _toolboxPositionDefault);
 
             this.renderOptions.echartOptions = {
-                title: (titlePosition == null)? {} : {
+                title: (titlePosition == null) ? {} : {
                     text: this.config.title,
                     subtext: this.config.subtitle,
                     x: titlePosition.x,
@@ -807,10 +806,10 @@
                     trigger: "item",
                     formatter: "{a} <br/>{b} : {c}"
                 },
-                renderAsImage : (this.config.renderAsImage == true)? true: false,
-                toolbox:(toolboxPosition == null)? {} : {
+                renderAsImage: (this.config.renderAsImage == true) ? true : false,
+                toolbox: (toolboxPosition == null) ? {} : {
                     show: true,
-                    orient: this.config.toolboxHorizontal? "horizontal":"vertical" ,//'vertical',
+                    orient: this.config.toolboxHorizontal ? "horizontal" : "vertical",//'vertical',
                     x: toolboxPosition.x,
                     y: toolboxPosition.y,
                     color: ['#1e90ff', '#22bb22', '#4b0082', '#d2691e'],
@@ -841,10 +840,10 @@
         }
 
 
-        this.refreshRender = function(){
-	    	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
-	        this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions, true);
-	    }	
+        this.refreshRender = function () {
+            this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+            this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions, true);
+        }
     });
 
 
@@ -868,16 +867,16 @@
         split: { label: "split", type: Number, required: true, order: 9 },
         horizontal: { label: "horizontal", type: Boolean, order: 10 },
         horRadius: { label: "horizontal radius", type: Number, order: 11 },
-        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 12},
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 12 },
         toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 13 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 14},
-        renderAsImage: { label: "render as image", type: Boolean, order: 15}
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 14 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 15 }
     },
     function () {
-    	this.renderOptions= {
-    		echartObj: null,
-    		echartOptions: {}
-    	};
+        this.renderOptions = {
+            echartObj: null,
+            echartOptions: {}
+        }
 
         this.render = function () {
             var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
@@ -1150,8 +1149,8 @@
             var titlePosition = _getEchartOptionsPosition(this.config.titlePosition || _titlePositionDefault);
             var toolboxPosition = _getEchartOptionsPosition(this.config.toolboxPosition || _toolboxPositionDefault);
 
-            this.renderOptions.echartOptions =  {
-                title: (titlePosition == null)? {} : {
+            this.renderOptions.echartOptions = {
+                title: (titlePosition == null) ? {} : {
                     text: this.config.title,
                     subtext: this.config.subtitle,
                     x: titlePosition.x,
@@ -1162,10 +1161,10 @@
                     trigger: "item",
                     formatter: "{a} <br/>{b} : {c}"
                 },
-                renderAsImage : (this.config.renderAsImage == true)? true: false,
-                toolbox: (toolboxPosition == null)? {} :{
+                renderAsImage: (this.config.renderAsImage == true) ? true : false,
+                toolbox: (toolboxPosition == null) ? {} : {
                     show: true,
-                    orient: this.config.toolboxHorizontal? "horizontal":"vertical" ,//'vertical',
+                    orient: this.config.toolboxHorizontal ? "horizontal" : "vertical",//'vertical',
                     x: toolboxPosition.x,
                     y: toolboxPosition.y,
                     color: ['#1e90ff', '#22bb22', '#4b0082', '#d2691e'],
@@ -1191,16 +1190,16 @@
             };
 
 
-			_echartObj.setTheme(_themes[this.config.theme]);
-            _echartObj.setOption(this.renderOptions.echartOptions,true);
+            _echartObj.setTheme(_themes[this.config.theme]);
+            _echartObj.setOption(this.renderOptions.echartOptions, true);
             _echartObj.hideLoading();
         }
 
-        
-        this.refreshRender = function(){
-	    	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
-	        this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions,true);
-	    }	
+
+        this.refreshRender = function () {
+            this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+            this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions, true);
+        }
     });
 
 

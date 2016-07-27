@@ -25,11 +25,13 @@ var serverUpdatePath = null;
 var macTV;
 
 var mTimer = {
+	hasLider: false, 
 	hasRuntime: false,
 	cIndexC: 0, // Contenido.
 	cIndexS: 0, // Slider.
 	TransicionFin: "", 
-	contenido: 0
+	contenido: 0, 
+	BloqueID: 0
 };
 
 var pptMaster = {
@@ -40,7 +42,39 @@ var pptMaster = {
 	tiempo: 0, 
 	hasKeyControlActive: false, 
 	getIntroPPT: function(){
+	}, 
 
+	keyControlPPT: function(keyCode){
+
+		switch(keyCode)
+			{
+				case tvKey.KEY_RETURN:
+				case tvKey.KEY_PANEL_RETURN:
+					alert("RETURN");
+					widgetAPI.sendReturnEvent();
+					break;
+				case tvKey.KEY_LEFT:
+					alert("LEFT");
+					break;
+				case tvKey.KEY_RIGHT:
+					alert("RIGHT");
+					break;
+				case tvKey.KEY_UP:
+					alert("UP");
+					break;
+				case tvKey.KEY_DOWN:
+
+					alert("DOWN");
+
+					break;
+				case tvKey.KEY_ENTER:
+				case tvKey.KEY_PANEL_ENTER:
+					alert("ENTER");
+					break;
+				default:
+				alert("Unhandled key");
+			break;
+			}
 	}
 }; 
 
@@ -92,14 +126,34 @@ Master = {
 		},
 
 	KeyDown: function(){				
-		var keyCode = event.keyCode;		
+		var keyCode = event.keyCode;	
+
+		pptMaster.keyControlPPT(keyCode); 
+
+		// Lenctor de Codigo desde Dispositivo. Condicionantes
+
+		if(pptMaster.active){
+			if(mTimer.hasLider){
+			// Es un Dispositivo Lider de Grupo 
+				var obj = {
+				macAdrees: mac,			
+				Tipo: "TV",						
+				accion: "CONTROLLIDER",
+				"keyCode": keyCode, 
+				"BloqueID": mTimer.BloqueID, 
+				"cIndexC": mTimer.cIndexC, 
+				"cIndexS": mTimer.cIndexS, 
+				"pptKey": pptMaster.slide
+				};				
+				instancia.Server.send("message", JSON.stringify(obj) );				
+			}			
+		}
+
+
 
 alert("El BOron es " + keyCode + " == "  + 29443); 
 		alert(keyCode); 
-		if(keyCode == 29443 ){
-			var vv = document.getElementById("mp4-video-source"); 
-			vv.currentTime = 0; 
-			vv.play(); 
+		if(keyCode == 29443 ){		
 		}
 
 		if(keyCode == 5){
@@ -121,7 +175,8 @@ alert("El BOron es " + keyCode + " == "  + 29443);
 
 		receptorWs: function(data){				
 				// ["ACTUALIZAR-APP", "ACTIVAR", "TWEETS", "CAST", "PROGRAMA" "CONTROL" ]
-				localStorage.setItem("programaTV", null); 	
+					localStorage.setItem("programaTV", null); 
+
 				switch (data.accion) {
 					case "ACTUALIZAR-APP":
 						// SOLICITUD DE ACTUALIZACION DE APP DESDE EL SERVIDOR.	Cambio de IP cambio de Servidor a las Apliaciones.						
@@ -645,7 +700,9 @@ generateContentByFuenteTipoSimple: function(config){
 	// Si Fuente tipo es 
 		var hasRequest = false; 
 		var requestList = []; 	
-		var hasVideo = false; 	
+		var hasVideo = false; 
+
+		pptMaster.active = false; 	
 
 		$("#footer-gvapp").hide(); 
 
@@ -678,6 +735,10 @@ generateContentByFuenteTipoSimple: function(config){
                 } }); 
 				
 		} else {
+
+			alert("Es Manual*****");
+
+
 
 			if(item.Url in Master.dTransManual){				
 				Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, url: item.Url});				
@@ -714,6 +775,9 @@ generateContentByFuenteTipoSimple: function(config){
 		// Falta la Manipulacion del Power point.
 		// pptCollection.
 
+			pptMaster.active = true; 
+
+
 		$("#footer-gvapp").show(); 
 
 
@@ -723,18 +787,27 @@ generateContentByFuenteTipoSimple: function(config){
 			pptMaster.cuerpo = 	$(Master.pptCollection[item.Url]).find("img"); 
 			pptMaster.totalSlide = pptMaster.cuerpo.length; 
 
+			alert("**************************** PPT MASTER*************************"); 
+
 		// Este es el total de Slider de la aplicacion Ahora.
-			$("#sc-" + item.Posicion).html(pptMaster.cuerpo[0]);
+			$("#sc-" + item.Posicion).html( pptMaster.cuerpo[0] );		
+			Msg.warning("presentacion", "PPT sliderShow. Tome el control remoto para Navegar los " + pptMaster.cuerpo.length + "Sliders"); 
 				
 		} else {
 				requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){					
 					Master.pptCollection[item.Url] =  data;					
 
-					pptMaster.cuerpo = 	$(Master.pptCollection[item.Url]).find("img"); 					
+					pptMaster.cuerpo = $(Master.pptCollection[item.Url]).find("img"); 					
 					pptMaster.totalSlide = pptMaster.cuerpo.length;
 
-					$("#sc-" + item.Posicion).html(pptMaster.cuerpo[0]);
+					alert("**************************** PPT MASTER*************************"); 
+					alert(pptMaster.cuerpo.length); 
 
+
+					$("#sc-" + item.Posicion).html( pptMaster.cuerpo[0] );
+					Msg.warning("presentacion", "PPT sliderShow. Tome el control remoto para Navegar los " + pptMaster.cuerpo.length + " Sliders."); 
+
+					pptMaster.slide = 1; 
 
 
 
@@ -815,14 +888,12 @@ nextRequest: function(arreglo, index, len){
 	if(arreglo[index].Type == "JSON"){
 		alert("Siguiente Paso Get del JSON"); 
 		alert(arreglo[i].Url); 
-		Msg.log(arreglo[i].Url); 
+	//	Msg.log(arreglo[i].Url); 
 		http.get( arreglo[i].Url, function(dta) { 
 
 			alert("Aqui Quiere LLegar Pero"); 
-			alert(dta); 
-		//	log("HTTP: " + JSON.stringify(dta) ); 
+			alert(dta); 		
 			alert("****************************"); 			
-
 			arreglo[i].methodCallRequest(dta);
 			i++;
 			Master.nextRequest(arreglo, i, len);  
@@ -907,8 +978,15 @@ var hastAutoMatic = false;
 										alert(typeof Master.dTransAuto[it].dt.generateVisual); 
 
 						Master.dTransAuto[it].visuals[0].visualOptions["renderAsImage"] = true;
-						Master.dTransAuto[it].dt.generateVisual(Master.dTransAuto[it].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
-					'sc-' + it ).render();
+						var hh = Master.dTransAuto[it].dt.generateVisual(Master.dTransAuto[it].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
+					'sc-' + it );  // .render();
+
+						alert("Antes del RENDER _________________"); 
+
+						hh.render(); 
+
+						alert(hh.renderOptions["tableHTML"]); 
+						
 										
 
 
@@ -1048,20 +1126,13 @@ getBloqueIDAndTimer: function(callback){
 
 		http.get(base_urlT + "Contenido/httpObtenerIDBloqueNow?Mac=" + macTV, function(res){
 			// La Progranacion Que nos corresponde es.
-
-			alert("?Cual le tocara El contenido que tendrá????????"); 
-
 			alert(res.IsOk); 
 			if(res.IsOk){
-
 				var dt = res.data; 
-				if(dt !== false){
-
-					for(var r in dt){
-						alert(r + "===>>" + dt[r] + " )))"); 
-					}
+				if(dt !== false){					
 
 					var rt = Master.getSelectedBloque(dt.data.BloqueID, fechaActual_APP); 
+					mTimer.BloqueID = dt.data.BloqueID; 
 
 
 					if(rt !== false){
@@ -1106,8 +1177,6 @@ cambiarBloque: function(){
 	alert("************************** CAMBIO BLOQUES ********************"); 	
 	alert("************************** CAMBIO BLOQUES ********************"); 	
 	alert("************************** CAMBIO BLOQUES ********************");
-
-	alert(mTimer.contenido);
 
 	var base_urlT = localStorage.getItem("base_url");
 	var getFullBloque = localStorage.getItem("getFullBloque");

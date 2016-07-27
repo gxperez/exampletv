@@ -246,7 +246,7 @@ public function Actualizar(){
 			<td ng-click="seccionTemp.agregar(1, seccionTemp.listSeccion.pos_1 )"><div id="pos_1"></div> </td> <td ng-click="seccionTemp.agregar(2, seccionTemp.listSeccion.pos_2 )"> <div id="pos_2"></div> </td>
 		</tr>
 		<tr>
-			<td ng-click="seccionTemp.agregar(3, seccionTemp.listSeccion.pos_3 )"><div id="pos_3"></div> </td> <td ng-click="ng-click="seccionTemp.agregar(4, seccionTemp.listSeccion.pos_4 )""> <div id="pos_4"></div></td>
+			<td ng-click="seccionTemp.agregar(3, seccionTemp.listSeccion.pos_3 )"><div id="pos_3"></div> </td> <td ng-click="seccionTemp.agregar(4, seccionTemp.listSeccion.pos_4 )"> <div id="pos_4"></div></td>
 		</tr>
 	</table>
 </div>'; 
