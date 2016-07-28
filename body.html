@@ -15,7 +15,7 @@
 <div id="marqueBar">
 </div>
 	
-<div id="footer-gvapp">
+<div id="footer-gvapp"> 
  <div id="svecKeyHelp_5i7izkurjr5r4" class="sf-ui-keyhelp sf-ui-keyhelp-black">   
    <table cellpadding="0px" cellspacing="0px" border="0px" valign="middle" style="width:100%;height:100%;">
    <tbody>
@@ -24,12 +24,8 @@
 	<td style="text-align:right;">
 	<table cellpadding="0px" cellspacing="0px" border="0px" style="table-layout:fixed;" align="right" class="sf-ui-keyhelp-items">
 	<tbody>
-	<tr>
-	<td class="sf-ui-keyhelp-icon sf-ui-keyhelp-icon-left" key="Left"></td>
-	<td class="sf-ui-keyhelp-icon sf-ui-keyhelp-icon-rigth" key="rigth"></td>
-	<td class="sf-ui-keyhelp-icon sf-ui-keyhelp-icon-updown" key="UPDOWN"></td>
-	<td class="sf-ui-keyhelp-margin-icon" key="UPDOWN"></td>
-	<td class="sf-ui-keyhelp-text" key="UPDOWN">Up/Down</td></tr>
+	<tr>	
+	
 	</tbody>
 	</table>
 	</td>
@@ -44,7 +40,28 @@
  
  
  <script type="text/javascript"> 
- $("#footer-gvapp").hide(); 
+  $("#footer-gvapp").show();
+
+  $(document).ready(function() {
+  	alert("Aqui se Pondra"); 
+
+  	$('#svecKeyHelp_5i7izkurjr5r4').sfKeyHelp({  	
+		'leftright':'Atras/Adelante'
+	});
+
+	$('#svecKeyHelp_5i7izkurjr5r4').sfKeyHelp("show");
+
+
+
+	alert("El siguiente componente SIP"); 
+
+  }); 
+
+  
+   
+
+
+
  </script> 	
 	
 </div>

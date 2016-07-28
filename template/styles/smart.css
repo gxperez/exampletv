@@ -5,7 +5,6 @@ html {
   -ms-text-size-adjust: 100%;
 }
 
-
 body {
   margin: 0;
 }
@@ -46,13 +45,21 @@ height: 100%;
 align-items: center;
 }
 
-
-
 /****  Tranbando los temas *****/
 
 .enbase {
 	height: 100%;
 	width: 100%;
+	padding-left: 15px;			
+}
+
+.excel-wrapp{
+	padding-left: 20px;
+}
+
+.img {
+	text-align: center;
+	width: 100%;	
 }
 
 
@@ -66,7 +73,7 @@ align-items: center;
 	overflow: hidden;
  }
 
- .cs-div_2x2>div>img,  .cs-div_3x3>div>img, .cs-div_H1>div>img, .cs-div_H1x3>div>img{
+ .cs-div_2x2>.enbase>.img>img,  .cs-div_3x3>.enbase>.img>img, .cs-div_H1>.enbase>.img>img, .cs-div_H1x3>.enbase>.img>img{
  	width: 100%
  }
 

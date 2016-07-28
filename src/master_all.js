@@ -316,7 +316,7 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 		    	    						modulo: "jquery",
 		    	    						contenido: [ {
 		    											representacionTipo: 3,
-		    											data: "<img src='"+ url + "' style='max-height: 715px;  align-items: center;'>"	    	    						
+		    											data: " <div class='img'><img src='"+ url + "' style='max-height: 715px;  align-items: center;'> </div>"	    	    						
 		    	    								}	    	    								
 		    	    								]				
 		    	    						}				
@@ -431,7 +431,7 @@ recorrerProgramaOff: function(){
 				"MostrarHeader":"1",
 				"Posicion":"0",
 				"DuracionPage":"00:00:30",
-				"DuracionPageSec":"10",
+				"DuracionPageSec":"30",
 				"secciones":[
 					{"Encabezado":"Primero",
 					"Posicion":"1",
@@ -492,7 +492,7 @@ recorrerProgramaOff: function(){
 				"MostrarHeader":"1",
 				"Posicion":"3",
 				"DuracionPage":"00:00:30",
-				"DuracionPageSec":"90",
+				"DuracionPageSec":"60",
 				"secciones":[
 					{"Encabezado":"Primero",
 					"Posicion":"1",
@@ -519,7 +519,7 @@ recorrerProgramaSinAsingacion: function(){
 	var defaultPropertities = {
 	"BloqueID":"0",
 	"DuracionBloque":"00:03:30",
-	"DuracionBloqueSec":"10",
+	"DuracionBloqueSec":"99",
 	"listaContenido":
 	{"TemporalContenido":
 		{"Guid":"8D054484-6682-984F-D906-BD051334641E",
@@ -537,7 +537,7 @@ recorrerProgramaSinAsingacion: function(){
 				"MostrarHeader":"1",
 				"Posicion":"0",
 				"DuracionPage":"00:00:30",
-				"DuracionPageSec":"5",
+				"DuracionPageSec":"20",
 				"secciones":[
 					{"Encabezado":"Primero",
 					"Posicion":"1",
@@ -570,48 +570,8 @@ recorrerProgramaSinAsingacion: function(){
 				]
 				}, 
 
-			"3": {"EsquemaTipo":"1",
+				"4": {"EsquemaTipo":"1",
 				"bgColor":"#000",
-				"TransicionTipoIni":"0",
-				"TransicionTipoFin":"1",
-				"MostrarHeader":"1",
-				"Posicion":"3",
-				"DuracionPage":"00:00:30",
-				"DuracionPageSec":"15",
-				"secciones":[
-					{"Encabezado":"Primero",
-					"Posicion":"1",
-					"FuenteTipo":"5",
-					"RepresentacionTipo":"3",
-					"FuenteID":"0",
-					"EsManual":"0",
-					"Url":"http://cnddosdobis:8090/WebServices/api.asmx/ObtenerDocumentoHTML?docCode=B41CBC74-D623-495D-98C5-F67C8B48D98C" // blueBack
-					}
-				]
-				}, 
-
-			"1": {"EsquemaTipo":"1",
-				"bgColor":"#fff",
-				"TransicionTipoIni":"0",
-				"TransicionTipoFin":"1",
-				"MostrarHeader":"1",
-				"Posicion":"1",
-				"DuracionPage":"00:00:30",
-				"DuracionPageSec":"5",
-				"secciones":[
-					{"Encabezado":"Primero",
-					"Posicion":"1",
-					"FuenteTipo":"4",
-					"RepresentacionTipo":"3",
-					"FuenteID":"0",
-					"EsManual":"0",
-					"Url":"http://10.234.51.69:8090/WebServices/api.asmx/ObtenerDocumentoHTML?docCode=df980dea-5ec3-4849-bdb9-54e2d0f2adab" // blueBack
-					}
-				]
-				},
-
-			"4": {"EsquemaTipo":"1",
-				"bgColor":"#fff",
 				"TransicionTipoIni":"0",
 				"TransicionTipoFin":"1",
 				"MostrarHeader":"1",
@@ -619,14 +579,36 @@ recorrerProgramaSinAsingacion: function(){
 				"DuracionPage":"00:00:30",
 				"DuracionPageSec":"10",
 				"secciones":[
-			{"Encabezado":"Primero",
+					{"Encabezado":"Primero",
 					"Posicion":"1",
-					"FuenteTipo":"3",
-					"RepresentacionTipo":"1",
+					"FuenteTipo":"6",
+					"RepresentacionTipo":"3",
 					"FuenteID":"0",
 					"EsManual":"0",
-					"Url":"http://10.234.51.69:8090/WebServices/api.asmx/ObtenerDocumentoJSON?docCode=530b62e4-19d3-4e34-8f0c-9d007f27f55a&queryParametroValores="
-				}]
+					"Url":"resource/Preludios.mp4" // blueBack
+					}
+				]
+				},
+
+			"3":
+			{"EsquemaTipo":"1",
+				"bgColor":"#000",
+				"TransicionTipoIni":"0",
+				"TransicionTipoFin":"1",
+				"MostrarHeader":"1",
+				"Posicion":"3",
+				"DuracionPage":"00:00:30",
+				"DuracionPageSec":"10",
+				"secciones":[
+					{"Encabezado":"Primero",
+					"Posicion":"1",
+					"FuenteTipo":"1",
+					"RepresentacionTipo":"3",
+					"FuenteID":"0",
+					"EsManual":"0",
+					"Url":"template/img/block01.png" // blueBack
+					}
+				]
 				} 
 			}
 		}
@@ -703,15 +685,15 @@ generateContentByFuenteTipoSimple: function(config){
 		var hasVideo = false; 
 
 		pptMaster.active = false; 	
-
-		$("#footer-gvapp").hide(); 
+	//	$("#footer-gvapp").hide(); 
 
 	config.secciones.forEach(function(item, indx) {		
 		switch(parseInt(item.FuenteTipo)){
-		case 1: // Imagen 
-		$("#sc-" + item.Posicion).html('<img src="'+ item.Url + '" class="">'); 
+		case 1: // Imagen 		
+		$("#sc-" + item.Posicion).html('<div class="img"> <img src="'+ item.Url + '" class=""> </div>'); 
 		break; 
 		case 2: // Texto.
+		$("#sc-" + item.Posicion).html(""); 
 		$("#sc-" + item.Posicion).html("<p>" +  item.Url  +"</p>");
 		break; 
 		case 3: // Bischart.
@@ -754,19 +736,19 @@ generateContentByFuenteTipoSimple: function(config){
 		}
 		break; 
 		case 4: // OfficeVIewExcel 
-
 			Master.setLocalCss("white"); 		
 
+			
 			alert("Este es la Office EXcel"); 
 			alert("URL: "+ item.Url); 
 
 			if(item.Url in Master.excelcollection){
-				$("#sc-" + item.Posicion).html(Master.excelcollection[item.Url]); 
+				$("#sc-" + item.Posicion).html("<div class='excel-wrapp'>" + Master.excelcollection[item.Url] + "</div>"); 
 				
 			} else {
 				requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){					
 					Master.excelcollection[item.Url] =  data
-					$("#sc-" + item.Posicion ).html(data); 
+					$("#sc-" + item.Posicion ).html("<div class='excel-wrapp'>" + data + "</div>"); 
 				} }); 
 			}
 
@@ -777,6 +759,7 @@ generateContentByFuenteTipoSimple: function(config){
 
 			pptMaster.active = true; 
 
+			Master.setLocalCss("black"); 
 
 		$("#footer-gvapp").show(); 
 
@@ -790,27 +773,23 @@ generateContentByFuenteTipoSimple: function(config){
 			alert("**************************** PPT MASTER*************************"); 
 
 		// Este es el total de Slider de la aplicacion Ahora.
-			$("#sc-" + item.Posicion).html( pptMaster.cuerpo[0] );		
-			Msg.warning("presentacion", "PPT sliderShow. Tome el control remoto para Navegar los " + pptMaster.cuerpo.length + "Sliders"); 
+alert("IMGES ---------------------------------------- IMAGES"); 
+		alert( pptMaster.cuerpo[0] ); 
+alert("IMGES ---------------------------------------- IMAGES"); 
+
+			$("#sc-" + item.Posicion).html( "<div class='img'>" + pptMaster.cuerpo[0].outerHTML + "</div>");		
+			Msg.warning("presentacion", "PPT sliderShow. Tome el control remoto para Navegar los " + pptMaster.cuerpo.length + " Sliders"); 
 				
 		} else {
 				requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){					
-					Master.pptCollection[item.Url] =  data;					
+					Master.pptCollection[item.Url] = data;					
 
-					pptMaster.cuerpo = $(Master.pptCollection[item.Url]).find("img"); 					
+					pptMaster.cuerpo = $(Master.pptCollection[item.Url]).find("img"); 
 					pptMaster.totalSlide = pptMaster.cuerpo.length;
 
-					alert("**************************** PPT MASTER*************************"); 
-					alert(pptMaster.cuerpo.length); 
-
-
-					$("#sc-" + item.Posicion).html( pptMaster.cuerpo[0] );
+					$("#sc-" + item.Posicion).html( "<div class='img'>" + pptMaster.cuerpo[0].outerHTML + "</div>");
 					Msg.warning("presentacion", "PPT sliderShow. Tome el control remoto para Navegar los " + pptMaster.cuerpo.length + " Sliders."); 
-
 					pptMaster.slide = 1; 
-
-
-
 				} }); 
 			}
 
@@ -832,7 +811,7 @@ generateContentByFuenteTipoSimple: function(config){
 		requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){					
 			
 
-				$("#sc-" + item.Posicion ).html(data); 
+				$("#sc-" + item.Posicion ).html("<div class='excel-wrapp'>" + data + "</div>"); 
 			
 
 				} 
@@ -966,9 +945,8 @@ var hastAutoMatic = false;
 				//	// console.log(Master.dTransAuto[it]); 
 				alert("@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"); 
 					alert("NO Existe fold"); 
-					alert(Master.dTransAuto[it].dt); 									
-
-					alert( JSON.stringify(Master.dTransAuto[it].visuals[0].visualType) ); 
+					alert(Master.dTransAuto[it].dt);
+					alert( JSON.stringify(Master.dTransAuto[it].visuals[0].visualType)); 
 
 
 										alert("/*********************/"); 
@@ -980,19 +958,7 @@ var hastAutoMatic = false;
 						Master.dTransAuto[it].visuals[0].visualOptions["renderAsImage"] = true;
 						var hh = Master.dTransAuto[it].dt.generateVisual(Master.dTransAuto[it].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
 					'sc-' + it );  // .render();
-
-						alert("Antes del RENDER _________________"); 
-
-						hh.render(); 
-
-						alert(hh.renderOptions["tableHTML"]); 
-						
-										
-
-
-					
-
-
+						hh.render(); 			
 
 					alert("Paso el Renderizado. "); 
 				}

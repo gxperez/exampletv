@@ -420,7 +420,7 @@ var prueba;
             return _visual.config;
         }
         catch (e) {
-            console.error(e);
+            error(e);
         }
     }
 
@@ -558,8 +558,8 @@ var prueba;
 
     // Private function
     // generate html table string
-    function _generateTableHTML(dataColumns, data, totalColumns, totalData, headerColor, measureColor, isMeasureColor) {
-        var _tableHeaderColor = headerColor ? "style='background-color:" + headerColor + ";'" : "",
+    function _generateTableHTML(dataColumns, data, totalColumns, totalData, headerColor, measureColor, isMeasureColorRange, totalText) {
+        var _tableHeaderColor =  "style='background-color:" + (headerColor || "#e8e8e8") + ";'",
             _tableHeader = "<table border='1' class='table'><thead><tr  class='table-header' " + _tableHeaderColor + ">",
             _tableBody = "<tbody>";
 
@@ -567,7 +567,7 @@ var prueba;
             var _color = null;
 
             if (measureColor && totalColumns.indexOf(column) >= 0) {
-                if (isMeasureColor) {
+                if (isMeasureColorRange) {
                     var _colorArray = Array.isArray(measureColor[column]) ? measureColor[column].filter(function (mc) { return dataValor >= mc["start"] && dataValor <= mc["end"] }) : [];
 
                     if (_colorArray.length > 0)
@@ -619,10 +619,112 @@ var prueba;
                     _tableTdColSpanNumber++;
             }
 
-            _tableRow = "<tr class='table-totalRow'  style='background-color: #e8e8e8;' ><td class='table-totalRow-data' colspan='" + _tableTdColSpanNumber + "'> total </td>" + _tableRow + "</tr>";
+            _tableRow = "<tr class='table-totalRow'  style='background-color: #f7f7f7;' ><td class='table-totalRow-data' colspan='" + _tableTdColSpanNumber + "'> "+(totalText || 'Total')+"  </td>" + _tableRow + "</tr>";
             _tableBody += _tableRow;
         }
 
+        _tableBody += "</tbody></table>";
+
+        return _tableHeader + _tableBody;
+    }
+
+    // generate multiple tables in one 
+    function _generateUnifiedTableHTML(dataColumns, data, measureColumns, totalData,group, groups,category, categories,colorsHeader,colorHeader,  measureColor, isMeasureColorRange,totalText) {
+        var  _tableHeader = "<table border='1' class='table'><thead>",
+            _tableBody = "<tbody>";
+
+        function _getColor(column, dataValor) {
+            var _color = null;
+
+            if (measureColor && measureColumns.indexOf(column) >= 0) {
+                if (isMeasureColorRange) {
+                    var _colorArray = Array.isArray(measureColor[column]) ? measureColor[column].filter(function (mc) { return dataValor >= mc["start"] && dataValor <= mc["end"] }) : [];
+
+                    if (_colorArray.length > 0)
+                        _color = _colorArray[0]["color"];
+                }
+                else {
+                    _color = measureColor[column];
+                }
+
+                return _color ? "style='color:" + _color + ";'" : "";
+            }
+        }
+
+        _tableHeader += "<tr  class='table-header table-header-category'>";
+        _tableHeader += "<th class='table-header-item table-header-category-group' rowspan='2'>" + group + "</th>";
+        var _headerCategoryColSpan =  measureColumns.length || 0 ;
+
+        // Table header category
+        for (var dc in categories) {
+            var _cHeader = colorsHeader[categories[dc]] || colorHeader;
+            _tableHeader += "<th class='table-header-item table-header-category-item' style='background-color:" +(_cHeader || "#e8e8e8") + ";' colspan='"+_headerCategoryColSpan+"'>" + categories[dc] + "</th>";
+        }
+
+        _tableHeader += "</tr>";
+
+        _tableHeader += "<tr  class='table-header'>";
+
+        // Table header
+        for (var dc in categories) {
+            for (var dc in dataColumns) {
+                if (measureColumns.indexOf(dataColumns[dc]) >= 0) {
+                    _tableHeader += "<th class='table-header-item'>" + dataColumns[dc] + "</th>";
+                }
+            }
+        }
+
+        _tableHeader += "</tr></thead>";
+
+        // Table body
+        for(var g in groups)
+        {
+            var _tableRow = "<tr class='table-row'>";
+            _tableRow += "<td class='table-row-data table-row-data-group'>" + groups[g] + "</td>";
+
+             for (var dc in categories) {
+                var _rowData = data.filter(function(d){ return  d[group] == groups[g] && d[category] ==categories[dc]})[0];
+
+                for (var dc in dataColumns) {
+                    if (measureColumns.indexOf(dataColumns[dc]) >= 0) {
+                        if(_rowData)
+                        {
+                            var _dc = dataColumns[dc];
+                            var _data =_rowData[dataColumns[dc]];
+                            _tableRow += "<td class='table-row-data' "+_getColor(_dc,_data)+" >" +_data + "</td>";
+                        }
+                        else
+                            _tableRow += "<td class='table-row-data'></td>";
+                    }
+                }
+            }
+
+            _tableRow += "</tr>";
+            _tableBody += _tableRow;
+        }
+
+        var _tableRowTotal = "<tr class='table-totalRow' style='background-color: #f7f7f7;'>";
+            _tableRowTotal += "<td class='table-totalRow-data table-row-data-group'>"+(totalText || 'Total')+"</td>";
+
+         for (var dc in categories) {
+            var _rowDataTotal = totalData.filter(function(d){ return  d[category] ==categories[dc]})[0];
+
+            for (var dc in dataColumns) {
+                if (measureColumns.indexOf(dataColumns[dc]) >= 0) {
+                    if(_rowDataTotal)
+                    {
+                        var _dc = dataColumns[dc];
+                        var _data = _rowDataTotal[dataColumns[dc]];
+                        _tableRowTotal += "<td class='table-totalRow-data' "+_getColor(_dc,_data)+" >" +_data  + "</td>";
+                    }
+                    else
+                        _tableRowTotal += "<td class='table-totalRow-data'></td>";
+                }
+            }
+        }
+
+        _tableRowTotal += "</tr>";
+        _tableBody += _tableRowTotal;
         _tableBody += "</tbody></table>";
 
         return _tableHeader + _tableBody;
@@ -672,7 +774,9 @@ var prueba;
             measures: { label: "measures categories", type: datatransformer.typeMultipleMeasures, required: true, order: 5 },
             measureColor: { label: "measure color", type: String, tooltip: _tootip.measureColor, order: 6 },
             measureRound: { label: "measure round", type: Number, order: 7 },
-            css: { label: "css", type: String, tooltip: _tootip.css, order: 8 }
+            unifiedTable: { label: "unified table", type: Boolean, order: 8 },
+            totalText: { label: "total text", type: String, order: 9 },
+            css: { label: "css", type: String, tooltip: _tootip.css, order: 10 }
         },
         function () {
             this.renderOptions = {
@@ -787,22 +891,49 @@ var prueba;
                     }
                 }
 
-                for (var c in _categories) {
-                    var _tableHtml = "<div class='table-item' style='margin: 0px;padding: 0px;'>",
-                        _dataInCategory = _generateData.filter(function (d) { return d[_category] == _categories[c] }),
-                        _totalDataInCategory = _generateDataTotal.filter(function (d) { return d[_category] == _categories[c] });
+                if(this.config.unifiedTable)
+                {
 
-                    _tableHtml += "<h3 class='table-title'>" +
-                                  _categories[c] +
-                                  "</h3>" +
-                                  _generateTableHTML(_dataColumnsTable, _dataInCategory, this.config.measures, _totalDataInCategory, (_colorsHeader[_categories[c]] || _colorHeader), _isColorMeasureRange ? _colorsMeasure : _colorMeasure, _isColorMeasureRange);
+                    var _tableHtml = "<div class='table-item' style='margin: 0px;padding: 0px;'>";
+                    var _groups =this.util.getDistinct(_data, _group); 
+                    _tableHtml += _generateUnifiedTableHTML(
+                                                            _dataColumnsTable,
+                                                            _generateData, 
+                                                            this.config.measures,
+                                                            _generateDataTotal,
+                                                            _group,
+                                                            _groups,
+                                                            _category,
+                                                            _categories,
+                                                            _colorsHeader,
+                                                            _colorHeader, 
+                                                             _isColorMeasureRange ? _colorsMeasure : _colorMeasure, 
+                                                             _isColorMeasureRange,
+                                                            this.config.totalText);
 
-                    _tableHtml += "</div>";
                     _html += _tableHtml;
+                    this.renderOptions.tableHTML = _html += "</div>";
+                    this.renderOptions.tableHTML = "<style> " + this.config.css + " </style>" + this.renderOptions.tableHTML;
                 }
+                else
+                {
+                    for (var c in _categories) {
+                        var _tableHtml = "<div class='table-item' style='margin: 0px;padding: 0px;'>",
+                            _dataInCategory = _generateData.filter(function (d) { return d[_category] == _categories[c] }),
+                            _totalDataInCategory = _generateDataTotal.filter(function (d) { return d[_category] == _categories[c] });
 
-                this.renderOptions.tableHTML = _html += "</div>";
-                this.renderOptions.tableHTML = "<style> " + this.config.css + " </style>" + this.renderOptions.tableHTML;
+                        _tableHtml += "<h3 class='table-title'>" +
+                                      _categories[c] +
+                                      "</h3>" +
+                                      _generateTableHTML(_dataColumnsTable, _dataInCategory, this.config.measures, _totalDataInCategory, (_colorsHeader[_categories[c]] || _colorHeader), _isColorMeasureRange ? _colorsMeasure : _colorMeasure, _isColorMeasureRange, this.config.totalText);
+
+                        _tableHtml += "</div>";
+                        _html += _tableHtml;
+                    }
+
+                    this.renderOptions.tableHTML = _html += "</div>";
+                    this.renderOptions.tableHTML = "<style> " + this.config.css + " </style>" + this.renderOptions.tableHTML;
+                }
 
                 $("#" + this.config.elemId).html(this.renderOptions.tableHTML);
             }
