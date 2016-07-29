@@ -41,8 +41,38 @@ var pptMaster = {
 	hasFinish: false,
 	tiempo: 0, 
 	hasKeyControlActive: false, 
-	getIntroPPT: function(){
+	getPPT: function($index){
+
+		if($index in pptMaster.cuerpo){
+			pptMaster.cuerpo[$index];
+			$("#sc-" + 1).html( "<div class='img'>" + pptMaster.cuerpo[$index].outerHTML + "</div>");
+		}
 	}, 
+
+	next: function() {
+		pptMaster.slide++; 
+
+		if((pptMaster.slide) > pptMaster.totalSlide){
+			pptMaster.slide = pptMaster.totalSlide; 			
+			Msg.warning("Fin Slide", "Final de la Presentación"); 			
+		}
+		pptMaster.getPPT((pptMaster.slide-1));
+	}, 
+
+	back: function(){
+		pptMaster.slide--; 
+
+		if((pptMaster.slide) > pptMaster.totalSlide){
+			pptMaster.slide = pptMaster.totalSlide; 			
+			Msg.warning("Fin Slide", "Final de la Presentación"); 			
+		}
+
+		if(pptMaster.slide < 1){
+			pptMaster.slide = 1; 	
+			Msg.warning("Primer Slide", "Inicio de la presentación"); 
+		}
+		pptMaster.getPPT((pptMaster.slide-1));
+	}
 
 	keyControlPPT: function(keyCode){
 
@@ -54,18 +84,18 @@ var pptMaster = {
 					widgetAPI.sendReturnEvent();
 					break;
 				case tvKey.KEY_LEFT:
-					alert("LEFT");
+					alert("LEFT");					
+					pptMaster.back(); 
 					break;
 				case tvKey.KEY_RIGHT:
 					alert("RIGHT");
+					pptMaster.next(); 					
 					break;
 				case tvKey.KEY_UP:
 					alert("UP");
 					break;
 				case tvKey.KEY_DOWN:
-
 					alert("DOWN");
-
 					break;
 				case tvKey.KEY_ENTER:
 				case tvKey.KEY_PANEL_ENTER:
@@ -148,7 +178,6 @@ Master = {
 				instancia.Server.send("message", JSON.stringify(obj) );				
 			}			
 		}
-
 
 
 alert("El BOron es " + keyCode + " == "  + 29443); 
@@ -239,12 +268,7 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 				//		alert(hasProBloq); 
 
 						alert("Lo detendre Jusnto Aqui */***********************"); 
-
-			//			return true; 
-
-
-
-
+			//			return true;
 
 
 						if( prog[data.fechaActual].programa )
@@ -671,9 +695,7 @@ renderSliderPage: function(config, totalS){
 			Master.renderBloque(); 
 		}, parseInt(config.DuracionPageSec) * 1000 ); 		
 	}
-	
 	// 
-
 
 
 }, 
@@ -685,7 +707,7 @@ generateContentByFuenteTipoSimple: function(config){
 		var hasVideo = false; 
 
 		pptMaster.active = false; 	
-	//	$("#footer-gvapp").hide(); 
+		$("#footer-gvapp").hide(); 
 
 	config.secciones.forEach(function(item, indx) {		
 		switch(parseInt(item.FuenteTipo)){
