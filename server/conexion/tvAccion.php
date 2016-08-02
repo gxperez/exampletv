@@ -5,17 +5,17 @@ try
 	
 	
 	function registrarValidarTV( $dispositivoEnt){
-		 $DispositivoID = 0; 
-
-
+		 $DispositivoID = 0;
 		 global $bd; 
+
+
 		 $result = $bd->ejecutar("select count(*) as Cantidad, MAX(DispositivoID) as DispositivoID, uuid() as uid from dispositivo where Mac = '{$dispositivoEnt["Mac"]}';" );
 
 		 $row = $bd->obtener_fila($result, 0); 
 
 		 $DispositivoID = $row['DispositivoID']; 
 
-		 $consultaGruposPertenece = $bd->ejecutar("select GrupoID, DispositivoID from Grupo_Tv where Estado = 1 and DispositivoID = {$row['DispositivoID']};" );
+		 $consultaGruposPertenece = $bd->ejecutar("select GrupoID, DispositivoID, 0 as HasLider from Grupo_Tv where Estado = 1 and DispositivoID = {$row['DispositivoID']};" );
 		 $listaGrupo =  $bd->obtener_fila($consultaGruposPertenece, 0); 
 		 
 

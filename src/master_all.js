@@ -11,7 +11,7 @@ var fileSystemObj = {};
 alert("Cargaron COnfiguraciones Loaded master_all.js"); 
 
 ConfigSetting = {
-	ws: ['10.234.51.99:9300'], 
+	ws: ['10.234.133.76:9300'], // ['10.234.51.99:9300'], // 10.234.133.76
 	configFiles: ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ], //{ 0 = serverURL, 1 = version, 2 = all source }
 	serverApp: 'localhost:7777/GestionVista/'
 }; 
@@ -25,7 +25,7 @@ var serverUpdatePath = null;
 var macTV;
 
 var mTimer = {
-	hasLider: false, 
+	hasLider: true, 
 	hasRuntime: false,
 	cIndexC: 0, // Contenido.
 	cIndexS: 0, // Slider.
@@ -72,7 +72,7 @@ var pptMaster = {
 			Msg.warning("Primer Slide", "Inicio de la presentación"); 
 		}
 		pptMaster.getPPT((pptMaster.slide-1));
-	}
+	}, 
 
 	keyControlPPT: function(keyCode){
 
@@ -81,12 +81,13 @@ var pptMaster = {
 				case tvKey.KEY_RETURN:
 				case tvKey.KEY_PANEL_RETURN:
 					alert("RETURN");
-					widgetAPI.sendReturnEvent();
+					 widgetAPI.sendReturnEvent();
 					break;
 				case tvKey.KEY_LEFT:
 					alert("LEFT");					
 					pptMaster.back(); 
 					break;
+
 				case tvKey.KEY_RIGHT:
 					alert("RIGHT");
 					pptMaster.next(); 					
@@ -99,6 +100,7 @@ var pptMaster = {
 					break;
 				case tvKey.KEY_ENTER:
 				case tvKey.KEY_PANEL_ENTER:
+
 					alert("ENTER");
 					break;
 				default:
@@ -157,43 +159,40 @@ Master = {
 
 	KeyDown: function(){				
 		var keyCode = event.keyCode;	
-
-		pptMaster.keyControlPPT(keyCode); 
-
 		// Lenctor de Codigo desde Dispositivo. Condicionantes
-
 		if(pptMaster.active){
+			pptMaster.keyControlPPT(keyCode);
+
 			if(mTimer.hasLider){
 			// Es un Dispositivo Lider de Grupo 
 				var obj = {
-				macAdrees: mac,			
-				Tipo: "TV",						
-				accion: "CONTROLLIDER",
-				"keyCode": keyCode, 
-				"BloqueID": mTimer.BloqueID, 
-				"cIndexC": mTimer.cIndexC, 
-				"cIndexS": mTimer.cIndexS, 
-				"pptKey": pptMaster.slide
-				};				
-				instancia.Server.send("message", JSON.stringify(obj) );				
+					macAdrees: macTV,			
+					Tipo: "TV",						
+					accion: "CONTROLLIDER",
+					"keyCode": keyCode, 
+					"BloqueID": mTimer.BloqueID, 
+					"cIndexC": mTimer.cIndexC, 
+					"cIndexS": mTimer.cIndexS, 
+					"pptKey": pptMaster.slide
+				};
+
+				alert("Aqui Estas: "); 
+				alert( typeof instancia); 
+				alert("CUBO RUBY"); 
+				alert( typeof instancia.conn); 
+
+			alert("type Servidor"); 
+
+				alert (typeof instancia.conn.Server); 
+				 instancia.conn.Server.send("message", JSON.stringify(obj) );		
 			}			
 		}
 
 
-alert("El BOron es " + keyCode + " == "  + 29443); 
-		alert(keyCode); 
-		if(keyCode == 29443 ){		
-		}
+alert("El Codigo Mostrado o pulsado ES:"); 
+		alert(keyCode); 		
 
-		if(keyCode == 5){
-
-
-			alert(Master.html); 
-			
-			// vv.currentTime =0
-
-
-		}
+		
 			    if(instancia == null || instancia === undefined ){			    	
 			    	instancia = new MasterTV();			    	
 			    	instancia.handleKeyDown(keyCode);
@@ -217,9 +216,8 @@ alert("El BOron es " + keyCode + " == "  + 29443);
 					case "ACTUALIZAR-PROG":
 
 						localStorage.setItem("programaTV", null);
-						mTimer.hasRuntime = false; 
-						Master.cambiarBloque(); 
-
+						mTimer.hasRuntime = false;
+						Master.cambiarBloque();
 					break; 
 					case "NOTIFICAR":	
 
@@ -314,7 +312,8 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 						// Permite enviar y recibir funcionalidades del control remoto en el servici												
 						break;						
 					default:
-					alert("La Accion no APlicca"); 					
+					alert("La Accion no APlicca"); 		
+					alert(data.accion); 			
 					alert("---*--*-----*-*-*-*-*- "); 
 						break;
 				}

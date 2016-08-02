@@ -7,10 +7,11 @@ require 'class.PHPWebSocket.php';
 require 'class.AdminBisTV.php'; 
 
 $glb_Hash = 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1'; 	
-$integracionConfig = array('server' => "http://10.234.133.76:7777/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1"
-	//,	'server' => 'http://192.168.183.1:7777/gestion/server/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1'
-);
 
+
+$integracionConfig = array('server' => "http://10.234.51.99:8079/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1"	, 
+"baseURL"=> "http://10.234.51.99:8079/GestionVista/"
+);
 
 function wsOnMessage($clientID, $message, $messageLength, $binary) {
 	global $Server;
@@ -18,22 +19,19 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 	global $integracionConfig; 
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
 	$timeNow =  new DateTime();	
-
 	$Server->log("Recepcion de Mensajes.");
 	$Server->log( $timeNow->format('Y,m,d,H,i,s')  );
 	$Server->log("=================================");
 	$Server->log($message); 
-
 	
 	if ($messageLength == 0) {
 		$Server->wsClose($clientID);
 		return;
 	}
 
-	$varible = json_decode($message);		
+	$varible = json_decode($message);
 
 	if(array_key_exists("accion" , $varible ) ){
-
 		switch ($varible->accion) {
 			case "ACTIVAR":
 				$Server->wsClients[$clientID]; 
@@ -43,13 +41,29 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 				$Server->log("Cliente $clientID Esta conectado."); 						
 				$retornos =	$BisGestion->setHasRefresh(); 
 				// $Server->log( print_r($retornos, true) ); 
-				$Server->wsSend($clientID,  json_encode(array('accion' => "NOTIFICAR", "Msg"=> "El dispositivo confirmara si esta actualizado", "fecha"=> $timeNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"], "fechaActual"=> date("Y-m-d") ) ) );	
-				break;
+				$Server->wsSend($clientID,  json_encode(array('accion' => "NOTIFICAR", "Msg"=> "El dispositivo confirmara si esta actualizado", "fecha"=> $timeNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"], "base_url"=> $integracionConfig["baseURL"],  "fechaActual"=> date("Y-m-d") ) ) );	
+				break;	
 
+			case "CONTROLLIDER":
+			// Recibe el Mensaje del Key Control del Lider.
+			$Server->log("Recibe el mensaje del Lider y La Tecla Pulsada"); 
+			// Aqui va el recorrido para los TV del Grupo que el Corresponde.
+			// Aqui Entonaremos la cancion.
+
+			// {"macAdrees":"0800279b3e8c","Tipo":"TV","accion":"CONTROLLIDER","keyCode":5,"BloqueID":"1","cIndexC":0,"cIndexS":1,"pptKey":2}
+
+
+
+
+
+
+			break;
+			case "TIMEQUERY":
+			//	$Server->wsSend(); 
+			break; 
 			default:
-
 			//	# code...
-
+			
 				break;
 		}		
 
@@ -108,9 +122,7 @@ function wsOnOpen($clientID)
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
 	
 	$tempDateNow =  new DateTime(); 
-	$Server->log( "$ip  ($clientID) has connected." . json_encode($Server->wsClients[$clientID]));
-
-	
+	$Server->log( "$ip  ($clientID) has connected." . json_encode($Server->wsClients[$clientID]));	
 
 
 	//Send a join notice to everyone but the person who joined
@@ -122,6 +134,7 @@ function wsOnOpen($clientID)
 						'moto' => 'verde', "fecha"=>  $tempDateNow->format('Y,m,d,H,i,s') );
 						
 			// $Server->wsSend($id, "Visitor $clientID ($ip) has joined the room. con el String" . json_encode($client) );
+		$Server->log( "Mensaje para Clientes Diferentes. " ); 
 				$Server->wsSend($id,  json_encode($messal) );
 		} else {
 
@@ -172,10 +185,8 @@ $Server->bind('close', 'wsOnClose');
 
 // for other computers to connect, you will probably need to change this to your LAN IP or external IP,
 // alternatively use: gethostbyaddr(gethostbyname($_SERVER['SERVER_NAME']))
+//  $Server->wsStartServer('10.234.51.99', 9300); // ws://10.234.130.55:9300'  127.0.0.1 // 10.234.133.76
+
  $Server->wsStartServer('10.234.133.76', 9300); // ws://10.234.130.55:9300'  127.0.0.1
-// $Server->wsStartServer('192.168.183.1', 9300); // ws://10.234.130.55:9300'  127.0.0.1
-
-
-
 
 ?>

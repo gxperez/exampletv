@@ -361,7 +361,7 @@ on vwPS.ProgramacionID= p.ProgramacionID and vwPS.Estado = 1
 
 inner join bloque_contenido as bcc on bcc.BloqueID = vwPS.BloqueID
 inner join contenido as cc on cc.ContenidoID = bcc.ContenidoID
-and cc.Estado = 1
+and cc.Estado = 1 and bcc.Estado = 1
 inner join template_pages as tp on tp.SliderMaestroID = cc.SliderMaestroID
 and tp.Estado = 1
 inner join seccion_template as st on st.TemplatePagesID = tp.TemplatePagesID

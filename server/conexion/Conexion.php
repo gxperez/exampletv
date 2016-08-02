@@ -48,13 +48,16 @@ Class ConexionDB{
    /*Método para ejecutar una sentencia sql*/
    public function ejecutar($sql){
     //  $this->stmt=mysql_query($sql,$this->link);
+      if(!$this->link){
+         $this->conectar(); 
+      }
+
 	   $this->stmt = mysqli_query($this->link, $sql); 
       return $this->stmt;
    }
 
    /*Método para obtener una fila de resultados de la sentencia sql*/
-   public function obtener_fila($stmt,$fila){
-      
+   public function obtener_fila($stmt,$fila){   
 
       if ($fila==0){
        //  $this->array=mysql_fetch_array($stmt);         
@@ -70,13 +73,12 @@ Class ConexionDB{
 
    //Devuelve el último id del insert introducido
    public function lastID(){
+      
       return mysqli_insert_id($this->link);
    }
 
    public function conectarServerInfo(){
-
       // Conxion del Json para Distribuirlo por 
-
    }
 
 

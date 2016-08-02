@@ -40,10 +40,23 @@ class AdminBisTV
 				$retorno[$rows["GrupoID"]] = array();
 			}			
 			$retorno[$rows["GrupoID"]][] = $rows; 
-		}
-		
+		}		
 		return $retorno; 
+	}
 
+	public function ObtenerListaTVPorGrupo(){
+		$result = $this->db->ejecutar("select * from vw_rep_programacion_contenido_hoy");
+
+		$retorno = array();
+
+		while($rows =$this->db->obtener_fila($result, 0) ) {
+
+			if(!array_key_exists($rows["GrupoID"], $retorno)){
+				$retorno[$rows["GrupoID"]] = array();
+			}			
+			$retorno[$rows["GrupoID"]][] = $rows; 
+		}		
+		return $retorno; 
 	}
 
 }
