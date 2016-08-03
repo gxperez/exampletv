@@ -243,9 +243,9 @@
 			if(array_key_exists($res->Variable, $filtrosDefinidos)){				
 				$filtrosDefinidos[$res->Variable] = $res->Nombre;
 			}
-			return array("Existe"=> true, "getString"=> json_encode($filtrosDefinidos) ); 
+			return array("Existe"=> true, "getString"=> json_encode($filtrosDefinidos) , "FuerzaVenta"=> $res->Nombre ); 
 		}
-		return array("Existe"=> false, "getString"=> json_encode($filtrosDefinidos) ); 
+		return array("Existe"=> false, "getString"=> json_encode($filtrosDefinidos), "FuerzaVenta"=> "Sin Asignar"); 
 
 	}
 
@@ -258,7 +258,6 @@ on d.DispositivoID = gt.DispositivoID
  where gt.Estado = 1 and Mac ='{$mac}';"; 
 
  		$query = $this->db->query($sql);
-
  		// Este es el Resultado final del sistema.
 		$listaDispositivo = $query->result(); 
 		return $listaDispositivo;

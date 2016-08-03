@@ -11,7 +11,7 @@ var fileSystemObj = {};
 alert("Cargaron COnfiguraciones Loaded master_all.js"); 
 
 ConfigSetting = {
-	ws: ['10.234.133.76:9300'], // ['10.234.51.99:9300'], // 10.234.133.76
+	ws: ['10.234.51.99:9300'], // 10.234.133.76 ['10.234.133.76:9300'], //
 	configFiles: ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ], //{ 0 = serverURL, 1 = version, 2 = all source }
 	serverApp: 'localhost:7777/GestionVista/'
 }; 
@@ -31,7 +31,43 @@ var mTimer = {
 	cIndexS: 0, // Slider.
 	TransicionFin: "", 
 	contenido: 0, 
-	BloqueID: 0
+	BloqueID: 0,
+	setTimerToChange: function(sec){
+
+		var d= new Date(2015, 1, 1, 0, 0, 0, 0);
+
+		d.setMilliseconds(sec*1000); 
+		mTimer.timerToChange = sec; 
+
+		alert(d); 
+
+		var hourt = (d.getHours()==0)? "" : d.getHours() + " : ";
+		var mint = (d.getMinutes() ==0)? ":": (d.getMinutes()<=9)?"0"+d.getMinutes()+ ":" :d.getMinutes() + ":";
+		var segundot = (d.getSeconds()<=9)?"0"+d.getSeconds() : d.getSeconds() + "";
+		var strTimeOut = hourt + mint + segundot; 
+
+		alert("Antes del Asunto esta: "); 
+		alert(strTimeOut); 
+		alert(mTimer.timerToChange); 
+
+		$("#timerToChange").html("<h2>" + strTimeOut + "</h2>"); 
+
+		if(mTimer.timerToChange > 0){
+			if(mTimer.totc != null){
+				clearTimeout(mTimer.totc);	
+				mTimer.totc = null; 
+			}			
+
+			mTimer.totc = setTimeout(function(){
+				mTimer.timerToChange = mTimer.timerToChange - 1; 
+				mTimer.setTimerToChange(mTimer.timerToChange); 
+			}, 1000); 
+		} else {
+			$("#timerToChange").html(""); 
+		}
+	}, 
+	timerToChange: 0, 
+	totc: null
 };
 
 var pptMaster = {
@@ -47,6 +83,37 @@ var pptMaster = {
 			pptMaster.cuerpo[$index];
 			$("#sc-" + 1).html( "<div class='img'>" + pptMaster.cuerpo[$index].outerHTML + "</div>");
 		}
+	}, 
+
+	getLiderAccion: function(res){
+	// Saber si esta en el Mismo Bloque.
+	if(mTimer.BloqueID !== res.BloqueID){
+		var rt = Master.getSelectedBloque(res.BloqueID, localStorage.getItem("fechaActual_APP")); 
+					mTimer.BloqueID = res.BloqueID;
+					if(rt !== false){
+						Master.setPantallaPropiedad(rt); 												
+					}
+	}
+
+	// Saber Cual es el contenido en el Que Esta
+	if(mTimer.cIndexC !==  res.cIndexC){
+
+		if(res.cIndexC > 0){
+			mTimer.cIndexC = (res.cIndexC-1); 
+		} else {
+			mTimer.cIndexC = 0; 
+		}
+		
+		mTimer.cIndexS = (res.cIndexS-1);
+
+		if (mTimer.cIndexS < 0){
+			mTimer.cIndexS = 0; 			
+		}
+		Master.renderBloque(); 
+	} 
+	// ppt Slider.
+	pptMaster.slide = (res.pptKey+ 1); 
+		pptMaster.getPPT((res.pptKey-1));
 	}, 
 
 	next: function() {
@@ -308,8 +375,13 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 						Master.slideNow(); 
 						
 						break;						
-					case "CONTROL":  // CONTROL REMOTO DESDE EL SERVER.
+					case "CONTROLLIDER":  // CONTROL REMOTO DESDE EL SERVER.
 						// Permite enviar y recibir funcionalidades del control remoto en el servici												
+						Msg.log("Sincronizado..."); 
+					//	data.						
+					pptMaster.getLiderAccion(data); 
+
+
 						break;						
 					default:
 					alert("La Accion no APlicca"); 		
@@ -363,6 +435,8 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 					// Estuvo OK el asunto
 					alt[fecha] = {programa: res.programa, contenido: [] }; 
 					localStorage.setItem("programaTV", JSON.stringify(alt) );
+					localStorage.setItem("FuerzaVenta", res.FuerzaVenta); 
+					$("#fv-TV").html("<strong>Fuerza Venta: </strong>" + res.FuerzaVenta ); 
 						Msg.log("Configurando programa."); 
 
 						mTimer.hasRuntime = true; 
@@ -689,9 +763,19 @@ renderSliderPage: function(config, totalS){
 	mTimer.cIndexS++; 	
 	mTimer.TransicionFin = config.TransicionTipoFin; 
 
+
 	if(hasNormal !== false){
+
+		alert("Durecion Estimada @###@#@#@#@#"); 
+		alert(config.DuracionPageSec); 
+		mTimer.setTimerToChange(config.DuracionPageSec);
+
+		
+		
+
+
 		mTimer.contenido = setTimeout(function(){
-			Master.renderBloque(); 
+			Master.renderBloque(); 			
 		}, parseInt(config.DuracionPageSec) * 1000 ); 		
 	}
 	// 
@@ -1102,6 +1186,11 @@ getBloqueIDAndTimer: function(callback){
 
 	alert("Los Locales son: " + macTV); 
 
+	pptMaster.slide = 0;
+	pptMaster.totalSlide = 0;
+	pptMaster.tiempo= 0;
+	pptMaster.hasKeyControlActive= false;
+
 	alert(mTimer.contenido);
 
 	var base_urlT = localStorage.getItem("base_url"); 
@@ -1156,14 +1245,8 @@ getBloqueIDAndTimer: function(callback){
 cambiarBloque: function(){
 	// Consular al Servidor cual es el Bloque
 	// alert("Consulta para Cambiar el Bloque. "); 
-
 	alert("************************** CAMBIO BLOQUES ********************"); 	
-	alert("************************** CAMBIO BLOQUES ********************"); 	
-	alert("************************** CAMBIO BLOQUES ********************");
-
-	alert("************************** CAMBIO BLOQUES ********************"); 	
-	alert("************************** CAMBIO BLOQUES ********************"); 	
-	alert("************************** CAMBIO BLOQUES ********************");
+	
 
 	var base_urlT = localStorage.getItem("base_url");
 	var getFullBloque = localStorage.getItem("getFullBloque");

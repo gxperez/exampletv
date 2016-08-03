@@ -23,9 +23,12 @@ class AdminBisTV
 		$date = date("Y-m-d"); 
 		if(!array_key_exists($date, $this->dtRefresh)) {
 			// Ajustes e General.			
-
 		}
 		// Para la programacion en General.
+	}
+
+	public function getFuerzaVenta($macAd) {
+		// MacAdrdrees.				
 
 	}
 
@@ -44,17 +47,21 @@ class AdminBisTV
 		return $retorno; 
 	}
 
-	public function ObtenerListaTVPorGrupo(){
-		$result = $this->db->ejecutar("select * from vw_rep_programacion_contenido_hoy");
+	public function ObtenerListaTVDelGrupoPorMacLider($mc){
+		$result = $this->db->ejecutar("select dis.Mac, dis.Nombre, dis.DispositivoID, gt.GrupoID from grupo_tv as gt
+ inner join dispositivo as dis on dis.DispositivoID = gt.DispositivoID
+ and dis.Estado = 1 and gt.Estado = 1
+ where gt.GrupoID = (select gt.GrupoID from grupo_tv as gt
+ inner join dispositivo as dis on dis.DispositivoID = gt.DispositivoID
+ and dis.Estado = 1 and gt.Estado = 1
+ where dis.Mac = '$mc' and gt.EsLider = 1)");
 
 		$retorno = array();
 
 		while($rows =$this->db->obtener_fila($result, 0) ) {
-
-			if(!array_key_exists($rows["GrupoID"], $retorno)){
-				$retorno[$rows["GrupoID"]] = array();
+			if($rows["Mac"] !== $mc){
+				$retorno[$rows["Mac"]] = $rows; 
 			}			
-			$retorno[$rows["GrupoID"]][] = $rows; 
 		}		
 		return $retorno; 
 	}

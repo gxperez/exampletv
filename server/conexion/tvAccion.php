@@ -15,7 +15,7 @@ try
 
 		 $DispositivoID = $row['DispositivoID']; 
 
-		 $consultaGruposPertenece = $bd->ejecutar("select GrupoID, DispositivoID, 0 as HasLider from Grupo_Tv where Estado = 1 and DispositivoID = {$row['DispositivoID']};" );
+		 $consultaGruposPertenece = $bd->ejecutar("select GrupoID, DispositivoID, EsLider from Grupo_Tv where Estado = 1 and DispositivoID = {$row['DispositivoID']};" );
 		 $listaGrupo =  $bd->obtener_fila($consultaGruposPertenece, 0); 
 		 
 
@@ -56,9 +56,7 @@ try
 
 					$stmt = $bd->ejecutar("UPDATE `bis_gestionvista`.`session_dispositivo_log` SET `Estado`='-1' WHERE `Mac`='{$dispositivoEnt['Mac']}';"); 
 
-					 $bd->ejecutar("UPDATE `bis_gestionvista`.`dispositivo_log` SET `Estatus`='0', `FechaHoraFin`='{$date}' WHERE `Estatus`='1' and `DispositivoID` = {$dispositivoEnt['DispositivoID']};"); 
-
-			
+					 $bd->ejecutar("UPDATE `bis_gestionvista`.`dispositivo_log` SET `Estatus`='0', `FechaHoraFin`='{$date}' WHERE `Estatus`='1' and `DispositivoID` = {$dispositivoEnt['DispositivoID']};");
 
 					return $stmt; 
 	}

@@ -46,9 +46,44 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 			case "CONTROLLIDER":
 			// Recibe el Mensaje del Key Control del Lider.
-			$Server->log("Recibe el mensaje del Lider y La Tecla Pulsada"); 
+			$Server->log("Recibe el mensaje del Lider y la tecla pulsada"); 
 			// Aqui va el recorrido para los TV del Grupo que el Corresponde.
 			// Aqui Entonaremos la cancion.
+			$listaPc = $BisGestion->ObtenerListaTVDelGrupoPorMacLider(trim($varible->macAdrees)); 
+
+			$Server->log(print_r($listaPc, true)); 
+
+			foreach ($Server->listTV as $key => $value) {
+
+				// Para FInes de Prueba
+				 // 29443 // Reiniciar el Slider Al Primero.
+				if($varible->keyCode == 29443){
+
+					$rsJS = array("accion"=> "CONTROLLIDER", "Msg"=> "", 'keyCode' => $varible->keyCode, "BloqueID"=> $varible->BloqueID, "cIndexC"=> $varible->cIndexC, "cIndexS"=> $varible->cIndexS,"pptKey"=>1, "server"=> $integracionConfig["server"]);
+
+					$Server->log("Esto Existe Y esta OK"); 										
+					$Server->log("El Cambio Por Prueba Sip");
+					$Server->log(print_r($value, true));
+					$Server->wsSend($key, json_encode($rsJS)); 
+
+				}
+
+
+				if(array_key_exists($value["Mac"], $listaPc)) {
+					// 
+					$rsJS = array("accion"=> "CONTROLLIDER", "Msg"=> "", 'keyCode' => $varible->keyCode, "BloqueID"=> $varible->BloqueID, "cIndexC"=> $varible->cIndexC, "cIndexS"=> $varible->cIndexS,"pptKey"=>$varible->pptKey, "server"=> $integracionConfig["server"]);
+
+					$Server->log("Esto Existe Y esta OK"); 										
+					$Server->log("Este es el PC Encendida");
+					$Server->log(print_r($value, true));
+					$Server->wsSend($key, json_encode($rsJS)); 
+
+
+				}
+
+			}
+
+
 
 			// {"macAdrees":"0800279b3e8c","Tipo":"TV","accion":"CONTROLLIDER","keyCode":5,"BloqueID":"1","cIndexC":0,"cIndexS":1,"pptKey":2}
 
@@ -133,9 +168,8 @@ function wsOnOpen($clientID)
 						'mensaje' => '"Visitor $clientID ($ip) has joined the room. con el String"',
 						'moto' => 'verde', "fecha"=>  $tempDateNow->format('Y,m,d,H,i,s') );
 						
-			// $Server->wsSend($id, "Visitor $clientID ($ip) has joined the room. con el String" . json_encode($client) );
 		$Server->log( "Mensaje para Clientes Diferentes. " ); 
-				$Server->wsSend($id,  json_encode($messal) );
+			//	$Server->wsSend($id,  json_encode($messal) );
 		} else {
 
 		$rs = array("accion"=> 'ACTIVAR',  "Msg"=> "El dispositivo Esta conectado", "fecha"=> $tempDateNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"]) ; 

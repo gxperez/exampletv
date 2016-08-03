@@ -292,7 +292,7 @@ public function Actualizar(){
 				$contenidoHoy = $this->mContenido->obtenerContenidoHoyPorGrupoPorGrupoID($idGrupo, $filtroGuid["getString"]);
 
 			
-				 echo json_encode(array("IsOk"=> true, "programa"=> $contenidoHoy ) );
+				 echo json_encode(array("IsOk"=> true, "programa"=> $contenidoHoy, "FuerzaVenta"=> $filtroGuid["FuerzaVenta"]) );
 				 return 0; 
 
 				}				
