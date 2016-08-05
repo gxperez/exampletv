@@ -35,7 +35,6 @@ var mTimer = {
 	setTimerToChange: function(sec){
 
 		var d= new Date(2015, 1, 1, 0, 0, 0, 0);
-
 		d.setMilliseconds(sec*1000); 
 		mTimer.timerToChange = sec; 
 
@@ -50,7 +49,7 @@ var mTimer = {
 		alert(strTimeOut); 
 		alert(mTimer.timerToChange); 
 
-		$("#timerToChange").html("<h2>" + strTimeOut + "</h2>"); 
+		$("#timerToChange").html("<div style='width:20%; float: left; '> <span class='fa fa-hourglass-half'></span> </div>	<div style='width:40%; float: left;'> <span class='clockT'>" + strTimeOut + "</span> &nbsp; &nbsp; </div> <div style'width:40%; text-align: right'></div> "); 
 
 		if(mTimer.timerToChange > 0){
 			if(mTimer.totc != null){
@@ -436,7 +435,7 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 					alt[fecha] = {programa: res.programa, contenido: [] }; 
 					localStorage.setItem("programaTV", JSON.stringify(alt) );
 					localStorage.setItem("FuerzaVenta", res.FuerzaVenta); 
-					$("#fv-TV").html("<strong>Fuerza Venta: </strong>" + res.FuerzaVenta ); 
+					$("#fv-TV").html("<span class='fa fa-university'></span>" + res.FuerzaVenta ); 
 						Msg.log("Configurando programa."); 
 
 						mTimer.hasRuntime = true; 
