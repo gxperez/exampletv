@@ -11,7 +11,7 @@ var fileSystemObj = {};
 alert("Cargaron COnfiguraciones Loaded master_all.js"); 
 
 ConfigSetting = {
-	ws: ['10.234.51.99:9300'], // 10.234.133.76 ['10.234.133.76:9300'], //
+	ws: ['10.234.133.76:9300'], //,'10.234.51.99:9300'], // 10.234.133.76 ['10.234.133.76:9300'], //
 	configFiles: ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ], //{ 0 = serverURL, 1 = version, 2 = all source }
 	serverApp: 'localhost:7777/GestionVista/'
 }; 
@@ -37,17 +37,12 @@ var mTimer = {
 		var d= new Date(2015, 1, 1, 0, 0, 0, 0);
 		d.setMilliseconds(sec*1000); 
 		mTimer.timerToChange = sec; 
-
-		alert(d); 
+		
 
 		var hourt = (d.getHours()==0)? "" : d.getHours() + " : ";
 		var mint = (d.getMinutes() ==0)? ":": (d.getMinutes()<=9)?"0"+d.getMinutes()+ ":" :d.getMinutes() + ":";
 		var segundot = (d.getSeconds()<=9)?"0"+d.getSeconds() : d.getSeconds() + "";
-		var strTimeOut = hourt + mint + segundot; 
-
-		alert("Antes del Asunto esta: "); 
-		alert(strTimeOut); 
-		alert(mTimer.timerToChange); 
+		var strTimeOut = hourt + mint + segundot; 		
 
 		$("#timerToChange").html("<div style='width:20%; float: left; '> <span class='fa fa-hourglass-half'></span> </div>	<div style='width:40%; float: left;'> <span class='clockT'>" + strTimeOut + "</span> &nbsp; &nbsp; </div> <div style'width:40%; text-align: right'></div> "); 
 
@@ -255,8 +250,18 @@ Master = {
 		}
 
 
+
+
 alert("El Codigo Mostrado o pulsado ES:"); 
 		alert(keyCode); 		
+
+		if(keyCode == 29443){
+		// Vamos Enviar la Prueba del Asunto
+		alert("Vive Ya. Andrea Bocheli"); 
+
+		instancia.conn.Server.send("message", JSON.stringify({accion: "BROADCAST"}) );			
+
+		}
 
 		
 			    if(instancia == null || instancia === undefined ){			    	
@@ -358,12 +363,22 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 						break;
 					case "TWEETS":
 						// REcepcion de Mesajes Instantaneos desde Un serviddor.					
-						if(typeof data.mensaje !== 'undefined'){
-							log(data.mensaje); 
+						if(typeof data.mensaje !== 'undefined'){							
+							Msg.log(data.mensaje); 
 						}						
 						break;
 						
 					case "BROADCAST":  // Boletin. Difusion de Informacion.
+
+					// 
+					var tt = {modo:"flash", showCategory: false,
+		 			 	categoryText: "Ejemplo de Categoria",
+		 	  			styleCat: "background: green; color: white;",
+		 	  			items: ["Paso del primer mensaje Enviado desde el Servidor", 'Solo una prueba de calidad', "Tercer Mensaje de Coordinacion"]
+		 			};
+
+		 			Msg.showMaqueeFlashInfo(tt); 
+
 						
 						break;
 					case "PROGRAMA":  // LA INFORMACION COMPLETA PARA EL PROGRAMA DEL DIA Y SU HORARIO.						

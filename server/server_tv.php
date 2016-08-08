@@ -76,11 +76,8 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 					$Server->log("Esto Existe Y esta OK"); 										
 					$Server->log("Este es el PC Encendida");
 					$Server->log(print_r($value, true));
-					$Server->wsSend($key, json_encode($rsJS)); 
-
-
+					$Server->wsSend($key, json_encode($rsJS));
 				}
-
 			}
 
 
@@ -96,6 +93,14 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 			case "TIMEQUERY":
 			//	$Server->wsSend(); 
 			break; 
+
+			case 'BROADCAST':
+				$Server->log("BROADCAST=> Listen"); 
+				$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "" ); 
+				$Server->wsSend($clientID, json_encode($rsJSB)); 
+
+
+				break;
 			default:
 			//	# code...
 			
