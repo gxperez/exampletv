@@ -1510,7 +1510,7 @@ var Msg = {
 			left = '<div style="float: left; width: 2%; height: 27px; text-align: center; padding-top: 5px; border-top: black solid 1px;"> </div>'; 
 			right = '<div style="float: left; width: 97%; height: 27px; padding-top: 5px; border-top: black solid 1px; '+ styleMsg +'">' + htmlText +' </div>';
 		}		
-		fullHtmlBar = "<div class='sf-ui-keyhelp sf-ui-keyhelp-black'>" + left + right + "</div>"; 
+		fullHtmlBar = "<div class='sf-ui-keyhelp sf-ui-keyhelp-black' style='z-index=15000'>" + left + right + "</div>"; 
 		// Recorrido del los Itmes de Noticias
 		// Combinacion de Colores.
 		$("#marqueBar").html(fullHtmlBar);

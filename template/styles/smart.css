@@ -9,6 +9,12 @@ body {
   margin: 0;
 }
 
+
+#marqueBar {
+	z-index: 10000;
+
+}
+
 .secc-title-bar{
 	width: 15%;
 	min-width: 15%;
