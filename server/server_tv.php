@@ -65,7 +65,6 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 					$Server->log("El Cambio Por Prueba Sip");
 					$Server->log(print_r($value, true));
 					$Server->wsSend($key, json_encode($rsJS)); 
-
 				}
 
 
@@ -82,9 +81,17 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 
 
+// 
+/*
+
+{modo:"flash", showCategory: true,
+		 			 	categoryText: "Destilados",
+		 	  			styleCat: "background: red; color: white;",
+		 	  			items: ["Esta es Otra Forma Paso del primer mensaje Enviado desde el Servidor", 'Solo una prueba de calidad']
+		 			};
+
+			*/
 			// {"macAdrees":"0800279b3e8c","Tipo":"TV","accion":"CONTROLLIDER","keyCode":5,"BloqueID":"1","cIndexC":0,"cIndexS":1,"pptKey":2}
-
-
 
 
 
@@ -96,7 +103,15 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 			case 'BROADCAST':
 				$Server->log("BROADCAST=> Listen"); 
-				$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "" ); 
+
+				$arregloRes= array('modo' => "flash",
+				 "showCategory"=>true, 
+				 "categoryText"=> "EL BISFORSALES",
+		 	  	 "styleCat"=> "background: blue; color: white;",
+		 	  	 "items"=> array("Resultados del primer Equipo", "Segundo Equipo", "Tecero de todos los Equipos", "Cuarto Mensjae del Bis") 
+				 );
+
+				$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "", "duracion"=> 12000, "data"=> $arregloRes ); 
 				$Server->wsSend($clientID, json_encode($rsJSB)); 
 
 
@@ -224,8 +239,8 @@ $Server->bind('close', 'wsOnClose');
 
 // for other computers to connect, you will probably need to change this to your LAN IP or external IP,
 // alternatively use: gethostbyaddr(gethostbyname($_SERVER['SERVER_NAME']))
-//  $Server->wsStartServer('10.234.51.99', 9300); // ws://10.234.130.55:9300'  127.0.0.1 // 10.234.133.76
+  $Server->wsStartServer('10.234.51.99', 9300); // ws://10.234.130.55:9300'  127.0.0.1 // 10.234.133.76
 
- $Server->wsStartServer('10.234.133.76', 9300); // ws://10.234.130.55:9300'  127.0.0.1
+ // $Server->wsStartServer('10.234.133.76', 9300); // ws://10.234.130.55:9300'  127.0.0.1
 
 ?>

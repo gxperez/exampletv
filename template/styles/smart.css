@@ -10,9 +10,45 @@ body {
 }
 
 
-#marqueBar {
-	z-index: 10000;
+.content-marque {
+position: fixed;
+height: 35px;
+width: 100%;
+background-image: url(../../image/BgNavigator.png);
+background-repeat: repeat-x;
+background-repeat-x: repeat;
+background-repeat-y: no-repeat;
+top: 686px;
+z-index: 6;
+opacity: 0.81;
+}
 
+.newsticker{
+	position: absolute;	
+	padding: 0px;
+	margin-left: 18px;
+}
+
+.newsticker li {
+color: #f2f2f2;
+white-space: nowrap;
+height: 39px;
+padding-top: 8px; 
+line-height: 10px;
+list-style: none;
+font-size: 22px;
+text-align: left;
+}
+
+.title-cat-marq {
+	font-size: 18px;
+	
+
+}
+
+.content-marque marquee {
+	font-size: 23px;
+	color: #ffffff;
 }
 
 .secc-title-bar{

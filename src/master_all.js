@@ -11,7 +11,8 @@ var fileSystemObj = {};
 alert("Cargaron COnfiguraciones Loaded master_all.js"); 
 
 ConfigSetting = {
-	ws: ['10.234.133.76:9300'], //,'10.234.51.99:9300'], // 10.234.133.76 ['10.234.133.76:9300'], //
+	ws: ['10.234.51.99:9300'],
+	// ws: ['10.234.133.76:9300'], //,'10.234.51.99:9300'], // 10.234.133.76 ['10.234.133.76:9300'], //
 	configFiles: ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ], //{ 0 = serverURL, 1 = version, 2 = all source }
 	serverApp: 'localhost:7777/GestionVista/'
 }; 
@@ -256,13 +257,9 @@ alert("El Codigo Mostrado o pulsado ES:");
 		alert(keyCode); 		
 
 		if(keyCode == 29443){
-		// Vamos Enviar la Prueba del Asunto
-		alert("Vive Ya. Andrea Bocheli"); 
-
-		instancia.conn.Server.send("message", JSON.stringify({accion: "BROADCAST"}) );			
-
+		// Vamos Enviar la Prueba del Asunto	
+		 instancia.conn.Server.send("message", JSON.stringify({accion: "BROADCAST"}) );			
 		}
-
 		
 			    if(instancia == null || instancia === undefined ){			    	
 			    	instancia = new MasterTV();			    	
@@ -274,7 +271,6 @@ alert("El Codigo Mostrado o pulsado ES:");
 
 		receptorWs: function(data){				
 				// ["ACTUALIZAR-APP", "ACTIVAR", "TWEETS", "CAST", "PROGRAMA" "CONTROL" ]
-					localStorage.setItem("programaTV", null); 
 
 				switch (data.accion) {
 					case "ACTUALIZAR-APP":
@@ -292,6 +288,7 @@ alert("El Codigo Mostrado o pulsado ES:");
 					break; 
 					case "NOTIFICAR":	
 
+						localStorage.setItem("programaTV", null); 
 					alert("NOtificar desde la Respuesta del Servidor en el Servicio SIPP"); 							
 
 						var prog = JSON.parse(localStorage.getItem("programaTV"));
@@ -306,7 +303,6 @@ alert("El Codigo Mostrado o pulsado ES:");
 						localStorage.setItem("getFullBloque", data.server); 
 						localStorage.setItem("fechaActual_APP", data.fechaActual); 
 						localStorage.setItem("fecha_APP", data.fecha); 					
-
 
 
 					if(!(data.fechaActual in prog) ){
@@ -371,13 +367,19 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 					case "BROADCAST":  // Boletin. Difusion de Informacion.
 
 					// 
-					var tt = {modo:"flash", showCategory: false,
+					var tt = data.data; 
+					/* {modo:"normal", showCategory: true,
 		 			 	categoryText: "Ejemplo de Categoria",
 		 	  			styleCat: "background: green; color: white;",
 		 	  			items: ["Paso del primer mensaje Enviado desde el Servidor", 'Solo una prueba de calidad', "Tercer Mensaje de Coordinacion"]
 		 			};
-
+		 			*/
 		 			Msg.showMaqueeFlashInfo(tt); 
+
+
+		 			setTimeout(function(){
+		 				Msg.hideMarqueFlashInfo(); 
+		 			}, data.duracion); 
 
 						
 						break;
@@ -1462,6 +1464,14 @@ var Msg = {
 		$("#marqueBar").html(""); 
 	}, 
 
+	onfinishMarque: function(e){
+
+		alert(e); 
+				
+		alert("Finalizo el Marquee en 1"); 
+
+	}, 
+
 	showMaqueeFlashInfo: function(opton){
 		// How to Used.	
 		/*
@@ -1480,14 +1490,14 @@ var Msg = {
 			if(opton.modo == "flash"){
 				htmlText += "<li>" + itm + "</li>";
 			} else {
-				htmlText += "   |   " + itm + ""; 
+				htmlText += "&nbsp; &nbsp;  |     " + itm + ""; 
 			}			
 		});
 		if(opton.modo == "flash"){
 			htmlText = "<ul class='newsticker'> " + htmlText  +  "</ul>"; 
 		} else {
 			alert("Paso 2"); 
-			htmlText = "<marquee>" + htmlText  +  "</marquee>";
+			htmlText = "<marquee id='mqLooperCall' onfinish='Msg.onfinishMarque();' loop='2' >" + htmlText  +  "</marquee>";
 		}
 		if(opton.showCategory !== false){
 			categoryText = opton.categoryText; 
@@ -1497,7 +1507,7 @@ var Msg = {
 
 				stylC = opton.styleCat; 
 			}
-			left = '<div style="float: left; width: 17%; height: 27px; text-align: center; padding-top: 5px; border-top: black solid 1px; border-right: black solid 2px; '+ stylC +'">' + categoryText +' </div>'; 
+			left = '<div class="title-cat-marq" style="float: left; width: 17%; height: 27px; text-align: center; padding-top: 5px; border-top: black solid 1px; border-right: black solid 2px; '+ stylC +'">' + categoryText +' </div>'; 
 
 			if("styleMsg" in opton){
 				styleMsg = opton.styleMsg; 
@@ -1510,17 +1520,30 @@ var Msg = {
 			left = '<div style="float: left; width: 2%; height: 27px; text-align: center; padding-top: 5px; border-top: black solid 1px;"> </div>'; 
 			right = '<div style="float: left; width: 97%; height: 27px; padding-top: 5px; border-top: black solid 1px; '+ styleMsg +'">' + htmlText +' </div>';
 		}		
-		fullHtmlBar = "<div class='sf-ui-keyhelp sf-ui-keyhelp-black' style='z-index=15000'>" + left + right + "</div>"; 
+		fullHtmlBar = "<div class='content-marque'>" + left + right + "</div>"; 
 		// Recorrido del los Itmes de Noticias
 		// Combinacion de Colores.
 		$("#marqueBar").html(fullHtmlBar);
+
+		var duraciones = 7000;
+		if("duration" in  opton){
+			duraciones = opton.duration;
+		}
+
+
 		if(opton.modo == "flash"){
-			$(".newsticker").newsTicker({
-				row_height: 35,
-				max_rows: 1,
-			});
+
+			$(function () {
+				$(".newsticker").newsTicker({
+					row_height: 35,
+					max_rows: 1,
+					duration: duraciones
+				});
+
+			});			
 		}
 	}, 
+
 	hideMarqueFlashInfo: function(){
 		$("#marqueBar").html(""); 
 	}
