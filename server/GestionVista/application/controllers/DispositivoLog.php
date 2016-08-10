@@ -198,4 +198,25 @@ $this->validation->set_rules("objeto[FechaCrea]", "FechaCrea", "");
 	        return true; 
 		} 
 	}
+
+	public function online(){
+		if (!$this->session->userdata("sUsuario")){
+			redirect("/portal/login", "refresh");			
+			return false; 
+		}
+
+
+		// El index para la notificcion.
+
+		$data = array("csrf" =>array(
+        "name" => $this->security->get_csrf_token_name(),
+        "hash" => $this->security->get_csrf_hash()
+        ) );
+
+        
+
+		// Carga de planilla web en general.
+		$this->load->view("web/vw_websocket_dispositivo", $data); 
+
+	}
 }

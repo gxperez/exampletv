@@ -325,8 +325,7 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 								prog[data.fechaActual].programa
 							alert(i + "==> " + prog[data.fechaActual].programa[i])
 							hasProBloq = true; 
-							}
-							
+							}							
 						}
 
 					//	alert("Despues del blucle"); 
@@ -374,11 +373,11 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 		 	  			items: ["Paso del primer mensaje Enviado desde el Servidor", 'Solo una prueba de calidad', "Tercer Mensaje de Coordinacion"]
 		 			};
 		 			*/
+
 		 			Msg.showMaqueeFlashInfo(tt); 
 
-
-		 			setTimeout(function(){
-		 				Msg.hideMarqueFlashInfo(); 
+		 			Msg.broadCastTimeOut = setTimeout(function(){
+		 					Msg.hideMarqueFlashInfo(); 
 		 			}, data.duracion); 
 
 						
@@ -1383,7 +1382,26 @@ renderStruct: function(option, callfunctionBack){
 };
 //*********************************** Final del Master controlador. **********************/
 
+var BroadCastManger = {
+	data: {}, 
+	urlBroadCast: "",
+
+	start: function(){
+	},
+
+	stop: function(){
+	},
+
+	restart: function(){
+	}, 
+
+	getData: function(){
+		
+	}
+};
+
 var Msg = {	
+	broadCastTimeOut: 0, 
 	log: function( text, titulo) {
 			alert(text); 	 
 		 	var til = ""; 		 	
@@ -1464,12 +1482,7 @@ var Msg = {
 		$("#marqueBar").html(""); 
 	}, 
 
-	onfinishMarque: function(e){
-
-		alert(e); 
-				
-		alert("Finalizo el Marquee en 1"); 
-
+	onfinishMarque: function(e){				
 	}, 
 
 	showMaqueeFlashInfo: function(opton){
@@ -1481,6 +1494,12 @@ var Msg = {
 		 	  items: ["Paso del primer mensaje Enviado desde el Servidor", 'Solo una prueba de calidad', "Tercer Mensaje de Coordinacion"]
  });  
 		*/
+
+		if(Msg.broadCastTimeOut != 0) {			
+			clearTimeout(Msg.broadCastTimeOut);	
+			Msg.broadCastTimeOut = 0; 
+		}
+
 		var categoryText = ""; 
 		var htmlText = ""; 
 		var fullHtmlBar = "";		
@@ -1490,7 +1509,7 @@ var Msg = {
 			if(opton.modo == "flash"){
 				htmlText += "<li>" + itm + "</li>";
 			} else {
-				htmlText += "&nbsp; &nbsp;  |     " + itm + ""; 
+				htmlText += "&nbsp; &nbsp; &nbsp;  |     " + itm + ""; 
 			}			
 		});
 		if(opton.modo == "flash"){
@@ -1513,6 +1532,23 @@ var Msg = {
 				styleMsg = opton.styleMsg; 
 			}
 			right = '<div style="float: left; width: 82%; height: 27px; padding-top: 5px; border-top: black solid 1px; '+ styleMsg +'">' + htmlText +' </div>'; 
+
+			if("subCategoryText" in opton){
+				subCategoryText = opton.subCategoryText; 
+				var stylCSub = ""; 			
+
+			if("styleSubCat" in opton){
+				stylCSub = opton.styleSubCat; 
+			}
+
+			leftNext = '<div class="title-cat-marq" style="float: left; width: 17%; height: 27px; text-align: center; padding-top: 5px; border-top: black solid 1px; border-right: black solid 2px; '+ stylCSub +'">' + subCategoryText +' </div>'; 
+			right = '<div style="float: left; width: 65%; height: 27px; padding-top: 5px; border-top: black solid 1px; '+ styleMsg +'">' + htmlText +' </div>'; 
+
+			left = left + leftNext; 
+
+			}
+
+
 		} else {
 			if("styleMsg" in opton){
 				styleMsg = opton.styleMsg; 
@@ -1523,7 +1559,7 @@ var Msg = {
 		fullHtmlBar = "<div class='content-marque'>" + left + right + "</div>"; 
 		// Recorrido del los Itmes de Noticias
 		// Combinacion de Colores.
-		$("#marqueBar").html(fullHtmlBar);
+		//$("#marqueBar").html(fullHtmlBar);
 
 		var duraciones = 7000;
 		if("duration" in  opton){
@@ -1533,14 +1569,37 @@ var Msg = {
 
 		if(opton.modo == "flash"){
 
-			$(function () {
+			var items = $(fullHtmlBar);
+			$("#marqueBar").html(items); 
+
+			setTimeout(function(){
+
+				items.find(".newsticker").newsTicker({
+					row_height: 35,
+					max_rows: 1,
+					duration: duraciones
+			});
+
+			}, 1500); 
+
+			
+/*
+			.ready(function(){
 				$(".newsticker").newsTicker({
 					row_height: 35,
 					max_rows: 1,
 					duration: duraciones
 				});
+			});*/
 
-			});			
+/*
+			$(function () {
+				
+			});			*/
+		}
+		else
+		{
+			$("#marqueBar").html(fullHtmlBar);
 		}
 	}, 
 

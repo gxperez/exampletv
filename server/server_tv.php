@@ -1,38 +1,27 @@
 <?php
-// prevent the server from timing out
 set_time_limit(0);
 date_default_timezone_set("America/Santo_Domingo"); 
-// include the web sockets server script (the server is started at the far bottom of this file)
 require 'class.PHPWebSocket.php';
-require 'class.AdminBisTV.php'; 
+require 'class.AdminBisTV.php';
+$glb_Hash = 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1';
 
-$glb_Hash = 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1'; 	
 
 
 $integracionConfig = array('server' => "http://10.234.51.99:8079/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1"	, 
 "baseURL"=> "http://10.234.51.99:8079/GestionVista/"
 );
 
-function wsOnMessage($clientID, $message, $messageLength, $binary) {
+
+
+function receptorTV($varible, $clientID, $messageLength){
+
 	global $Server;
 	global $BisGestion; 
 	global $integracionConfig; 
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
-	$timeNow =  new DateTime();	
-	$Server->log("Recepcion de Mensajes.");
-	$Server->log( $timeNow->format('Y,m,d,H,i,s')  );
-	$Server->log("=================================");
-	$Server->log($message); 
-	
-	if ($messageLength == 0) {
-		$Server->wsClose($clientID);
-		return;
-	}
 
-	$varible = json_decode($message);
 
-	if(array_key_exists("accion" , $varible ) ){
-		switch ($varible->accion) {
+	switch ($varible->accion) {
 			case "ACTIVAR":
 				$Server->wsClients[$clientID]; 
 				$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));
@@ -46,21 +35,14 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 			case "CONTROLLIDER":
 			// Recibe el Mensaje del Key Control del Lider.
-			$Server->log("Recibe el mensaje del Lider y la tecla pulsada"); 
-			// Aqui va el recorrido para los TV del Grupo que el Corresponde.
-			// Aqui Entonaremos la cancion.
+			$Server->log("Recibe el mensaje del Lider y la tecla pulsada"); 			
 			$listaPc = $BisGestion->ObtenerListaTVDelGrupoPorMacLider(trim($varible->macAdrees)); 
-
 			$Server->log(print_r($listaPc, true)); 
 
 			foreach ($Server->listTV as $key => $value) {
-
-				// Para FInes de Prueba
-				 // 29443 // Reiniciar el Slider Al Primero.
+				// Para FInes de Prueba				 
 				if($varible->keyCode == 29443){
-
 					$rsJS = array("accion"=> "CONTROLLIDER", "Msg"=> "", 'keyCode' => $varible->keyCode, "BloqueID"=> $varible->BloqueID, "cIndexC"=> $varible->cIndexC, "cIndexS"=> $varible->cIndexS,"pptKey"=>1, "server"=> $integracionConfig["server"]);
-
 					$Server->log("Esto Existe Y esta OK"); 										
 					$Server->log("El Cambio Por Prueba Sip");
 					$Server->log(print_r($value, true));
@@ -71,7 +53,6 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 				if(array_key_exists($value["Mac"], $listaPc)) {
 					// 
 					$rsJS = array("accion"=> "CONTROLLIDER", "Msg"=> "", 'keyCode' => $varible->keyCode, "BloqueID"=> $varible->BloqueID, "cIndexC"=> $varible->cIndexC, "cIndexS"=> $varible->cIndexS,"pptKey"=>$varible->pptKey, "server"=> $integracionConfig["server"]);
-
 					$Server->log("Esto Existe Y esta OK"); 										
 					$Server->log("Este es el PC Encendida");
 					$Server->log(print_r($value, true));
@@ -79,31 +60,15 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 				}
 			}
 
-
-
-// 
-/*
-
-{modo:"flash", showCategory: true,
-		 			 	categoryText: "Destilados",
-		 	  			styleCat: "background: red; color: white;",
-		 	  			items: ["Esta es Otra Forma Paso del primer mensaje Enviado desde el Servidor", 'Solo una prueba de calidad']
-		 			};
-
-			*/
 			// {"macAdrees":"0800279b3e8c","Tipo":"TV","accion":"CONTROLLIDER","keyCode":5,"BloqueID":"1","cIndexC":0,"cIndexS":1,"pptKey":2}
-
-
-
-
 			break;
 			case "TIMEQUERY":
 			//	$Server->wsSend(); 
 			break; 
 
 			case 'BROADCAST':
-				$Server->log("BROADCAST=> Listen"); 
 
+				$Server->log("BROADCAST=> Listen");
 				$arregloRes= array('modo' => "flash",
 				 "showCategory"=>true, 
 				 "categoryText"=> "EL BISFORSALES",
@@ -113,16 +78,89 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 				$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "", "duracion"=> 12000, "data"=> $arregloRes ); 
 				$Server->wsSend($clientID, json_encode($rsJSB)); 
-
-
 				break;
+
+			case 'CONTROL':
+			// Enlistar solo A este Cliente Cual es el 			
+
+				// $Server->wsSend($clientID, json_encode($rsJSB)); 
+
+					
+					break;
 			default:
-			//	# code...
-			
 				break;
-		}		
+		}
+}
+
+function receptorBackend($varible, $clientID, $messageLength){
+
+	global $Server;
+	global $BisGestion; 
+	global $integracionConfig; 
+	$ip = long2ip( $Server->wsClients[$clientID][6] );
+
+	switch ($varible->accion) {
+		case 'CONTROL':
+		// Enviarle el listado de TVS Conectadas. y el ID
+		$jsonResult = json_encode($Server->listTV);
+		$Server->wsSend($clientID, json_encode($rsJSB)); 
+
+		break; 
+
+
+
+	}
+
+
+}
+
+function wsOnMessage($clientID, $message, $messageLength, $binary) {
+	global $Server;	
+
+	$ip = long2ip( $Server->wsClients[$clientID][6] );
+	$timeNow =  new DateTime();	
+
+	$Server->log("Recepcion de Mensajes.");
+	$Server->log( $timeNow->format('Y,m,d,H,i,s')  );
+	$Server->log("=================================");	
+	
+	if ($messageLength == 0) {
+		$Server->wsClose($clientID);
+		return;
+	}
+
+	$varible = json_decode($message);
+
+	if(array_key_exists("accion" , $varible ) ){
+		if(array_key_exists("Tipo", $varible)){
+
+			switch ($varible->Tipo) {
+				case 'TV':
+
+					receptorTV($varible, $clientID, $messageLength); 							
+					break;				
+				case "cliente_Browser":
+
+					receptorBackend($varible, $clientID, $messageLength); 							
+					break;
+				case "smartphone":
+
+				break;
+			} 
+
+
+			
+
+		
+
+		}
 
 		return false; 
+
+	} else {
+		// Ajustar aqui la Varialbe 
+		$Server->log("=================================");	
+
 	}
 
 	
@@ -239,8 +277,8 @@ $Server->bind('close', 'wsOnClose');
 
 // for other computers to connect, you will probably need to change this to your LAN IP or external IP,
 // alternatively use: gethostbyaddr(gethostbyname($_SERVER['SERVER_NAME']))
-  $Server->wsStartServer('10.234.51.99', 9300); // ws://10.234.130.55:9300'  127.0.0.1 // 10.234.133.76
+//  $Server->wsStartServer('10.234.51.99', 9300); // ws://10.234.130.55:9300'  127.0.0.1 // 10.234.133.76
 
- // $Server->wsStartServer('10.234.133.76', 9300); // ws://10.234.130.55:9300'  127.0.0.1
+  $Server->wsStartServer('10.234.133.76', 9300); // ws://10.234.130.55:9300'  127.0.0.1
 
 ?>

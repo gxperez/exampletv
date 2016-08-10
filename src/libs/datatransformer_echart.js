@@ -315,12 +315,14 @@
         measures: { label: "measures", type: datatransformer.typeMultipleMeasures, required: true, order: 4 },
         theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
         horizontal: { label: "horizontal", type: Boolean, order: 6 },
-        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 7 },
-        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 8 },
-        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 9 },
-        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 10 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 11 },
-        renderAsImage: { label: "render as image", type: Boolean, order: 12 }
+        numberSize: { label: "number Size", type: Number, order: 7 },
+        hideNumber: { label: "hide Number", type: Boolean, order: 8},
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 9 },
+        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 10 },
+        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 11 },
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 12 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 13 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 14 }
     },
     function () {
         this.renderOptions = {
@@ -338,7 +340,9 @@
                  _generateData = [],
                  _dataForBar = [],
                  _categories = [],
-                 _leyends = [];
+                 _leyends = [],
+				 _hideNumber = this.config.hideNumber? false:true,
+				 _numberSize = this.config.numberSize? this.config.numberSize: 10;
 
             _echartObj.showLoading({ text: _message.loading });
 
@@ -378,9 +382,9 @@
                         normal: {
                             borderRadius: 5,
                             label: {
-                                show: true,
+                                show: _hideNumber,
                                 textStyle: {
-                                    fontSize: '10',
+                                    fontSize: _numberSize, //'10',
                                     fontWeight: 'bold'
                                 }
                             }
@@ -483,9 +487,6 @@
                 series: _dataForBar
             };
 
-            console.log(this.renderOptions.echartOptions);
-            console.log(_themes[this.config.theme]);
-
             _echartObj.setTheme(_themes[this.config.theme]);
             _echartObj.setOption(this.renderOptions.echartOptions);
             _echartObj.hideLoading();
@@ -513,12 +514,14 @@
         measures: { label: "measures", type: datatransformer.typeMultipleMeasures, required: true, order: 4 },
         theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
         shadow: { label: "shadow", type: Boolean, order: 6 },
-        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 7 },
-        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 8 },
-        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 9 },
-        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 10 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 11 },
-        renderAsImage: { label: "render as image", type: Boolean, order: 12 }
+		numberSize: { label: "number Size", type: Number, order: 6 },
+        hideNumber: { label: "hide Number", type: Boolean, order: 7},
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 8 },
+        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 9 },
+        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 10 },
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 11 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 12 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 13 }
     },
     function () {
         this.renderOptions = {
@@ -535,7 +538,9 @@
 				_generateData = [],
 				_dataForBar = [],
 				_categories = [],
-				_leyends = [];
+				_leyends = [],
+				_hideNumber = this.config.hideNumber? false:true,
+				_numberSize = this.config.numberSize? this.config.numberSize: 10;
 
             _echartObj.showLoading({ text: _message.loading });
 
@@ -577,11 +582,11 @@
                         itemStyle: {
                             normal: {
                                 areaStyle: { type: 'default' },
-                                borderRadius: 5,
+                                borderRadius: 5 ,
                                 label: {
-                                    show: true,
+                                    show: _hideNumber,
                                     textStyle: {
-                                        fontSize: '10',
+                                        fontSize: _numberSize, //'10',
                                         fontWeight: 'bold'
                                     }
                                 }
@@ -599,9 +604,9 @@
                             normal: {
                                 borderRadius: 5,
                                 label: {
-                                    show: true,
+                                    show: _hideNumber,
                                     textStyle: {
-                                        fontSize: '10',
+                                        fontSize: _numberSize, //'10',
                                         fontWeight: 'bold'
                                     }
                                 }

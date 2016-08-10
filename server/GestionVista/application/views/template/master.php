@@ -135,7 +135,7 @@ margin-left: 11px;
                   <li class="sub-menu">
                       <a href="javascript:;" >
                           <i class="fa fa-tasks"></i>
-                          <span>Formularios</span>
+                          <span>Formularios Si</span>
                       </a>
                       <ul class="sub">
                           <li><a  ng-click="SetMain('contenido/sm')">Contenido</a></li>
@@ -153,6 +153,18 @@ margin-left: 11px;
                           
                           
 
+                      </ul>
+                  </li>
+
+                  <li class="sub-menu">
+                      <a href="javascript:;" >
+                          <i class=" fa fa-bar-chart-o"></i>
+                          <span>Control</span>
+                      </a>
+                      <ul class="sub">
+                         <li><a  ng-click="SetMain('dispositivolog/online')">En linea</a></li>                          
+                          
+                          
                       </ul>
                   </li>
                 

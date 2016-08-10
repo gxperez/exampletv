@@ -3481,6 +3481,91 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
         }
 }]);
 
+ $ang.controller("WebSocketController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+
+
+        $scope.pantallaNombre = 'Control de dispositivos TVs';        
+        $scope.vCrud = appCrud;
+        $scope.Servidor = {};
+        // $scope.vCrud.setForm(form);   
+
+
+        $scope.wsReceptor = function(data){             
+                switch (data.accion) {
+                    case "":
+
+                    break; 
+                }
+        };        
+
+        $scope.initt = function () {
+            // Inicializacion del Web socket.            
+            
+            console.log('Connecting...');
+            $scope.Servidor = new FancyWebSocket('ws://10.234.133.76:9300');             
+
+            //Let the user know we're connected
+            $scope.Servidor.bind('open', function() {
+                console.log( "Connected." );
+                fechaJson = new Date();    
+                fechaJson = fechaJson.toJSON();
+
+                current_Cliente = {
+                    clienteSessionID: 0,
+                    macAdrees: "",         
+                    Tipo: "cliente_Browser",
+                    hash: "",
+                    fecha: fechaJson,
+                    accion: "CONTROL",                                        
+                }; 
+
+                $scope.Servidor.send("message",JSON.stringify(current_Cliente) ); 
+
+            });
+
+            //OH NOES! Disconnection occurred.
+            $scope.Servidor.bind('close', function( data ) {
+                console.log( "Disconnected." );
+            });
+
+            //Log any messages sent from server
+            $scope.Servidor.bind('message', function( payload ) {  
+            var result = JSON.parse(payload); 
+
+            $scope.wsReceptor(result); 
+            console.log(payload);                       
+
+            });
+
+            $scope.Servidor.connect();
+            
+        
+
+            $scope.Pantalla = {nombre: 'GrupoTv'};  
+            $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));  
+            $scope.listaGrupoTv = vw_listaGrupoTv;
+                   
+
+             http(base_url + 'GrupoTv/ObtenerDatos', {}, function (dt) {                
+                    $appSession.IsSession(dt);                                         
+
+                    $scope.listaGrupos = dt.listaGrupos; 
+                    // $scope.ObtenerPaginacionRes(dt); 
+
+             });
+        };            
+
+        $scope.ListAll = function(){
+        }
+
+       
+}]);
+
+
+
  $ang.controller("GrupoTVController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
         function http(url, data, callback) {
             appHttp.Get(url, data, callback); 
