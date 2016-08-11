@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html ng-app="projectRtc">
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='public/stylesheets/style.css' />
+	
+	<script type="text/javascript" src="public/javascripts/socket.io.js"></script>
+	<script type="text/javascript" src="public/javascripts/adapter.js"></script>
+	<script type="text/javascript" src="public/javascripts/rtcClient.js"></script>
+	
+	<script type="text/javascript" src="public/javascripts/angular.min.js">
+	</script>
+	<script type="text/javascript" src="public/javascripts/app.js"></script>
+  </head>
+  <body>
+  	<h1><%= header %></h1>
+
+
+
+    <div class="localStream" ng-controller="LocalStreamController as localStream">
+	LALALALA
+      <p><%= username %>: <input ng-model="localStream.name"/></p>
+      <video id="localVideo" muted="muted" autoplay="true"></video>
+      <li ng-click="localStream.toggleCam()">
+        <a href>{{ localStream.cameraIsOn ? 'Stop' : 'Start' }}</a>
+      </li>
+      <div >    
+        <p><%= share %>:</p>
+        <a>{{ localStream.link }}</a>
+      </div>
+    </div>
+
+
+    <div class="remoteStreams" ng-controller="RemoteStreamsController as rtc">
+    <h2>Remote Streams</h2>
+
+    <div id="remoteVideosContainer">
+	Jojojo; 
+	</div>
+
+    <table>
+        <thead>
+          <tr>
+              <th>Stream</th><th>1-way</th><th>2-way</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="stream in rtc.remoteStreams" ng-class="{'selected' : stream.isPlaying}">
+              <td><a>{{stream.name}}</a></td>
+                  <td ng-click="rtc.view(stream)"><a>View</a></td>
+                  <td ng-click="rtc.call(stream)"><a>Call</a></td>
+          </tr>
+      </tbody>
+    </table>
+
+    <li ng-click="rtc.loadData()" style="width: 240px">
+          <a href>Refresh</a>
+      </li>
+  <div class="remoteStreams">
+  
+  </div>
+  
+  </div>
+
+
+  	<p class="footer"><%= footer %></p>
+  </body>
+</html>

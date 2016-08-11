@@ -839,8 +839,7 @@ generateContentByFuenteTipoSimple: function(config){
 		} else {
 
 			alert("Es Manual*****");
-
-
+			hasRequest= true; 
 
 			if(item.Url in Master.dTransManual){				
 				Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, url: item.Url});				
@@ -1048,10 +1047,15 @@ applyTransicion: function(transicionTipo, modo ){
 
 var hastAutoMatic = false; 
 		arrBichar.forEach(function(it, k){
-			if (it.type == "manual"){				
-				Master.dTransAuto[it].visuals[0].visualOptions["renderAsImage"] = true;
-				Master.dTransManual[it.Url].dt.generateVisual(Master.dTransManual[it.Url].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
-					'sc-' + it.Posicion ).render();
+			
+			if (it.type == "manual"){		
+
+				Master.dTransManual[it].visuals[0].visualOptions["renderAsImage"] = true;
+				var tth = Master.dTransManual[it.Url].dt.generateVisual(Master.dTransManual[it.Url].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
+					'sc-' + it.Posicion )
+				tth.render(); 
+
+
 			} else {	
 			hastAutoMatic = true;				
 			}
@@ -1063,17 +1067,11 @@ var hastAutoMatic = false;
 			for(var it in Master.dTransAuto){
 				if(Master.dTransAuto.hasOwnProperty(it)){					
 				//	// console.log(Master.dTransAuto[it]); 
-				alert("@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"); 
-					alert("NO Existe fold"); 
-					alert(Master.dTransAuto[it].dt);
+				alert("@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"); 					
+					
 					alert( JSON.stringify(Master.dTransAuto[it].visuals[0].visualType)); 
+					alert("/*******************/"); 
 
-
-										alert("/*********************/"); 
-										alert(math.eval("b * a", {a: 2, b:4})); 
-										alert("/*******************/"); 
-
-										alert(typeof Master.dTransAuto[it].dt.generateVisual); 
 
 						Master.dTransAuto[it].visuals[0].visualOptions["renderAsImage"] = true;
 						var hh = Master.dTransAuto[it].dt.generateVisual(Master.dTransAuto[it].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
@@ -1396,7 +1394,7 @@ var BroadCastManger = {
 	}, 
 
 	getData: function(){
-		
+
 	}
 };
 
