@@ -316,7 +316,7 @@
         theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
         horizontal: { label: "horizontal", type: Boolean, order: 6 },
         numberSize: { label: "number Size", type: Number, order: 7 },
-        hideNumber: { label: "hide Number", type: Boolean, order: 8},
+        hideNumber: { label: "hide Number", type: Boolean, order: 8 },
         titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 9 },
         leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 10 },
         leyendVertical: { label: "leyend Vertical", type: Boolean, order: 11 },
@@ -341,8 +341,8 @@
                  _dataForBar = [],
                  _categories = [],
                  _leyends = [],
-				 _hideNumber = this.config.hideNumber? false:true,
-				 _numberSize = this.config.numberSize? this.config.numberSize: 10;
+				 _hideNumber = this.config.hideNumber ? false : true,
+				 _numberSize = this.config.numberSize ? this.config.numberSize : 10;
 
             _echartObj.showLoading({ text: _message.loading });
 
@@ -514,8 +514,8 @@
         measures: { label: "measures", type: datatransformer.typeMultipleMeasures, required: true, order: 4 },
         theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
         shadow: { label: "shadow", type: Boolean, order: 6 },
-		numberSize: { label: "number Size", type: Number, order: 6 },
-        hideNumber: { label: "hide Number", type: Boolean, order: 7},
+        numberSize: { label: "number Size", type: Number, order: 6 },
+        hideNumber: { label: "hide Number", type: Boolean, order: 7 },
         titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 8 },
         leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 9 },
         leyendVertical: { label: "leyend Vertical", type: Boolean, order: 10 },
@@ -539,8 +539,8 @@
 				_dataForBar = [],
 				_categories = [],
 				_leyends = [],
-				_hideNumber = this.config.hideNumber? false:true,
-				_numberSize = this.config.numberSize? this.config.numberSize: 10;
+				_hideNumber = this.config.hideNumber ? false : true,
+				_numberSize = this.config.numberSize ? this.config.numberSize : 10;
 
             _echartObj.showLoading({ text: _message.loading });
 
@@ -582,7 +582,7 @@
                         itemStyle: {
                             normal: {
                                 areaStyle: { type: 'default' },
-                                borderRadius: 5 ,
+                                borderRadius: 5,
                                 label: {
                                     show: _hideNumber,
                                     textStyle: {

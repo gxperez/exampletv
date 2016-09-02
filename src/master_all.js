@@ -26,10 +26,11 @@ var serverUpdatePath = null;
 var macTV;
 
 var mTimer = {
-	hasLider: true, 
+	hasLider: false, 
 	hasRuntime: false,
 	cIndexC: 0, // Contenido.
 	cIndexS: 0, // Slider.
+	lastChange: 0,
 	TransicionFin: "", 
 	contenido: 0, 
 	BloqueID: 0,
@@ -48,6 +49,7 @@ var mTimer = {
 		$("#timerToChange").html("<div style='width:20%; float: left; '> <span class='fa fa-hourglass-half'></span> </div>	<div style='width:40%; float: left;'> <span class='clockT'>" + strTimeOut + "</span> &nbsp; &nbsp; </div> <div style'width:40%; text-align: right'></div> "); 
 
 		if(mTimer.timerToChange > 0){
+
 			if(mTimer.totc != null){
 				clearTimeout(mTimer.totc);	
 				mTimer.totc = null; 
@@ -58,6 +60,10 @@ var mTimer = {
 				mTimer.setTimerToChange(mTimer.timerToChange); 
 			}, 1000); 
 		} else {
+
+			clearTimeout(mTimer.totc);	
+			mTimer.totc = null; 
+
 			$("#timerToChange").html(""); 
 		}
 	}, 
@@ -72,6 +78,7 @@ var pptMaster = {
 	hasFinish: false,
 	tiempo: 0, 
 	hasKeyControlActive: false, 
+	isManualGlobalModo: false,
 	getPPT: function($index){
 
 		if($index in pptMaster.cuerpo){
@@ -106,6 +113,7 @@ var pptMaster = {
 		}
 		Master.renderBloque(); 
 	} 
+
 	// ppt Slider.
 	pptMaster.slide = (res.pptKey+ 1); 
 		pptMaster.getPPT((res.pptKey-1));
@@ -143,15 +151,23 @@ var pptMaster = {
 				case tvKey.KEY_RETURN:
 				case tvKey.KEY_PANEL_RETURN:
 					alert("RETURN");
+
+					if(Msg.isToolsBox){
+								Msg.toolsBox();
+								return false;
+					}
+
 					 widgetAPI.sendReturnEvent();
 					break;
 				case tvKey.KEY_LEFT:
-					alert("LEFT");					
+					alert("LEFT");	
+					$("#footer-gvapp").hide(); 				
 					pptMaster.back(); 
 					break;
 
 				case tvKey.KEY_RIGHT:
 					alert("RIGHT");
+					$("#footer-gvapp").hide(); 				
 					pptMaster.next(); 					
 					break;
 				case tvKey.KEY_UP:
@@ -183,16 +199,13 @@ Master = {
 	fn_onShow: [], 
 	initt: function(){
 		alert("exec Master.innit()"); 
-		Fondo.setInicioPage(function(){	
-
-			alert("Set de Home Inicio"); 
+		Fondo.setInicioPage(function(){			
 
 			widgetAPI = new Common.API.Widget();
 			tvKey = new Common.API.TVKeyValue();
 			pluginAPI = new Common.API.Plugin();
 			fileSystemObj = new FileSystem();		
-
-			alert("Set vars Inicio"); 			
+						
 
 			widgetAPI.sendReadyEvent();
 			alert("Finish Ready. "); 
@@ -213,19 +226,144 @@ Master = {
 		}); 		
 	},
 
-	reconectar : function(){	
+	reconectar : function(){
+	},
 
+	runGlobalManual: function(){
+		// Si esta en GLobal entonces
+		clearTimeout(mTimer.contenido);
+		mTimer.contenido= 0; 
+		mTimer.setTimerToChange(0); 
+		Msg.log("Modo de cambio slide Manual.");
+	}, 
 
-		     
-		},
+	stopGlobalManual: function(){
+		Msg.log("Modo de cambio slide Automatico. Iniciando...");
+		mTimer.contenido = setTimeout(function(){
+			Master.renderBloque(); 			
+		}, (30 * 1000) ); 
+		mTimer.setTimerToChange(30); 
 
-	KeyDown: function(){				
+	}, 
+
+	changeGlobalManual: function(keyD){
+
+		alert("El Paso del Modo Manual"); 
+
+		alert("Comparative mode manual=> " + keyD + " el i++ " + mTimer.cIndexC + " & el:  " + mTimer.cIndexS); 
+
+		if(pptMaster.active){
+
+			// Seria otras Teclas.
+
+			alert("mManual PPT"); 
+
+			switch(keyD)
+			{
+				case tvKey.KEY_RETURN:
+				case tvKey.KEY_PANEL_RETURN:
+					 widgetAPI.sendReturnEvent();
+					break;
+
+				case tvKey.KEY_RW:
+					alert("LEFT");	
+					var totalC = Master.curContent.length; 					
+
+					mTimer.cIndexC = (mTimer.cIndexC-1); 
+
+					if(mTimer.lastChange == mTimer.cIndexC){
+						mTimer.cIndexC = (mTimer.cIndexC-1); 
+					}
+
+					if(mTimer.cIndexC < 0){
+						mTimer.cIndexC = totalC;
+						pptMaster.active = false; 
+					}
+
+					mTimer.lastChange = (mTimer.cIndexC *1);
+
+					Master.renderBloque();	
+					break;
+				case tvKey.KEY_FF:
+
+					alert("RIGHT");	
+					// pptMaster.next(); 
+					pptMaster.active = false; 	
+
+					if(mTimer.lastChange == mTimer.cIndexC){
+						// Este es el Tiempo de negociacion.
+						mTimer.cIndexC++;	
+					}
+
+					mTimer.lastChange = (mTimer.cIndexC *1);
+
+					Master.renderBloque();
+					break;				
+				default:				
+			break;
+			}
+
+		} else {				 
+
+			switch(keyD)
+			{
+				case tvKey.KEY_RETURN:
+				case tvKey.KEY_PANEL_RETURN:
+					 widgetAPI.sendReturnEvent();
+					break;
+				case tvKey.KEY_LEFT:
+					alert("LEFT");	
+
+					var totalC = Master.curContent.length; 					
+
+					mTimer.cIndexC = (mTimer.cIndexC-1); 
+
+					if(mTimer.lastChange == mTimer.cIndexC){
+						mTimer.cIndexC = (mTimer.cIndexC-1); 
+					}
+					if(mTimer.cIndexC < 0){
+						mTimer.cIndexC = totalC;
+						pptMaster.active = false; 
+					}
+					mTimer.lastChange = (mTimer.cIndexC *1);
+					Master.renderBloque();	
+					
+					break;
+
+				case tvKey.KEY_RIGHT:
+					alert("RIGHT");										
+					if(mTimer.lastChange == mTimer.cIndexC){						
+						mTimer.cIndexC++;	
+					}
+
+					mTimer.lastChange = (mTimer.cIndexC *1);					
+					Master.renderBloque();
+					break;				
+				default:
+				alert("Unhandled key");
+			break;
+			}
+		}
+
+	}, 
+
+	KeyDown: function(){
+
 		var keyCode = event.keyCode;	
+		var isPtt = false;
+
+		if(pptMaster.isManualGlobalModo){
+			alert("El modo Manual esta Activado"); 
+			Master.changeGlobalManual(keyCode); 
+		}
+
 		// Lenctor de Codigo desde Dispositivo. Condicionantes
 		if(pptMaster.active){
-			pptMaster.keyControlPPT(keyCode);
+			pptMaster.keyControlPPT(keyCode);						
+			isPtt = true; 
+		}
 
-			if(mTimer.hasLider){
+		if(mTimer.hasLider){
 			// Es un Dispositivo Lider de Grupo 
 				var obj = {
 					macAdrees: macTV,			
@@ -235,30 +373,18 @@ Master = {
 					"BloqueID": mTimer.BloqueID, 
 					"cIndexC": mTimer.cIndexC, 
 					"cIndexS": mTimer.cIndexS, 
-					"pptKey": pptMaster.slide
+					"isPPT": false					
 				};
 
-				alert("Aqui Estas: "); 
-				alert( typeof instancia); 
-				alert("CUBO RUBY"); 
-				alert( typeof instancia.conn); 
-
-			alert("type Servidor"); 
-
-				alert (typeof instancia.conn.Server); 
+				if(isPtt){
+					obj.pptKey = pptMaster.slide; 
+					obj.isPPT = true;
+				}
 				 instancia.conn.Server.send("message", JSON.stringify(obj) );		
-			}			
-		}
+			}
 
-
-
-
-alert("El Codigo Mostrado o pulsado ES:"); 
-		alert(keyCode); 		
-
-		if(keyCode == 29443){
-		// Vamos Enviar la Prueba del Asunto	
-		 instancia.conn.Server.send("message", JSON.stringify({accion: "BROADCAST"}) );			
+		if(keyCode == 29443){  // Enter para la Prueba del BroadCast.		
+		   // instancia.conn.Server.send("message", JSON.stringify({accion: "BROADCAST"}) );			
 		}
 		
 			    if(instancia == null || instancia === undefined ){			    	
@@ -271,7 +397,6 @@ alert("El Codigo Mostrado o pulsado ES:");
 
 		receptorWs: function(data){				
 				// ["ACTUALIZAR-APP", "ACTIVAR", "TWEETS", "CAST", "PROGRAMA" "CONTROL" ]
-
 				switch (data.accion) {
 					case "ACTUALIZAR-APP":
 						// SOLICITUD DE ACTUALIZACION DE APP DESDE EL SERVIDOR.	Cambio de IP cambio de Servidor a las Apliaciones.						
@@ -281,19 +406,14 @@ alert("El Codigo Mostrado o pulsado ES:");
 						}
 						break;
 					case "ACTUALIZAR-PROG":
-
 						localStorage.setItem("programaTV", null);
 						mTimer.hasRuntime = false;
 						Master.cambiarBloque();
 					break; 
 					case "NOTIFICAR":	
+						localStorage.setItem("programaTV", null); 					
 
-						localStorage.setItem("programaTV", null); 
-					alert("NOtificar desde la Respuesta del Servidor en el Servicio SIPP"); 							
-
-						var prog = JSON.parse(localStorage.getItem("programaTV"));
-
-						alert(prog); 
+						var prog = JSON.parse(localStorage.getItem("programaTV"));						
 						alert("**************** Progrmacion ***********************");  // Hay que Hacerle Parser.
 						if(prog == null || typeof prog == "undefined" || typeof prog == "string" ){
 								prog = {}; 
@@ -302,7 +422,12 @@ alert("El Codigo Mostrado o pulsado ES:");
 						localStorage.setItem("base_url", data.base_url); 
 						localStorage.setItem("getFullBloque", data.server); 
 						localStorage.setItem("fechaActual_APP", data.fechaActual); 
-						localStorage.setItem("fecha_APP", data.fecha); 					
+						localStorage.setItem("fecha_APP", data.fecha); 	
+
+						if("EsLider" in data ){
+								mTimer.hasLider = data.EsLider; 
+								Msg.log("Lider del Grupo"); 
+						}
 
 
 					if(!(data.fechaActual in prog) ){
@@ -340,21 +465,21 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 						mTimer.hasRuntime = true; 
 						Fondo.setBodyPage();						
 						Master.getBloqueIDAndTimer(); 
-
-
-					}
-
-					// console.log("El contenido ya ha sido actualizado.");					
-					// Master.IrVideoTimeOut();
+					}					
 
 					break;
-
 					case "ACTIVAR":
 						// Devolver la Hora en que se debe configurar.												
 					//	if(data.fecha != null || typeof data.fecha !== 'undefined' )
 						//	Master.confirmDateTime(data.fecha.toString()); 
-					//	Master.IrVideoTimeOut();						
-						
+					//	Master.IrVideoTimeOut();
+					break;						
+					case "SETLIDERTV":
+
+						if("EsLider" in data ){							
+							mTimer.hasLider = data.EsLider; 							
+						}						
+
 						break;
 					case "TWEETS":
 						// REcepcion de Mesajes Instantaneos desde Un serviddor.					
@@ -373,13 +498,11 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 		 	  			items: ["Paso del primer mensaje Enviado desde el Servidor", 'Solo una prueba de calidad', "Tercer Mensaje de Coordinacion"]
 		 			};
 		 			*/
-
 		 			Msg.showMaqueeFlashInfo(tt); 
 
 		 			Msg.broadCastTimeOut = setTimeout(function(){
 		 					Msg.hideMarqueFlashInfo(); 
 		 			}, data.duracion); 
-
 						
 						break;
 					case "PROGRAMA":  // LA INFORMACION COMPLETA PARA EL PROGRAMA DEL DIA Y SU HORARIO.						
@@ -740,7 +863,7 @@ renderBloque: function(){
 		mTimer.cIndexS = 0; 
 	}
 
-	alert("Antes del Css de la aplicacion.   renderBloque"); 
+	alert("Antes del Css de la aplicacion. renderBloque"); 
 	$("#cssApplicationWrapper").html(""); 
 
 	Master.renderSliderPage(Master.curContent[mTimer.cIndexC].slides[mTimer.cIndexS], totalS); 
@@ -781,17 +904,15 @@ renderSliderPage: function(config, totalS){
 
 	if(hasNormal !== false){
 
-		alert("Durecion Estimada @###@#@#@#@#"); 
-		alert(config.DuracionPageSec); 
-		mTimer.setTimerToChange(config.DuracionPageSec);
+		if(pptMaster.isManualGlobalModo == false ){
 
+						mTimer.setTimerToChange(config.DuracionPageSec);
+			mTimer.contenido = setTimeout(function(){
+				Master.renderBloque(); 			
+			}, parseInt(config.DuracionPageSec) * 1000 ); 		
+		}
 		
-		
 
-
-		mTimer.contenido = setTimeout(function(){
-			Master.renderBloque(); 			
-		}, parseInt(config.DuracionPageSec) * 1000 ); 		
 	}
 	// 
 
@@ -823,30 +944,38 @@ generateContentByFuenteTipoSimple: function(config){
 
 		if(parseInt(item.EsManual) == 0) {
 
+			// Cantidad de Registro que tiene el Elemento.			
+			
+
+
 			hasRequest= true; 
 			requestList.push({Url: item.Url, Type:"JSON", methodCallRequest: function(res){
 
 				alert("SOLO YEGARA AQUI SIIIIIIIIII.."); 
 
+					var cantidad = 0;	
+					if("data" in res){
+						cantidad = res.data.length; 
+					}
+
+
 					var responseJSON = res; 					
-                    Master.dTransAuto[item.Posicion] ={dt: datatransformer.new( responseJSON.data, responseJSON.config), visuals: responseJSON.config.visuals};
+                    Master.dTransAuto[item.Posicion] ={dt: datatransformer.new( responseJSON.data, responseJSON.config), visuals: responseJSON.config.visuals, dataLength: cantidad};
                 	Master.fn_onShow.push({name: "Bischart", type: "auto"});
 				
+
 
                     
                 } }); 
 				
 		} else {
-
 			alert("Es Manual*****");
-			hasRequest= true; 
+			hasRequest= true;
 
 			if(item.Url in Master.dTransManual){				
 				Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, url: item.Url});				
 			} else {
-
 				requestList.push({Url: item.Url, Type:"JSON",  methodCallRequest: function(res){
-
                     var responseJSON = res; 
                     Master.dTransManual[item.Url] = {dt: datatransformer.new( responseJSON.data, responseJSON.config), visuals: responseJSON.config.visuals};                    
                 	Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, Url: item.Url});                	
@@ -962,10 +1091,8 @@ if(hasVideo){
 
 nextRequest: function(arreglo, index, len){	
 
-	var i = index; 
-
+	var i = index;
 	if(index >= len){
-	
 
 		Master.applyTransicion(mTimer.TransicionTipoIni, "in"); 
 		alert("Entrada Apply"); 
@@ -988,34 +1115,20 @@ nextRequest: function(arreglo, index, len){
 		alert(arreglo[i].Url); 
 	//	Msg.log(arreglo[i].Url); 
 		http.get( arreglo[i].Url, function(dta) { 
-
-			alert("Aqui Quiere LLegar Pero"); 
-			alert(dta); 		
-			alert("****************************"); 			
+			
 			arreglo[i].methodCallRequest(dta);
 			i++;
-			Master.nextRequest(arreglo, i, len);  
-			// console.log("Escenario #1"); 			
+			Master.nextRequest(arreglo, i, len);  					
 		}, "json"); 
-	} 
-
-
-
-
-
-
+	}
 
 }, 
 
 generateContentByFuenteTipoRequest: function(){
-	// Si Fuente tipo es 
-	
-
+	// Si Fuente tipo es 	
 	config.secciones.forEach(function(item, indx) {
-
 								
 	}); 
-
 	
 
 	if((parseInt(itx)+1) == numRow){
@@ -1054,24 +1167,24 @@ var hastAutoMatic = false;
 				var tth = Master.dTransManual[it.Url].dt.generateVisual(Master.dTransManual[it.Url].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
 					'sc-' + it.Posicion )
 				tth.render(); 
-
-
 			} else {	
 			hastAutoMatic = true;				
 			}
 		});
 
-
-
 		if(hastAutoMatic){
 			for(var it in Master.dTransAuto){
 				if(Master.dTransAuto.hasOwnProperty(it)){					
-				//	// console.log(Master.dTransAuto[it]); 
-				alert("@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"); 					
 					
-					alert( JSON.stringify(Master.dTransAuto[it].visuals[0].visualType)); 
-					alert("/*******************/"); 
+					// alert( JSON.stringify(Master.dTransAuto[it].visuals[0].visualType)); 
+					if(Master.dTransAuto[it].dataLength <= 0){
+						// No hay Slides
+						$('#sc-' + it).html('<div><br> <br><p style="text-align: center; font-size: 20px; color: rgb(126, 123, 123); background: rgb(243, 241, 241); padding: 8px;">No hay Data. </p></div>');
 
+						return 0; 					
+					}
+
+					alert("Aqui Va el Data Length" + Master.dTransAuto[it].dataLength ); 
 
 						Master.dTransAuto[it].visuals[0].visualOptions["renderAsImage"] = true;
 						var hh = Master.dTransAuto[it].dt.generateVisual(Master.dTransAuto[it].visuals[0].visualType, Master.dTransAuto[it].visuals[0].visualOptions,
@@ -1191,6 +1304,7 @@ setCambioBloque: function(tmr){  // tmr: tiempo en segundos
 	tmr = parseInt(tmr)*1000;
 	mTimer.bloque = setTimeout(function(){
 		Master.cambiarBloque(); 
+		pptMaster.isManualGlobalModo = false;
 	}, tmr );
 }, 
 
@@ -1399,6 +1513,7 @@ var BroadCastManger = {
 };
 
 var Msg = {	
+	isToolsBox: false,
 	broadCastTimeOut: 0, 
 	log: function( text, titulo) {
 			alert(text); 	 
@@ -1467,6 +1582,20 @@ var Msg = {
 		 		$("#divGrowls" + id ).remove(); 		 		
 		 	}, 4500); 
 	},
+
+	toolsBox: function(){
+		var menuCtx = '<div id="openModalTools" class="modalDialog"><div> <h1>Cambiar Modo:</h1> <p>Precione en el control la tecla: </p> <p><span style=" font-size: 22px;    font-weight: lighter;    background: rgb(162, 0, 0);    padding-right: 14px;    padding-left: 14px;     color: white;     margin: 5px; ">A</span> &nbsp; Modo Autom&aacute;tico. </p>  <p><span style="     font-size: 22px;     font-weight: lighter;     background: green;     padding-right: 14px;     padding-left: 14px;  color: white;  margin: 5px; ">B</span> &nbsp; Modo Manual. </p>  <p> <img src="image/toolsMenu.png" > &nbsp; Salir</p> <p style="font-size: 15px; ">* En el modo "manual" podr&aacute;s cambiar pasar los Slides con el control remoto. A los 5 minutos sin actividad, el televisor cambia a modo autom&aacute;tico.</p></div> </div>'; 
+
+		if(Msg.isToolsBox){
+			$("#menuDialogBox").html(""); 
+
+			Msg.isToolsBox = false;
+		} else {
+			Msg.isToolsBox = true;
+			$("#menuDialogBox").html(menuCtx); 
+		}
+
+	}, 
 
 	textBlock: function(htmlcontent){
         $.blockUI({ 
@@ -1920,10 +2049,62 @@ MasterTV = function() {
 	this.app_info = {server: "", version: "", serverRequest: ""};
 	this.ManagerPages = {
 			showInfoBar: false,
-			EventRemote: {ENTER: function(){  }, GREEN: function(){ } },
+			EventRemote: {ENTER: function(){  }, 
+
+						RED: function(){
+
+							alert("Este es RED COLOR RED."); 
+
+							if(Msg.isToolsBox){
+								alert("SOlo BOX"); 
+								pptMaster.isManualGlobalModo = false;
+								Msg.toolsBox();
+
+								Master.stopGlobalManual();
+							}							
+
+						}, 
+
+						GREEN: function(){ 
+							// Convertirlo en modo Manuel.
+							if(Msg.isToolsBox){
+								alert("SOlo BOX"); 
+								pptMaster.isManualGlobalModo = true;
+								Msg.toolsBox();
+								Master.runGlobalManual();
+							}
+
+							// Quitar el Roloj de Tiempo y los contadores.					 
+
+
+						},
+
+						RETURN: function(){							
+							if(Msg.isToolsBox){
+								Msg.toolsBox();
+								return false;
+							}
+							widgetAPI.sendReturnEvent();								
+						}, 
+
+				
+
+						TOOLS: function(){
+							// Esta Es una Configuracion Por defecto para cambiar el modo de la Habre una Pieza del Menu.
+							alert("ESTe es Una opRIRFFK KEY  TOOLS YESSS"); 
+						//	$("<div>Muestrea un Dialogo</div>").dialog(); 
+						Msg.toolsBox(); 
+
+							// Msg.textBlock("<div>Este es Un mensaje de Verdad</div>"); 
+
+
+						}
+
+						},
 			infoBarLeyend: [],
 			content: {}
 	};  
+
 
 	alert("Estamos en la Istancia"); 
 	

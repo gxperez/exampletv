@@ -764,7 +764,7 @@ var prueba;
      */
     datatransformer.addVisual("advancedTable",
         {
-            title: { label: "title", type: String, required: true, order: 1 },
+            title: { label: "title", type: String, order: 1 },
             category: { label: "category", type: datatransformer.typeGroup, required: true, order: 2 },
             tableHeaderColor: { label: "table header color", type: String, tooltip: _tootip.tableHeaderColor, order: 3 },
             group: { label: "group", type: datatransformer.typeGroup, required: true, order: 4 },
@@ -888,9 +888,11 @@ var prueba;
                     }
                 }
 
+                var _titleHtml = this.config.title ? "<h3 class='table-title'>" + this.config.title + "</h3>" : "";
+
                 if (this.config.unifiedTable) {
 
-                    var _tableHtml = "<div class='table-item' style='margin: 0px;padding: 0px;'>";
+                    var _tableHtml = _titleHtml + "<div class='table-item' style='margin: 0px;padding: 0px;'>";
                     var _groups = this.util.getDistinct(_data, _group);
                     _tableHtml += _generateUnifiedTableHTML(
                                                             _dataColumnsTable,
@@ -913,11 +915,11 @@ var prueba;
                 }
                 else {
                     for (var c in _categories) {
-                        var _tableHtml = "<div class='table-item' style='margin: 0px;padding: 0px;'>",
+                        var _tableHtml ="<div class='table-item' style='margin: 0px;padding: 0px;'>",
                             _dataInCategory = _generateData.filter(function (d) { return d[_category] == _categories[c] }),
                             _totalDataInCategory = _generateDataTotal.filter(function (d) { return d[_category] == _categories[c] });
 
-                        _tableHtml += "<h3 class='table-title'>" +
+                        _tableHtml += "<h3 class='table-title-category'>" +
                                       _categories[c] +
                                       "</h3>" +
                                       _generateTableHTML(_dataColumnsTable, _dataInCategory, this.config.measures, _totalDataInCategory, (_colorsHeader[_categories[c]] || _colorHeader), _isColorMeasureRange ? _colorsMeasure : _colorMeasure, _isColorMeasureRange, this.config.totalText);
@@ -926,7 +928,7 @@ var prueba;
                         _html += _tableHtml;
                     }
 
-                    this.renderOptions.tableHTML = _html += "</div>";
+                    this.renderOptions.tableHTML = _titleHtml + (_html += "</div>");
                     this.renderOptions.tableHTML = "<style> " + this.config.css.replace(/{visualId}/g, "#" + this.config.elemId) + " </style>" + this.renderOptions.tableHTML;
                 }
 
