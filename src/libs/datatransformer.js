@@ -15,7 +15,7 @@
 'use strict';
 var prueba;
 
-(function (window, $, math, callback) {
+(function (window, $, math, callback) { 
     // Contants
     var MEASURE_COLUMN_PREFIX = "_",
         MEASURE_COLUMN_REGEXP = /_\w+_/ig;
@@ -286,7 +286,7 @@ var prueba;
                     var _measureVariable = _options.measures[measure].match(MEASURE_COLUMN_REGEXP)[0];
                     var _value = 0;
 
-                    if (typeof _measureVariable != "undefined") {
+                    if (_measureVariable != undefined && _measureVariable != null) {
                         // Get data of variable
                         var _value = _dataFilter[0][_measureVariable.substr(1, _measureVariable.length - 2)]; // _variable_
                     }
@@ -310,7 +310,9 @@ var prueba;
                     }
 
                     // Evaluate measure expression with the data
-                    var _value = _round(_getExpressionValue(_options.measures[measure], _variables), measureRoundDigits);
+                    var _value = measureRoundDigits === undefined || measureRoundDigits === null?
+                                        _getExpressionValue(_options.measures[measure], _variables) : 
+                                        _round(_getExpressionValue(_options.measures[measure], _variables), measureRoundDigits);
 
                     // Add measure
                     _group[measure] = _value;
@@ -525,7 +527,8 @@ var prueba;
                 generateDataTransformed: _generateDataTransformed,
                 generateDataOfExpression: _generateDataOfExpression,
                 generateMeasureColumn: _generateMeasureColumn,
-                getExpressionValue: _getExpressionValue
+                getExpressionValue: _getExpressionValue,
+                noDataTemplateHTML: '<p class="nodata-label" style="margin: o0px auto;text-align: center;padding-top: 28%;">No Data Available</p>'
             };
 
             delete this.visuals[elemId]
@@ -553,13 +556,14 @@ var prueba;
     var _tootip = {
         tableHeaderColor: "It can be configurated in one of the following 2 ways: -> color=red  -> category=red,categoryName|yellow,categoryName",
         measureColor: "It can be configurated in one of the following 2 ways: -> color=red,measureName|green,measureName -> range= measureName+red,1,2+green,3,4| measureName+yellow,1,2,+blue,3,4",
-        css: "Table classes hierarchy: (table-container) > (table-item) > (table-title) + (table > (table-header > table-header-item) + (table-row > table-row-item) ). Apply CSS only to this visual using {visualId} that is the id of the element where the visual is rendered "
+        measureSymbol: "It can be configurated: symbol=$,measureName|#,measureName|%,measureName ",
+        css: "Table classes: h3.table-title,   div.table-item,   table.table,  tr.table-header,  tr.table-header-category,   th.table-header-category-item,   tr.table-row ,   td.table-row-data,   td.table-row-data-group,    tr.table-totalRow ,   td.table-totalRow-data,    td.table-row-data-group. Apply CSS only to this visual using {visualId} that is the id of the element where the visual is rendered."
     };
 
     // Private function
     // generate html table string
-    function _generateTableHTML(dataColumns, data, totalColumns, totalData, headerColor, measureColor, isMeasureColorRange, totalText) {
-        var _tableHeaderColor = "style='background-color:" + (headerColor || "#e8e8e8") + ";'",
+    function _generateTableHTML(dataColumns, data, totalColumns, totalData,symbol, headerColor, measureColor, isMeasureColorRange, totalText) {
+        var _tableHeaderColor = headerColor? "style='background-color:" + headerColor+ ";'" : "",
             _tableHeader = "<table border='1' class='table'><thead><tr  class='table-header' " + _tableHeaderColor + ">",
             _tableBody = "<tbody>";
 
@@ -629,7 +633,7 @@ var prueba;
     }
 
     // generate multiple tables in one 
-    function _generateUnifiedTableHTML(dataColumns, data, measureColumns, totalData, group, groups, category, categories, colorsHeader, colorHeader, measureColor, isMeasureColorRange, totalText) {
+    function _generateUnifiedTableHTML(dataColumns, data, measureColumns, totalData, group, groups, category, categories, symbol, colorsHeader, colorHeader, measureColor, isMeasureColorRange, totalText) {
         var _tableHeader = "<table border='1' class='table'><thead>",
             _tableBody = "<tbody>";
 
@@ -658,7 +662,9 @@ var prueba;
         // Table header category
         for (var dc in categories) {
             var _cHeader = colorsHeader[categories[dc]] || colorHeader;
-            _tableHeader += "<th class='table-header-item table-header-category-item' style='background-color:" + (_cHeader || "#e8e8e8") + ";' colspan='" + _headerCategoryColSpan + "'>" + categories[dc] + "</th>";
+            var _tableHeaderColor = _cHeader? "style='background-color:" + _cHeader+ ";'" : "";
+
+            _tableHeader += "<th class='table-header-item table-header-category-item' "+_tableHeaderColor+" colspan='" + _headerCategoryColSpan + "'>" + categories[dc] + "</th>";
         }
 
         _tableHeader += "</tr>";
@@ -689,7 +695,8 @@ var prueba;
                         if (_rowData) {
                             var _dc = dataColumns[dc];
                             var _data = _rowData[dataColumns[dc]];
-                            _tableRow += "<td class='table-row-data' " + _getColor(_dc, _data) + " >" + _data + "</td>";
+                            var _symbol = symbol[dataColumns[dc]] || "";
+                            _tableRow += "<td class='table-row-data' " + _getColor(_dc, _data) + " >" + _data + _symbol + "</td>";
                         }
                         else
                             _tableRow += "<td class='table-row-data'></td>";
@@ -712,7 +719,8 @@ var prueba;
                     if (_rowDataTotal) {
                         var _dc = dataColumns[dc];
                         var _data = _rowDataTotal[dataColumns[dc]];
-                        _tableRowTotal += "<td class='table-totalRow-data' " + _getColor(_dc, _data) + " >" + _data + "</td>";
+                        var _symbol = symbol[dataColumns[dc]] || "";
+                        _tableRowTotal += "<td class='table-totalRow-data' " + _getColor(_dc, _data) + " >" + _data + _symbol + "</td>";
                     }
                     else
                         _tableRowTotal += "<td class='table-totalRow-data'></td>";
@@ -746,9 +754,9 @@ var prueba;
                 var _data = this.data.getTransformed(),
                     _dataColumns = Object.keys(_data[0]),
                     _title = "<h3 class='table-title'>" + this.config.title + "</h3>",
-                    _table = this.renderOptions.tableHTML = _title + _generateTableHTML(_dataColumns, _data),
-                    _mearureRound = this.config.measureRound || 2;
-
+                    _mearureRound = this.config.measureRound,
+                    _table = this.renderOptions.tableHTML = _title +  (_data.length > 0? _generateTableHTML(_dataColumns, _data,_mearureRound) : this.util.noDataTemplateHTML);
+                    
                 $("#" + this.config.elemId).html(_table);
             }
 
@@ -760,20 +768,70 @@ var prueba;
     /**
      *  advancedTable
      *
-     *  A visual obj that create a table with the data and advanced features
+     *  A visual obj that create a table with the data and advanced features.
+     *
+     *  CSS styles have to add {visualId} to point the container of the visual table.
+     *
+     *  Unified table has the follow structure ((1) the group column && (*) the multiple measures columns):
+     *
+     *      h3.table-title
+     *
+     *      div.table-item
+     *       
+     *       table.table
+     *            thead
+     *              tr.table-header.table-header-category
+     *                  th.table-header-item.table-header-category-group (1)
+     *                  th.table-header-item.table-header-category-item (*) 
+     *               
+     *              tr.table-header
+     *                  th.table-header-item
+     *
+     *
+     *            tbody
+     *              tr.table-row        
+     *                  td.table-row-data.table-row-data-group (1)
+     *                  td.table-row-data (*)
+     *               
+     *              tr.table-totalRow
+     *                  td.table-totalRow-data.table-row-data-group (1)
+     *                  td.table-totalRow-data (*)
+     *
+     *
+     *  Category table Structure:
+     *
+     *      h3.table-title
+     *
+     *      div.table-item
+     *
+     *          h3.table-title-category
+     *       
+     *          table.table
+     *              thead
+     *                  tr.table-header
+     *                  th.table-header-item
+     *
+     *              tbody
+     *                  tr.table-row
+     *                  td.table-row-data
+     *
+     *                  tr.table-totalRow
+     *                  td.table-totalRow-data
+     *
      */
     datatransformer.addVisual("advancedTable",
         {
             title: { label: "title", type: String, order: 1 },
             category: { label: "category", type: datatransformer.typeGroup, required: true, order: 2 },
-            tableHeaderColor: { label: "table header color", type: String, tooltip: _tootip.tableHeaderColor, order: 3 },
+            tableHeaderColor: { label: "table header color", type: String, tooltip: _tootip.tableHeaderColor, order: 3 , largeText: true},
             group: { label: "group", type: datatransformer.typeGroup, required: true, order: 4 },
             measures: { label: "measures categories", type: datatransformer.typeMultipleMeasures, required: true, order: 5 },
-            measureColor: { label: "measure color", type: String, tooltip: _tootip.measureColor, order: 6 },
-            measureRound: { label: "measure round", type: Number, order: 7 },
-            unifiedTable: { label: "unified table", type: Boolean, order: 8 },
-            totalText: { label: "total text", type: String, order: 9 },
-            css: { label: "css", type: String, tooltip: _tootip.css, order: 10 }
+            measureColor: { label: "measure color", type: String, tooltip: _tootip.measureColor, order: 6 , largeText: true  },
+            measureSymbol: { label: "measure symbol", type: String, tooltip: _tootip.measureSymbol, order: 7  , largeText: true},
+            measureRound: { label: "measure round", type: Number, order: 8 },
+            unifiedTable: { label: "unified table", type: Boolean, order: 9 },
+            totalText: { label: "total text", type: String, order: 10 },
+            css: { label: "css", type: String, tooltip: _tootip.css, order: 11, largeText: true }
         },
         function () {
             this.renderOptions = {
@@ -792,7 +850,20 @@ var prueba;
                     _dataColumnsTable = [],
                     _thc = this.config.tableHeaderColor,
                     _mc = this.config.measureColor,
-                    _mearureRound = this.config.measureRound || 2;
+                    _ms = this.config.measureSymbol,
+                    _mearureRound = this.config.measureRound;
+
+
+                var _titleHtml = this.config.title ? "<h3 class='table-title'>" + this.config.title + "</h3>" : "";
+
+                if(_data.length <= 0)
+                {
+
+                    this.renderOptions.tableHTML = _titleHtml +  this.util.noDataTemplateHTML;
+                    $("#" + this.config.elemId).html(this.renderOptions.tableHTML);
+
+                    return;
+                }
 
                 _dataColumnsTable.push(_group);
                 _categories = this.util.getDistinct(_data, _category);
@@ -888,7 +959,24 @@ var prueba;
                     }
                 }
 
-                var _titleHtml = this.config.title ? "<h3 class='table-title'>" + this.config.title + "</h3>" : "";
+                // -> symbol=$,measureName|#,measureName|%,measureName
+
+                var _measureSymbol = {};
+
+                if (typeof _ms != 'undefined' && _ms.indexOf('symbol=') >= 0) {
+                    var _symbolSyntax = _ms.replace('symbol=', '');
+                    var _symbolArray = _symbolSyntax.split('|');
+
+                    for (var c in _symbolArray) {
+                        var _c = _symbolArray[c].split(",");
+
+                        if (_c && _c.length == 2) {
+                            var _caSymbol = _c[0]
+                            var _caCategory = _c[1] || '';
+                            _measureSymbol[_caCategory] = _caSymbol;
+                        }
+                    }
+                }
 
                 if (this.config.unifiedTable) {
 
@@ -903,6 +991,7 @@ var prueba;
                                                             _groups,
                                                             _category,
                                                             _categories,
+                                                            _measureSymbol,
                                                             _colorsHeader,
                                                             _colorHeader,
                                                              _isColorMeasureRange ? _colorsMeasure : _colorMeasure,
@@ -922,7 +1011,7 @@ var prueba;
                         _tableHtml += "<h3 class='table-title-category'>" +
                                       _categories[c] +
                                       "</h3>" +
-                                      _generateTableHTML(_dataColumnsTable, _dataInCategory, this.config.measures, _totalDataInCategory, (_colorsHeader[_categories[c]] || _colorHeader), _isColorMeasureRange ? _colorsMeasure : _colorMeasure, _isColorMeasureRange, this.config.totalText);
+                                      _generateTableHTML(_dataColumnsTable, _dataInCategory, this.config.measures, _totalDataInCategory,_measureSymbol, (_colorsHeader[_categories[c]] || _colorHeader), _isColorMeasureRange ? _colorsMeasure : _colorMeasure, _isColorMeasureRange, this.config.totalText);
 
                         _tableHtml += "</div>";
                         _html += _tableHtml;

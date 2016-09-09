@@ -157,30 +157,45 @@
         title: { label: "title", type: String, required: true, order: 1 },
         group: { label: "group", type: datatransformer.typeGroup, required: true, order: 3 },
         measure: { label: "measure", type: datatransformer.typeMeasure, required: true, order: 4 },
-        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
-        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 6 },
-        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 7 },
-        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 8 },
-        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 9 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 10 },
-        renderAsImage: { label: "render as image", type: Boolean, order: 11 }
+        measureRound: { label: "measure round", type: Number, order: 5 },
+        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 6 },
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 7 },
+        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 8 },
+        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 9 },
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 10 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 11 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 12 }
     },
     function () {
         this.renderOptions = {
             echartObj: null,
-            echartOptions: {}
+            echartOptions: {},
+            noDataTemplateHTML: null
         }
 
         this.render = function () {
+        	var _data = this.data.data;
+
+        	if(_data.length <= 0)
+            {
+                this.renderOptions.noDataTemplateHTML =  "<h3>" + this.config.title + "</h3>" +  this.util.noDataTemplateHTML;
+                $("#" + this.config.elemId).html(this.renderOptions.noDataTemplateHTML);
+
+                return;
+            }
+            else
+            	 this.renderOptions.noDataTemplateHTML = null;
+
+
             var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
-				_data = this.data.data,
 				_measureObj = {},
 				_dataOptionsObj = {},
 				_generateData = [],
 				_dataForPie = [],
 				_leyends = [],
 				_measureValues = [],
-				_measureMaxvalue = 0;
+				_measureMaxvalue = 0,
+				_mearureRound = this.config.measureRound;
 
             _echartObj.showLoading({ text: _message.loading });
 
@@ -194,7 +209,7 @@
                 measures: _measureObj
             };
 
-            _generateData = this.util.generateDataTransformed(_data, _dataOptionsObj);
+            _generateData = this.util.generateDataTransformed(_data, _dataOptionsObj, _mearureRound);
 
             for (var d in _generateData) {
                 var _value = _toFixed(_generateData[d][this.config.measure]);
@@ -295,8 +310,13 @@
         }
 
         this.refreshRender = function () {
-            this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
-            this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
+        	if(this.renderOptions.noDataTemplateHTML === null)
+			{
+				this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+            	this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);	
+			}
+			else 
+				$("#" + this.config.elemId).html(this.renderOptions.noDataTemplateHTML);
         }
     });
 
@@ -313,27 +333,40 @@
         subtitle: { label: "subtitle", type: String, required: false, order: 2 },
         group: { label: "group", type: datatransformer.typeGroup, required: true, order: 3 },
         measures: { label: "measures", type: datatransformer.typeMultipleMeasures, required: true, order: 4 },
-        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
-        horizontal: { label: "horizontal", type: Boolean, order: 6 },
-        numberSize: { label: "number Size", type: Number, order: 7 },
-        hideNumber: { label: "hide Number", type: Boolean, order: 8 },
-        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 9 },
-        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 10 },
-        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 11 },
-        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 12 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 13 },
-        renderAsImage: { label: "render as image", type: Boolean, order: 14 }
+        measureRound: { label: "measure round", type: Number, order: 5 },
+        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 6 },
+        horizontal: { label: "horizontal", type: Boolean, order: 7 },
+        numberSize: { label: "number Size", type: Number, order: 8 },
+        hideNumber: { label: "hide Number", type: Boolean, order: 9 },
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 10},
+        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 11 },
+        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 12 },
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 13 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 14 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 15 }
     },
     function () {
         this.renderOptions = {
             echartObj: null,
-            echartOptions: {}
+            echartOptions: {},
+            noDataTemplateHTML: null
         }
 
 
         this.render = function () {
+        	var _data = this.data.data;
+
+        	if(_data.length <= 0)
+            {
+                this.renderOptions.noDataTemplateHTML =  "<h3>" + this.config.title + "</h3>" +  this.util.noDataTemplateHTML;
+                $("#" + this.config.elemId).html(this.renderOptions.noDataTemplateHTML);
+
+                return;
+            }
+            else
+            	 this.renderOptions.noDataTemplateHTML = null;
+
             var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
-                 _data = this.data.data,
                  _group = this.config.group,
                  _measuresObj = {},
                  _dataOptionsObj = {},
@@ -342,7 +375,9 @@
                  _categories = [],
                  _leyends = [],
 				 _hideNumber = this.config.hideNumber ? false : true,
-				 _numberSize = this.config.numberSize ? this.config.numberSize : 10;
+				 _numberSize = this.config.numberSize ? this.config.numberSize : 10,
+				 _mearureRound = this.config.measureRound;
+
 
             _echartObj.showLoading({ text: _message.loading });
 
@@ -358,7 +393,7 @@
                 measures: _measuresObj
             };
 
-            _generateData = this.util.generateDataTransformed(_data, _dataOptionsObj);
+            _generateData = this.util.generateDataTransformed(_data, _dataOptionsObj, _mearureRound);
 
             for (var m in this.config.measures) {
                 var _measure = this.config.measures[m];
@@ -493,8 +528,14 @@
         }
 
         this.refreshRender = function () {
-            this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
-            this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
+            if(this.renderOptions.noDataTemplateHTML === null)
+			{
+				this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+            	this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
+			}
+			else 
+				$("#" + this.config.elemId).html(this.renderOptions.noDataTemplateHTML);
+
         }
     });
 
@@ -512,26 +553,39 @@
         subtitle: { label: "subtitle", type: String, required: false, order: 2 },
         group: { label: "group", type: datatransformer.typeGroup, required: true, order: 3 },
         measures: { label: "measures", type: datatransformer.typeMultipleMeasures, required: true, order: 4 },
-        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 5 },
-        shadow: { label: "shadow", type: Boolean, order: 6 },
-        numberSize: { label: "number Size", type: Number, order: 6 },
-        hideNumber: { label: "hide Number", type: Boolean, order: 7 },
-        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 8 },
-        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 9 },
-        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 10 },
-        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 11 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 12 },
-        renderAsImage: { label: "render as image", type: Boolean, order: 13 }
+        measureRound: { label: "measure round", type: Number, order: 5 },
+        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 6 },
+        shadow: { label: "shadow", type: Boolean, order: 7 },
+        numberSize: { label: "number Size", type: Number, order: 8},
+        hideNumber: { label: "hide Number", type: Boolean, order: 9 },
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 10 },
+        leyendPosition: { label: "leyend Position", type: datatransformer.typeEnum, values: _echartPosition, order: 11 },
+        leyendVertical: { label: "leyend Vertical", type: Boolean, order: 12 },
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 13 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 14 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 15 }
     },
     function () {
         this.renderOptions = {
             echartObj: null,
-            echartOptions: {}
+            echartOptions: {},
+            noDataTemplateHTML: null
         }
 
         this.render = function () {
+        	var _data = this.data.data;
+
+        	if(_data.length <= 0)
+            {
+                this.renderOptions.noDataTemplateHTML =  "<h3>" + this.config.title + "</h3>" +  this.util.noDataTemplateHTML;
+                $("#" + this.config.elemId).html(this.renderOptions.noDataTemplateHTML);
+
+                return;
+            }
+            else
+            	 this.renderOptions.noDataTemplateHTML = null;
+
             var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
-				_data = this.data.data,
 				_group = this.config.group,
 				_measuresObj = {},
 				_dataOptionsObj = {},
@@ -540,7 +594,9 @@
 				_categories = [],
 				_leyends = [],
 				_hideNumber = this.config.hideNumber ? false : true,
-				_numberSize = this.config.numberSize ? this.config.numberSize : 10;
+				_numberSize = this.config.numberSize ? this.config.numberSize : 10,
+				_mearureRound = this.config.measureRound;
+
 
             _echartObj.showLoading({ text: _message.loading });
 
@@ -557,10 +613,10 @@
                 measures: _measuresObj
             };
 
-            _generateData = this.util.generateDataTransformed(_data, _dataOptionsObj);
+            _generateData = this.util.generateDataTransformed(_data, _dataOptionsObj, _mearureRound);
 
             for (var m in this.config.measures) {
-                var _measure = this.config.measures[m];
+                var _measure = this.config.measures[m]; 
                 var _categoryValues = [];
 
                 for (var c in _categories) {
@@ -712,8 +768,13 @@
         }
 
         this.refreshRender = function () {
-            this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
-            this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
+			if(this.renderOptions.noDataTemplateHTML === null)
+			{
+            	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+            	this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions);
+			}
+			else 
+				$("#" + this.config.elemId).html(this.renderOptions.noDataTemplateHTML);
         }
     });
 
@@ -733,23 +794,36 @@
         group: { label: "group", type: datatransformer.typeGroup, required: true, order: 3 },
         filter: { label: "filter group", type: String, required: true, order: 4 },
         measure: { label: "measure", type: datatransformer.typeMeasure, required: true, order: 5 },
-        min: { label: "min", type: Number, order: 6 },
-        max: { label: "max", type: Number, order: 7 },
-        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 8 },
-        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 8 },
-        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 9 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 10 },
-        renderAsImage: { label: "render as image", type: Boolean, order: 11 }
+        measureRound: { label: "measure round", type: Number, order: 6 },
+        min: { label: "min", type: Number, order: 7 },
+        max: { label: "max", type: Number, order: 8 },
+        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 9 },
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 10 },
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 11 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 12 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 13 }
     },
     function () {
         this.renderOptions = {
             echartObj: null,
-            echartOptions: {}
+            echartOptions: {},
+            noDataTemplateHTML: null
         }
 
         this.render = function () {
+        	var _data = this.data.data;
+
+        	if(_data.length <= 0)
+            {
+                this.renderOptions.noDataTemplateHTML =  "<h3>" + this.config.title + "</h3>" +  this.util.noDataTemplateHTML;
+                $("#" + this.config.elemId).html(this.renderOptions.noDataTemplateHTML);
+
+                return;
+            }
+            else
+            	 this.renderOptions.noDataTemplateHTML = null;
+
             var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
-				_data = this.data.data,
 				_group = this.config.group,
 				_filter = this.config.filter,
 				_measureObj = {},
@@ -759,7 +833,8 @@
 				_dataForGauge = [],
 				_categories = [],
 				_serieS = [],
-				_serieDatas = {};
+				_serieDatas = {},
+				_mearureRound = this.config.measureRound;
 
             _echartObj.showLoading({ text: _message.loading });
 
@@ -774,7 +849,7 @@
                 measures: _measureObj
             };
 
-            _generateData = this.util.generateDataTransformed(_data, _dataOptionsObj);
+            _generateData = this.util.generateDataTransformed(_data, _dataOptionsObj, _mearureRound);
 
             _dataForGauge.push(
 			{
@@ -846,8 +921,13 @@
 
 
         this.refreshRender = function () {
-            this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
-            this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions, true);
+			if(this.renderOptions.noDataTemplateHTML === null)
+			{
+            		this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+            		this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions, true);
+			}
+			else 
+				$("#" + this.config.elemId).html(this.renderOptions.noDataTemplateHTML);
         }
     });
 
@@ -867,26 +947,39 @@
         filter: { label: "filter group", type: String, required: true, order: 4 },
         measure: { label: "measures principal", type: datatransformer.typeMeasure, required: true, order: 5 },
         measures: { label: "measures categories", type: datatransformer.typeMultipleMeasures, required: true, order: 6 },
-        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 7 },
-        colors: { label: "color (red,#ff4500)", type: String, order: 8 },
-        split: { label: "split", type: Number, required: true, order: 9 },
-        horizontal: { label: "horizontal", type: Boolean, order: 10 },
-        horRadius: { label: "horizontal radius", type: Number, order: 11 },
-        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 12 },
-        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 13 },
-        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 14 },
-        renderAsImage: { label: "render as image", type: Boolean, order: 15 }
+        measureRound: { label: "measure round", type: Number, order: 7 },
+        theme: { label: "theme", type: datatransformer.typeEnum, values: _themeList, required: true, order: 8 },
+        colors: { label: "color (red,#ff4500)", type: String, order: 9 },
+        split: { label: "split", type: Number, required: true, order: 10 },
+        horizontal: { label: "horizontal", type: Boolean, order: 11 },
+        horRadius: { label: "horizontal radius", type: Number, order: 12 },
+        titlePosition: { label: "title Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 13 },
+        toolboxPosition: { label: "toolbox Position", type: datatransformer.typeEnum, values: _echartPositionWithNone, order: 14 },
+        toolboxHorizontal: { label: "toolbox Horizontal", type: Boolean, order: 15 },
+        renderAsImage: { label: "render as image", type: Boolean, order: 16 }
     },
     function () {
         this.renderOptions = {
             echartObj: null,
-            echartOptions: {}
+            echartOptions: {},
+            noDataTemplateHTML: null
         }
 
         this.render = function () {
+        	var _data = this.data.data;
+
+        	if(_data.length <= 0)
+            {
+                this.renderOptions.noDataTemplateHTML =  "<h3>" + this.config.title + "</h3>" +  this.util.noDataTemplateHTML;
+                $("#" + this.config.elemId).html(this.renderOptions.noDataTemplateHTML);
+
+                return;
+            }
+            else
+            	 this.renderOptions.noDataTemplateHTML = null;
+
             var _echartObj = this.renderOptions.echartObj = echarts.init(document.getElementById(this.config.elemId)),
 				_util = this.util,
-				_data = this.data.data,
 				_group = this.config.group,
 				_filter = this.config.filter,
 				_filterObj = {},
@@ -894,7 +987,9 @@
 				_dataOptionsObj = {},
 				_generateData = [],
 				_dataForGauge = [],
-				_categories = [];
+				_categories = [],
+				_mearureRound = this.config.measureRound;
+
 
             _echartObj.showLoading({ text: _message.loading });
 
@@ -927,7 +1022,7 @@
                 measures: _measureObj
             };
 
-            _generateData = this.util.generateDataTransformed(_data, _dataOptionsObj);
+            _generateData = this.util.generateDataTransformed(_data, _dataOptionsObj, _mearureRound);
 
             _dataForGauge.push(
 			{
@@ -950,7 +1045,7 @@
                 measures: _measuresObj
             };
 
-            _generateDatas = this.util.generateDataTransformed(_data, _datasOptionsObj);
+            _generateDatas = this.util.generateDataTransformed(_data, _datasOptionsObj, _mearureRound);
 
             for (var k in _leyends) {
                 _generateDataNumber.push(_generateDatas[0][_leyends[k]]);
@@ -1202,11 +1297,14 @@
 
 
         this.refreshRender = function () {
-            this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
-            this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions, true);
+        	if(this.renderOptions.noDataTemplateHTML === null)
+			{
+            	this.renderOptions.echartObj.setTheme(_themes[this.config.theme]);
+            	this.renderOptions.echartObj.setOption(this.renderOptions.echartOptions, true);
+			}
+			else 
+				$("#" + this.config.elemId).html(this.renderOptions.noDataTemplateHTML);
         }
     });
-
-
 
 })($, datatransformer, echarts);

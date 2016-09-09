@@ -326,16 +326,14 @@ Master = {
 						pptMaster.active = false; 
 					}
 					mTimer.lastChange = (mTimer.cIndexC *1);
-					Master.renderBloque();	
-					
+					Master.renderBloque();						
 					break;
-
+					
 				case tvKey.KEY_RIGHT:
 					alert("RIGHT");										
 					if(mTimer.lastChange == mTimer.cIndexC){						
 						mTimer.cIndexC++;	
 					}
-
 					mTimer.lastChange = (mTimer.cIndexC *1);					
 					Master.renderBloque();
 					break;				
