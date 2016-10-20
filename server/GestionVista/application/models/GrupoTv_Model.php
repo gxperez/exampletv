@@ -162,6 +162,7 @@
 
         	$update["FechaModifica"] = date("Y-m-d H:i:s");
         	$this->db->where("DispositivoID", $obj["DispositivoID"]);
+        	$this->db->where("Estado", 1);
         	$this->db->where("GrupoID", $obj["GrupoID"]);
 
 			$rs = $this->db->update("grupo_tv", $update);

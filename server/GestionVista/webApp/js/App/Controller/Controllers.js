@@ -583,8 +583,7 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
                              $('#myFormSeccionTemp').modal('hide');
                              $scope.seccionTemp.limpiar(); 
 
-                             $scope.wizard.obtenerSeccionFuentes($scope.wizard.selectedTemplatePagesID);
-                             $scope.$apply();
+                             $scope.wizard.obtenerSeccionFuentes($scope.wizard.selectedTemplatePagesID);                             
 
 
                         } else {                    
@@ -617,8 +616,7 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
                              $scope.seccionTemp.limpiar(); 
 
                             $scope.wizard.obtenerSeccionFuentes($scope.wizard.selectedTemplatePagesID);
-
-                            $scope.$apply();       
+                                 
                             
 
                         } else {                    
@@ -695,6 +693,7 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
                     if (dt.IsOk){
                         $scope.seccionTemp.listSeccion = dt.data; 
                         $scope.wizard.renderjQueryPosicion(); 
+                        $scope.$apply();
                     }                    
                  });
             }, 
