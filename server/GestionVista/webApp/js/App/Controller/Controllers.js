@@ -38,6 +38,14 @@ var Glbquery ={};
 
          $scope.Arreglo = [];
          $scope.texto = "Buenos dias";
+
+
+        $scope.GetHomeIndex = function(){         
+            var link = base_url + "Portal/HomePages";
+            appHttp.Get(link, null, (function (res, status) {
+                $scope.AppHtml = res;
+            }));        
+         }; 
         
 
         $scope.SetMain = function (link) {
@@ -100,6 +108,8 @@ var Glbquery ={};
                 }
             });
         };
+
+         $scope.GetHomeIndex();
     }]);
 
  $ang.controller('SimpleFormController', ['$scope', '$http', 'AppHttp','AppMenuEvent', '$compile', function ($scope, $http, appHttp,appMenuEvent, $compile) {
@@ -203,8 +213,12 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
 
         $scope.initt = function () {
 
-            $scope.Pantalla = {nombre: "Dispositivo"};            
-             http(base_url + "Dispositivo/Obtener", {}, function (dt) {                
+
+
+            $scope.Pantalla = {nombre: "Dispositivo"};   
+              $.blockUI({ message: "Favor Espere " });             
+             http(base_url + "Dispositivo/Obtener", {}, function (dt) {    
+               $.unblockUI();                
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -238,7 +252,10 @@ $ang.controller('DispositivoController', ['$scope', '$http',  'AppCrud', 'AppHtt
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
                 $scope.vCrud.$Search.w= ""; 
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + "Dispositivo/Obtener", {}, function (dt) {
+
+                    $.unblockUI();
 
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
@@ -381,8 +398,11 @@ $ang.controller("BloquesController", ["$scope", "$http",  "AppCrud", "AppHttp","
 
         $scope.initt = function () {
 
+              $.blockUI({ message: "Favor Espere " });    
+
             $scope.Pantalla = {nombre: 'Bloques'};            
-             http(base_url + 'Bloques/Obtener', {}, function (dt) {                
+             http(base_url + 'Bloques/Obtener', {}, function (dt) { 
+               $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -415,7 +435,9 @@ $ang.controller("BloquesController", ["$scope", "$http",  "AppCrud", "AppHttp","
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
                 $scope.vCrud.$Search.w= ""; 
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'Bloques/Obtener', {}, function (dt) {
+                    $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -638,8 +660,9 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
         };
 
         $scope.generarBosetoEsquema= function(descripcion){
-
+            $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'TemplatePages/obtenerTablaEsquemaID', {EsquemaTipo: descripcion}, function (dt) {                    
+                    $.unblockUI();
                     $scope.esquemaHtml = dt;                    
                  });
             
@@ -687,7 +710,10 @@ $ang.controller("ContenidoController", ["$scope", "$http",  "AppCrud", "AppHttp"
             obtenerSeccionFuentes: function(TemplatePagesID){
 
                  // Buscar objetso en Seccion.
+                 $.blockUI({ message: "Favor Espere " });
                  http(base_url + 'SeccionTemplate/obtenerSecionTempatePorTempateID', {TemplatePagesID: TemplatePagesID}, function (dt) {                    
+
+                    $.unblockUI();
                     $appSession.IsSession(dt);
 
                     if (dt.IsOk){
@@ -982,6 +1008,8 @@ $scope.guardarContenido = function(){
             'searchUrl':  base_url + 'Contenido/Buscar'
         });
 
+
+
         $scope.ObtenerPaginacionRes = function(res, num){            
             if(res.IsOk){
 
@@ -996,8 +1024,11 @@ $scope.guardarContenido = function(){
 
         $scope.initt = function () {
 
+              $.blockUI({ message: "Favor Espere " });    
+
             $scope.Pantalla = {nombre: 'Contenido'};            
-             http(base_url + 'Contenido/Obtener', {}, function (dt) {                
+             http(base_url + 'Contenido/Obtener', {}, function (dt) {  
+               $.unblockUI();                 
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -1030,7 +1061,9 @@ $scope.guardarContenido = function(){
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
                 $scope.vCrud.$Search.w= ""; 
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'Contenido/Obtener', {}, function (dt) {
+                    $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -1049,7 +1082,10 @@ $scope.guardarContenido = function(){
             // PAra los templates. 
             $scope.listaTemplatePages = []; 
 
+            $.blockUI({ message: "Favor Espere " });
+
             http(base_url + 'TemplatePages/ObtenerPorIDSliderMaestro', {id: copiObj.SliderMaestroID}, function (dt) { 
+                $.unblockUI();
                     $appSession.IsSession(dt); 
                     $scope.listaTemplatePages = dt.data; 
                     if(dt.data == null){
@@ -1183,8 +1219,10 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
 
         $scope.initt = function () {
 
+              $.blockUI({ message: "Favor Espere " });    
             $scope.Pantalla = {nombre: 'Fuentes'};            
-             http(base_url + 'Fuentes/Obtener', {}, function (dt) {                
+             http(base_url + 'Fuentes/Obtener', {}, function (dt) {  
+               $.unblockUI();                  
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -1198,7 +1236,9 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
                  if(cEvent.keyCode == 13){
                         $scope.vCrud.$Search.send = true; 
                         $scope.vCrud.$Search.w = $scope.buscarLista; 
+                        $.blockUI({ message: "Favor Espere " });
                     http(base_url + 'Fuentes/Buscar/' + $scope.buscarLista , {}, function (dt) {   
+                        $.unblockUI();
                             $appSession.IsSession(dt);                            
                            $scope.ObtenerPaginacionRes(dt);                                
                     });    
@@ -1207,8 +1247,10 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
                 case 'click':
 
                 $scope.vCrud.$Search.send = true;
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'Fuentes/Buscar/' + $scope.buscarLista, {},
                  function (dt) { 
+                    $.unblockUI();
                         $appSession.IsSession(dt);                          
                            $scope.ObtenerPaginacionRes(dt, null);                                
                 });    
@@ -1217,7 +1259,9 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
                 $scope.vCrud.$Search.w= ""; 
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'Fuentes/Obtener', {}, function (dt) {
+                    $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -1260,8 +1304,6 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
         $scope.ListAll = function(){
         }
 
-
-
         $scope.temp_Prvw = ""; 
 
         $scope.htmls = '<img src="../webApp/img/ppt.png" class="img-circle-op" width="65%" height="126">'; 
@@ -1271,10 +1313,9 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
             switch(parseInt(itm.FuenteTipo)){
                 case 1:
                 return ""; 
-                break;
+                break; 
 
                 case 4:
-
                 return '<img src="../webApp/img/excel.png" class="img-circle-op" width="65%" height="126">';
                 break; 
 
@@ -1289,21 +1330,13 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
                             var objTxtImg= $(txtImg);
                             return '<img src="' + listOfImg[0].src +'" class="" width="65%" height="126">';
                        }
-                }    
-
+                }   
                 return '<img src="../webApp/img/ppt.png" class="img-circle-op" width="65%" height="126">';
                 break;
-
-
-
             }
-
-
-
         }; 
 
         $scope.PreviewOfficeHTML = function(){
-
             // Preliminar de conversion del Html y los Excel. 
             $("#url_preview").html(""); 
             url = $scope.vCrud.form.Url;
@@ -1313,7 +1346,6 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
                     var dt = datatransformer.new( responseJSON.data, responseJSON.config),
                     visuals = responseJSON.config.visuals;
                     dt.generateVisual(visuals[0].visualType,visuals[0].visualOptions,'url_preview' ).render();
-
                 });
                 // El BISChar
                 
@@ -1437,8 +1469,11 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
             }, 
             'searchUrl':  base_url + 'FuerzaVenta/Buscar'
             });
+
+              $.blockUI({ message: "Favor Espere " });    
     
             http(base_url + 'FuerzaVenta/Obtener', {}, function (dt) {                
+                  $.unblockUI();    
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
             });
@@ -1498,8 +1533,9 @@ $scope.ActualizarHoja = function(){
         $scope.master = function(){
 
             $scope.Pantalla = {nombre: 'FuerzaVenta'}; 
-
+$.blockUI({ message: "Favor Espere " });
             http(base_url + 'FuerzaVenta/ObtenerMaestro', {}, function (dt) {                                                    
+                $.unblockUI();
                     $appSession.IsSession(dt);                               
                     if(dt.IsOk){
                         $scope.resumenFuerzaVenta = dt.data; 
@@ -1515,10 +1551,13 @@ $scope.ActualizarHoja = function(){
 
         $scope.initt = function () {
 
+
             $scope.inittCrud(); 
 
+              $.blockUI({ message: "Favor Espere " });    
             $scope.Pantalla = {nombre: 'FuerzaVenta'};            
              http(base_url + 'FuerzaVenta/Obtener', {}, function (dt) {                
+                  $.unblockUI();    
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -1551,7 +1590,9 @@ $scope.ActualizarHoja = function(){
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
                 $scope.vCrud.$Search.w= ""; 
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'FuerzaVenta/Obtener', {}, function (dt) {
+                    $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -1679,9 +1720,10 @@ $scope.ActualizarHoja = function(){
         }
 
         $scope.initt = function () {
-
+  $.blockUI({ message: "Favor Espere " });    
             $scope.Pantalla = {nombre: 'Grupo'};            
-             http(base_url + 'Grupo/Obtener', {}, function (dt) {                
+             http(base_url + 'Grupo/Obtener', {}, function (dt) { 
+               $.unblockUI();                   
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -1704,6 +1746,7 @@ $scope.ActualizarHoja = function(){
                 case 'click':
 
                 $scope.vCrud.$Search.send = true;
+
                 http(base_url + 'Grupo/Buscar/' + $scope.buscarLista, {},
                  function (dt) { 
                         $appSession.IsSession(dt);                          
@@ -1713,8 +1756,10 @@ $scope.ActualizarHoja = function(){
              }
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
-                $scope.vCrud.$Search.w= ""; 
+                $scope.vCrud.$Search.w= "";
+                $.blockUI({ message: "Favor Espere " }); 
                 http(base_url + 'Grupo/Obtener', {}, function (dt) {
+                    $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -2034,10 +2079,11 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
                 console.log(index); 
                 console.log("Remover"); 
 
-                
+                $.blockUI({ message: "Favor Espere " });
 
                  http(base_url + 'Bloques/EliminarBloqueContenido/' , {BloqueContenidoID: itm.BloqueContenidoID, BloqueID: itm.BloqueID, ProgramacionID: $scope.frmBloque.selectedID },
                   function (res) {
+                    $.unblockUI();
                     $appSession.IsSession(res); 
                     if(res.IsOk){
 
@@ -2085,7 +2131,10 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
                 $scope.masterGrupo.selectedBloqueID = itm.BloqueID;
                 $scope.masterGrupo.selectedBloque = JSON.parse(JSON.stringify(itm)); 
 
+                $.blockUI({ message: "Favor Espere " });
+
                 http(base_url + 'Bloques/obtenerBloquesContenidoPorIDs/' , sendObj , function (res) {
+                    $.unblockUI();
                     $appSession.IsSession(res); 
                     if(res.IsOk){
 
@@ -2166,8 +2215,11 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
                 
 
                 var sendObj = {ProgramacionID: $scope.frmBloque.selectedID, FrecuenciaTipo: $scope.frmBloque.form.FrecuenciaTipo, HoraInicio: $scope.frmBloque.form.HoraInicio, HoraFin: $scope.frmBloque.form.HoraFin, Estado: $scope.frmBloque.form.Estado};
+
+                $.blockUI({ message: "Favor Espere " });
                  http(base_url + 'Bloques/validarChoqueBloque/' , sendObj , function (res) {                                    
 
+                    $.unblockUI();
                     $appSession.IsSession(res); 
                     if(res.IsOk){
                         if(res.data){
@@ -2362,8 +2414,11 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
              $("#CanalBloque").show(); 
              $scope.frmBloque.selectedID = id; 
 
+             $.blockUI({ message: "Favor Espere " });
+
             // Paso #2 Cargar los Bloques en Orden y Generar el contenido segun configurado
             http(base_url + 'Bloques/ObtenerBloquesGenerados/' , {ProgramacionID: id}, function (res) {                
+                $.unblockUI();
                     $appSession.IsSession(res); 
                     if(res.IsOk){
                         $scope.listaBloques = res.data; 
@@ -2411,8 +2466,11 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
 
         $scope.initt = function () {
 
-            $scope.Pantalla = {nombre: 'Programacion'};            
+              $.blockUI({ message: "Favor Espere " });
+
+            $scope.Pantalla = {nombre: 'Programacion'};                        
              http(base_url + 'Programacion/Obtener', {}, function (dt) {                
+                  $.unblockUI();
 
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
@@ -2447,7 +2505,9 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
                 $scope.vCrud.$Search.w= ""; 
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'Programacion/Obtener', {}, function (dt) {
+                    $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -2586,9 +2646,11 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
         }
 
         $scope.initt = function () {
+            $.blockUI({ message: "Favor Espere " });
 
             $scope.Pantalla = {nombre: 'SeccionTemplate'};            
-             http(base_url + 'SeccionTemplate/Obtener', {}, function (dt) {                
+             http(base_url + 'SeccionTemplate/Obtener', {}, function (dt) {   
+             $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -2621,7 +2683,9 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
                 $scope.vCrud.$Search.w= ""; 
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'SeccionTemplate/Obtener', {}, function (dt) {
+                    $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -2748,9 +2812,11 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
         }
 
         $scope.initt = function () {
+            $.blockUI({ message: "Favor Espere " });
 
             $scope.Pantalla = {nombre: 'UsuarioLogSesion'};            
-             http(base_url + 'UsuarioLogSesion/Obtener', {}, function (dt) {                
+             http(base_url + 'UsuarioLogSesion/Obtener', {}, function (dt) {  
+             $.unblockUI();              
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -2773,6 +2839,7 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
                 case 'click':
 
                 $scope.vCrud.$Search.send = true;
+
                 http(base_url + 'UsuarioLogSesion/Buscar/' + $scope.buscarLista, {},
                  function (dt) { 
                         $appSession.IsSession(dt);                          
@@ -2783,7 +2850,9 @@ $ang.controller("MasterBloquesController", ["$scope", "$http", "AppCrud",  "AppH
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
                 $scope.vCrud.$Search.w= ""; 
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'UsuarioLogSesion/Obtener', {}, function (dt) {
+                    $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -2935,9 +3004,13 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
                     } 
                 }
 
+                $.blockUI({ message: "Favor Espere " });
+
                 // Envio de los Datos para Registrar Vinculo.
               http(base_url + 'FuerzaVentaDispositivo/registraRelacion', {"dispositivoID": contID, "GUID_FV": ui.item.sortable.model.GUID_FV }, function (dt) {                
                      res = dt; 
+
+                     $.unblockUI();
 
                   if(res.IsOk){
                    // console.log("Todo Ok"); 
@@ -3011,9 +3084,13 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
         }; 
 
         $scope.consultarDispositivoOnline = function(){
+            $.blockUI({ message: "Favor Espere " });
             http(base_url + 'FuerzaVentaDispositivo/obtenerDispositivoOnline', {}, function (res) {                                    
+
+                $.unblockUI();
                   if(res.IsOk){
                   //  console.log("Se elimino OK"); 
+
                   $scope.liveDisp = res.data; 
                   $scope.ordenarDispositivoPorEstatusLine(); 
                   } else {                    
@@ -3068,7 +3145,10 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
             $scope.dropzoneFields[dispositivo.DispositivoID] = []; 
             $scope.listaFuerzaVentaCopy[FV.Nivel].push(FV);           
 
+            $.blockUI({ message: "Favor Espere " });
+
              http(base_url + 'FuerzaVentaDispositivo/eliminarRelacion', {"dispositivoID": dispositivo.DispositivoID, "GUID_FV": FV.GUID_FV }, function (dt) {                
+                $.unblockUI();
 
                     res = dt; 
                   if(res.IsOk){
@@ -3145,8 +3225,12 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
 
         $scope.initt = function () {
 
+            $.blockUI({ message: "Favor Espere " });
+
             $scope.Pantalla = {nombre: 'FuerzaVentaDispositivo'};            
-             http(base_url + 'FuerzaVentaDispositivo/Obtener', {}, function (dt) {                
+             http(base_url + 'FuerzaVentaDispositivo/Obtener', {}, function (dt) {   
+
+             $.unblockUI();             
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -3179,7 +3263,9 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
                 $scope.vCrud.$Search.w= ""; 
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'FuerzaVentaDispositivo/Obtener', {}, function (dt) {
+                    $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -3308,8 +3394,10 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
 
         $scope.initt = function () {
 
+            $.blockUI({ message: "Favor Espere " });
             $scope.Pantalla = {nombre: 'PlanConfig'};            
-             http(base_url + 'PlanConfig/Obtener', {}, function (dt) {                
+             http(base_url + 'PlanConfig/Obtener', {}, function (dt) {   
+             $.unblockUI();             
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -3342,7 +3430,9 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
                 $scope.vCrud.$Search.w= ""; 
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'PlanConfig/Obtener', {}, function (dt) {
+                    $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -3504,7 +3594,7 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
             // Inicializacion del Web socket.            
             
             console.log('Connecting...');
-            $scope.Servidor = new FancyWebSocket('ws://10.234.133.76:9300');             
+            $scope.Servidor = new FancyWebSocket('ws://10.234.133.76:9300');            
 
             //Let the user know we're connected
             $scope.Servidor.bind('open', function() {
@@ -3547,8 +3637,9 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
             $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));  
             $scope.listaGrupoTv = vw_listaGrupoTv;
                    
-
+$.blockUI({ message: "Favor Espere " });
              http(base_url + 'GrupoTv/ObtenerDatos', {}, function (dt) {                
+                $.unblockUI();
                     $appSession.IsSession(dt);                                         
 
                     $scope.listaGrupos = dt.listaGrupos; 
@@ -3624,7 +3715,10 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
             // Envio del la Formula al controlador. Uno po Uno.                      
                     console.log(itm);  
                     var sendOb = {DispositivoID: itm.DispositivoID, GrupoID: $scope.masterGroup.GrupoID};
+                    $.blockUI({ message: "Favor Espere " });
                     http(base_url + 'GrupoTv/AgregarGrupoTV', sendOb, function (dt) {  
+                        $.unblockUI();
+
 
                     $appSession.IsSession(dt);          
 
@@ -3638,7 +3732,9 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
             // Envio del la Formula al controlador. Uno po Uno.
                      
                     var sendOb = {DispositivoID: itm.DispositivoID, GrupoID: itm.GrupoID};
+                    $.blockUI({ message: "Favor Espere " });
                     http(base_url + 'GrupoTv/EliminarGrupoTV', sendOb, function (dt) {  
+                        $.unblockUI();
 
                     $appSession.IsSession(dt);  
                     if(dt.IsOk){
@@ -3684,17 +3780,19 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
 
         $scope.initt = function () {
 
+
+
             $scope.Pantalla = {nombre: 'GrupoTv'};  
             $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));  
             $scope.listaGrupoTv = vw_listaGrupoTv;
                    
+                   $.blockUI({ message: "Favor Espere " });
 
              http(base_url + 'GrupoTv/ObtenerDatos', {}, function (dt) {                
                     $appSession.IsSession(dt);                                         
-
                     $scope.listaGrupos = dt.listaGrupos; 
                     // $scope.ObtenerPaginacionRes(dt); 
-
+                    $.unblockUI();
              });
         };        
 
@@ -3725,7 +3823,9 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
         } else {
                 $scope.vCrud.$Search.send = false;                                                        
                 $scope.vCrud.$Search.w= ""; 
+                $.blockUI({ message: "Favor Espere " });
                 http(base_url + 'GrupoTv/Obtener', {}, function (dt) {
+                    $.unblockUI();
                     $appSession.IsSession(dt);                                         
                     $scope.ObtenerPaginacionRes(dt); 
              });
@@ -3817,6 +3917,57 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
             break;
         }
         }
+}]);
+
+
+
+ $ang.controller("HomeDashBoardController", ["$scope", "$http",  "AppCrud", "AppHttp","AppMenuEvent", "$compile", "AppSession", function ($scope, $http, appCrud, appHttp,appMenuEvent, $compile, $appSession) {
+        function http(url, data, callback) {
+            appHttp.Get(url, data, callback); 
+        }
+
+$scope.resumen = []; 
+$scope.lastUpdate = ""; 
+$scope.rpt = {real: "0", total: "0", alcance:"0"}; 
+
+        $scope.initt = function(){ 
+            $scope.ActualizarDatosConexion();
+        setInterval(function(){         
+         if(document.getElementById("serverstatus02") != null){
+            $scope.ActualizarDatosConexion();
+         }
+        }, 60000 * 6 );
+        };
+
+
+        $scope.ActualizarDatosConexion = function(){
+               http(base_url + "ReporteController/reporteDispositivosOnline", null, function (res) {
+                $scope.resumen = res.Data;
+                $scope.lastUpdate = res.lastUpdate; 
+
+                $scope.rpt.real = $scope.resumen[0].valReal.toString();
+                $scope.rpt.total = $scope.resumen[0].valTotal.toString();
+                $scope.rpt.alcance = ($scope.resumen[0].Alcance*100).toString();
+
+                var doughnutData = [
+                      {
+                        value: 25, //($scope.resumen[0].Alcance*100),
+                        color:"#569ED4"
+                      },
+                      {
+                        value : 100-25, //($scope.resumen[0].Alcance*100),
+                        color : "#fdfdfd"
+                      }
+                    ];
+                    var myDoughnut = new Chart(document.getElementById("serverstatus02").getContext("2d")).Doughnut(doughnutData);                               
+            });
+        }
+
+
+
+        var form = {            
+        };
+
 }]);
 
 })();

@@ -167,14 +167,11 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 		foreach ( $Server->wsClients as $id => $client )
 			if ( $id != $clientID ) {
 
-			$varible = json_decode($message);
-		
+			$varible = json_decode($message);		
 
 			if(array_key_exists("accion" , $varible ) ){
 
-
 				$Server->log(print_r($varible, true));
-
 				if($varible->accion == "ACTIVAR"){
 					$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));					
 // 					$Server->log(print_r($arrayName, true)); 					 
@@ -194,7 +191,6 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 					   }
 				}
 			}
-
 			$confRes["mensaje"] = "Visitor $clientID ($ip) said \"$message\"" ;
 				// $Server->wsSend($id, "Visitor $clientID ($ip) said \"$message\"" .  "=>: ". $varible);
 				$Server->wsSend($id,  json_encode($confRes));				

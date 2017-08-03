@@ -7,7 +7,7 @@ class Contenido extends MY_Controller {
 	 	@autor:	Grequis Xavier Perez Fortuna.
 	 */
 	public function index()
-	{	
+	{			
 	
 	echo $this->generateGUID(); 
 	}

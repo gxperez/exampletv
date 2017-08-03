@@ -88,11 +88,10 @@ margin-left: 11px;
 					  <a class="logout" href="#">
 					  <span class="fa fa-home" style="font-size: 17px;"></span>  </a>
 				  </li>
-                   <li> 
+              <li> 
                   <a class="logout" href="#">
                   <span class="fa fa-envelope-o" style="font-size: 17px;"></span>  </a> </li>
-
-                    <li><a class="logout" href="<?php echo base_url(). "";?>index.php/portal/cerrarSession"><span class="fa fa-cogs" style="font-size: 17px;"></span> Cerrar Session</a></li>
+                    <li><a class="logout" href="<?php echo base_url(). "";?>index.php/portal/cerrarSession"><span class="fa fa-sign-out" style="font-size: 17px;"></span> Salir </a></li>
             	</ul>
             </div>
         </header>
@@ -109,77 +108,7 @@ margin-left: 11px;
               
               	  <p class="centered"><a href="#"><img src="<?php echo base_url(). "webApp/";?>img/user.jpg" class="img-circle" width="60"></a></p>
               	  <h5 class="centered"><?php echo "Administrador";  ?></h5>
-
-      
-
-                  <li class="sub-menu">
-                      <a href="javascript:;" >
-                          <i class="fa fa-cogs"></i>
-                          <span>Seguridad</span>
-                      </a> 
-
-                      <ul class="sub">
-                          <li><a  ng-click="SetMain('usuariologsesion/sm')">Usuario lOg</a></li>
-                      </ul>
-
-                  </li>
-                  <li class="sub-menu">
-                      <a href="javascript:;" >
-                          <i class="fa fa-book"></i>
-                          <span>Solicitudes</span>
-                      </a>
-                      <ul class="sub">
-                          <li><a  href="blank.html">Blank Page</a></li>
-                                                  </ul>
-                  </li>
-                  <li class="sub-menu">
-                      <a href="javascript:;" >
-                          <i class="fa fa-tasks"></i>
-                          <span>Formularios Si</span>
-                      </a>
-                      <ul class="sub">
-                          <li><a  ng-click="SetMain('contenido/sm')">Contenido</a></li>
-                          <li><a  ng-click="SetMain('fuentes/sm')">Fuentes</a></li>
-                          <li><a  ng-click="SetMain('fuerzaventadispositivo/master')">Master Dispositivo FV</a></li>
-                          <li><a  ng-click="SetMain('bloques/master')">Master Bloques</a></li>
-                          <li><a  ng-click="SetMain('fuerzaventa/master')">Fuerza de Venta FV </a></li>
-                          <li><a  ng-click="SetMain('grupotv/sm')">Administrador de Grupo</a></li>
-                          <li><a  ng-click="SetMain('dispositivo/sm')">Dispositivos</a></li>                          
-                          <li><a  ng-click="SetMain('programacion/sm')">Programacion</a></li>
-                          <li><a  ng-click="SetMain('grupo/sm')">Grupo</a></li>
-                          <li><a  ng-click="SetMain('bloques/sm')">Bloques</a></li>
-                          <li><a  ng-click="SetMain('fuerzaventa/sm')">FV</a></li>
-                          
-                          
-                          
-
-                      </ul>
-                  </li>
-
-                  <li class="sub-menu">
-                      <a href="javascript:;" >
-                          <i class=" fa fa-bar-chart-o"></i>
-                          <span>Control</span>
-                      </a>
-                      <ul class="sub">
-                         <li><a  ng-click="SetMain('dispositivolog/online')">En linea</a></li>                          
-                          
-                          
-                      </ul>
-                  </li>
-                
-                  <li class="sub-menu">
-                      <a href="javascript:;" >
-                          <i class=" fa fa-bar-chart-o"></i>
-                          <span>Reportes</span>
-                      </a>
-                      <ul class="sub">
-
-                         <li><a  ng-click="SetMain('planconfig/sm')">Plan config</a></li>                          
-                          <li><a  href="morris.html">Morris</a></li>
-                          <li><a  href="chartjs.html">Chartjs</a></li>
-                      </ul>
-                  </li>
+                  <?php echo $menus;  ?>                 
               </ul>
               <!-- sidebar menu end-->
           </div>

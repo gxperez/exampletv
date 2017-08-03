@@ -51,7 +51,7 @@
 		$stored_procedure = "call sp_PaginarResultQuery( ?, ?, ?);";
 		$query = $this->db->query($stored_procedure, $arrFill);
 		$listaFuentes = $query->result();
- 		return $listaDispositivo;
+ 		return $listaFuentes;
  	}
 
  	public function obtenerFuentesPaginado($limit, $row, $condicion = " Estado != -1"){

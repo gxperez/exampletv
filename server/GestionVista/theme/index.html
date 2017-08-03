@@ -723,7 +723,7 @@
                     return myNavFunction(this.id);
                 },
                 ajax: {
-                    url: "show_data.php?action=1",
+                    url: "http://localhost:7777/reporte/show_data.php?action=1",
                     modal: true
                 },
                 legend: [
@@ -740,6 +740,13 @@
             var to = $("#" + id).data("to");
             console.log('nav ' + nav + ' to: ' + to.month + '/' + to.year);
         }
+		
+		// myDateFunction(this.id);
+function myDateFunction(id) {
+  var date = $("#" + id).data("date");
+  var hasEvent = $("#" + id).data("hasEvent");
+}
+
     </script>
   
 
