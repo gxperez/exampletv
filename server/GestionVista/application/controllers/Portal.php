@@ -20,10 +20,12 @@ class Portal extends MY_Controller {
 	 */
 	public function index()
 	{
+		
 		if (!$this->session->userdata('sUsuario')){
 			redirect('/portal/login', 'refresh');			
 			return false; 
 		} 
+
 
 		$idRol = 0; 
 		 $this->load->model('Portal_model');

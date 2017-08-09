@@ -3926,9 +3926,9 @@ $.blockUI({ message: "Favor Espere " });
             appHttp.Get(url, data, callback); 
         }
 
-$scope.resumen = []; 
-$scope.lastUpdate = ""; 
-$scope.rpt = {real: "0", total: "0", alcance:"0"}; 
+    $scope.resumen = []; 
+    $scope.lastUpdate = ""; 
+    $scope.rpt = {real: "0", total: "0", alcance:"0"}; 
 
         $scope.initt = function(){ 
             $scope.ActualizarDatosConexion();
@@ -3951,11 +3951,11 @@ $scope.rpt = {real: "0", total: "0", alcance:"0"};
 
                 var doughnutData = [
                       {
-                        value: 25, //($scope.resumen[0].Alcance*100),
+                        value: ($scope.resumen[0].Alcance*100),
                         color:"#569ED4"
                       },
                       {
-                        value : 100-25, //($scope.resumen[0].Alcance*100),
+                        value : 100 - ($scope.resumen[0].Alcance*100),
                         color : "#fdfdfd"
                       }
                     ];
