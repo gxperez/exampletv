@@ -10,21 +10,24 @@ Class InstanciaDB {
    static $_instance;
 
    private function __construct(){
-      require 'configDB.php';
-	  
-      $this->_domain= "";
-      $this->_userdb= $user;
-      $this->_passdb= $password;
-      $this->_hostdb= $host;
-      $this->_db= $db;
+     // require 'configDB.php';
    }
 
    private function __clone(){ }
 
-   public static function getInstance(){
+   public static function getInstance($db){
       if (!(self::$_instance instanceof self)){
          self::$_instance=new self();
+
+      $this->_domain= "";
+      $this->_userdb= $db["user"];
+      $this->_passdb= $db["password"];
+      $this->_hostdb= $db["host"];
+      $this->_db= $db["db"];
+
+
       }
+      
       return self::$_instance;
    }
 

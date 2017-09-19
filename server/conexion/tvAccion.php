@@ -1,13 +1,11 @@
 <?php
 try
-{
-
-	
+{	
 	
 	function registrarValidarTV( $dispositivoEnt){
+
 		 $DispositivoID = 0;
 		 global $bd; 
-
 
 		 $result = $bd->ejecutar("select count(*) as Cantidad, MAX(DispositivoID) as DispositivoID, uuid() as uid from dispositivo where Mac = '{$dispositivoEnt["Mac"]}';" );
 

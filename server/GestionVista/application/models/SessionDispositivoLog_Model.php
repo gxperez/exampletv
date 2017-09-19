@@ -38,6 +38,8 @@
  		return $listaSessionDispositivoLog;
  	}
 
+ 	
+
  	public function obtenerSessionDispositivoLogPaginado($limit, $row, $condicion = " Estado != -1"){
 		$this->load->database();
 		$arrFill = array("vLimit" => $limit, "vPage"=> $row, "vCondicion"=> $condicion);

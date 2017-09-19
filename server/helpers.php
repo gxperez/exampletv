@@ -1,25 +1,74 @@
 <?php
-// prevent the server from timing out
-set_time_limit(0);
-date_default_timezone_set("America/Santo_Domingo"); 
-// include the web sockets server script (the server is started at the far bottom of this file)
-require 'class.PHPWebSocket.php';
-require 'class.AdminBisTV.php'; 
 
-$glb_Hash = 'F736E021-AAE6-FFBD-CEBE-A64294FC34B1'; 	
+try
+{	
+	
+	function registrarValidarTV( $dispositivoEnt){
+		 $DispositivoID = 0;
+		 global $bd; 
 
 
-$integracionConfig = array('server' => "http://10.234.51.99:8079/GestionVista/Contenido/httpQuitsObtenerPrograma?sckt_hash=F736E021-AAE6-FFBD-CEBE-A64294FC34B1"	, 
-"baseURL"=> "http://10.234.51.99:8079/GestionVista/"
-);
+		 $result = $bd->ejecutar("select count(*) as Cantidad, MAX(DispositivoID) as DispositivoID, uuid() as uid from dispositivo where Mac = '{$dispositivoEnt["Mac"]}';" );
 
+		 $row = $bd->obtener_fila($result, 0); 
+
+		 $DispositivoID = $row['DispositivoID']; 
+
+		 $consultaGruposPertenece = $bd->ejecutar("select GrupoID, DispositivoID, EsLider from Grupo_Tv where Estado = 1 and DispositivoID = {$row['DispositivoID']};" );
+		 $listaGrupo =  $bd->obtener_fila($consultaGruposPertenece, 0); 
+		 
+
+			if($row['Cantidad'] ==  0){
+				// Hay Que Crear el Televisor
+				$date = date("Y-m-d H:i:s"); 
+
+				$query = "INSERT INTO `bis_gestionvista`.`dispositivo` (`Nombre`, `Descripcion`, `DispositivoTipo`, `Marca`, `Estado`, `Mac`, `IP`, `FechaCrea`, `UltimaSesion`) VALUES ('TV-{$dispositivoEnt['Mac']}', 'Regitrado en el Servidor TV-{$dispositivoEnt['Mac']}', '1', 'Samsung', '1', '{$dispositivoEnt['Mac']}', '{$dispositivoEnt['Ip']}', '$date', '$date');"; 
+
+					$stmt = $bd->ejecutar($query); 
+					$DispositivoID = $bd->lastID();
+			}
+
+			// Insercion del Log en e Procedure 
+			$dateGen = date("Y-m-d H:i:s");
+
+
+			$stmt = $bd->ejecutar("INSERT INTO `bis_gestionvista`.`dispositivo_log` (`DispositivoID`, `Estatus`, `FechaHoraInicio`, `FechaCrea`) VALUES ($DispositivoID, '1', '$dateGen', '$dateGen');");
+
+		
+			$stmt = $bd->ejecutar("UPDATE `bis_gestionvista`.`session_dispositivo_log` SET `Estado`= -1 WHERE `Mac`='{$dispositivoEnt['Mac']}';"); 
+
+			$stmt = $bd->ejecutar("INSERT INTO `bis_gestionvista`.`session_dispositivo_log` (`DispositivoID`, `Mac`, `Ip`, `Estado`, `uid`) VALUES ('$DispositivoID', '{$dispositivoEnt['Mac']}', '{$dispositivoEnt['Ip']}', '1', '{$row['uid']}');");
+
+				$row["DispositivoID"] = $DispositivoID; 
+				$row["Mac"]	= $dispositivoEnt['Mac'];				
+				$row["Ip"]	= $dispositivoEnt['Ip'];
+				$row["listGrupos"] = $listaGrupo;
+				
+				return $row;
+	}
+
+	function logoutTV($dispositivoEnt){
+			global $bd; 
+			
+		// Cerrar 
+			$date = date("Y-m-d H:i:s"); 
+
+					$stmt = $bd->ejecutar("UPDATE `bis_gestionvista`.`session_dispositivo_log` SET `Estado`='-1' WHERE `Mac`='{$dispositivoEnt['Mac']}';"); 
+
+					 $bd->ejecutar("UPDATE `bis_gestionvista`.`dispositivo_log` SET `Estatus`='0', `FechaHoraFin`='{$date}' WHERE `Estatus`='1' and `DispositivoID` = {$dispositivoEnt['DispositivoID']};");
+
+					return $stmt; 
+	}
+
+
+// utilities.php
 function wsOnMessage($clientID, $message, $messageLength, $binary) {
 	global $Server;
 	global $BisGestion; 
 	global $integracionConfig; 
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
 	$timeNow =  new DateTime();	
-	$Server->log("Recepcion de Mensajes.");
+	$Server->log("Mensaje recibido: ");
 	$Server->log( $timeNow->format('Y,m,d,H,i,s')  );
 	$Server->log("=================================");
 	$Server->log($message); 
@@ -29,8 +78,7 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 		return;
 	}
 
-	$varible = json_decode($message);
-
+	$varible = json_decode($message);	
 	if(array_key_exists("accion" , $varible ) ){
 		switch ($varible->accion) {
 			case "ACTIVAR":
@@ -38,7 +86,7 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 				$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));
 				$Server->listTV[$clientID] = registrarValidarTV($arrayName);
 
-				$Server->log("Cliente $clientID Esta conectado."); 						
+				$Server->log(" Cliente $clientID Esta conectado. "); 						
 				$retornos =	$BisGestion->setHasRefresh(); 
 				// $Server->log( print_r($retornos, true) ); 
 				$Server->wsSend($clientID,  json_encode(array('accion' => "NOTIFICAR", "Msg"=> "El dispositivo confirmara si esta actualizado", "fecha"=> $timeNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"], "base_url"=> $integracionConfig["baseURL"],  "fechaActual"=> date("Y-m-d") ) ) );	
@@ -46,58 +94,39 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 
 			case "CONTROLLIDER":
 			// Recibe el Mensaje del Key Control del Lider.
-			$Server->log("Recibe el mensaje del Lider y la tecla pulsada"); 
-			// Aqui va el recorrido para los TV del Grupo que el Corresponde.
-			// Aqui Entonaremos la cancion.
+			$Server->log(" TV Lider. Recibe el mensaje y tecla pulsada. "); 
+
+			// Recorrido para los TV del Grupo que el Corresponde.			
 			$listaPc = $BisGestion->ObtenerListaTVDelGrupoPorMacLider(trim($varible->macAdrees)); 
 
-			$Server->log(print_r($listaPc, true)); 
-
+			// $Server->log(print_r($listaPc, true)); 
 			foreach ($Server->listTV as $key => $value) {
-
-				// Para FInes de Prueba
 				 // 29443 // Reiniciar el Slider Al Primero.
 				if($varible->keyCode == 29443){
-
 					$rsJS = array("accion"=> "CONTROLLIDER", "Msg"=> "", 'keyCode' => $varible->keyCode, "BloqueID"=> $varible->BloqueID, "cIndexC"=> $varible->cIndexC, "cIndexS"=> $varible->cIndexS,"pptKey"=>1, "server"=> $integracionConfig["server"]);
-
-					$Server->log("Esto Existe Y esta OK"); 										
-					$Server->log("El Cambio Por Prueba Sip");
-					$Server->log(print_r($value, true));
-					$Server->wsSend($key, json_encode($rsJS)); 
+						$Server->log(" Ejecutando Cambio: TVs Grupo. "); 										
+						$Server->wsSend($key, json_encode($rsJS)); 
 				}
 
 
 				if(array_key_exists($value["Mac"], $listaPc)) {
-					// 
+									// 
 					$rsJS = array("accion"=> "CONTROLLIDER", "Msg"=> "", 'keyCode' => $varible->keyCode, "BloqueID"=> $varible->BloqueID, "cIndexC"=> $varible->cIndexC, "cIndexS"=> $varible->cIndexS,"pptKey"=>$varible->pptKey, "server"=> $integracionConfig["server"]);
 
-					$Server->log("Esto Existe Y esta OK"); 										
-					$Server->log("Este es el PC Encendida");
-					$Server->log(print_r($value, true));
+					$Server->log("...Enviando mensaje a PC encendida.");					
 					$Server->wsSend($key, json_encode($rsJS));
 				}
 			}
 
-// 
-/*
-{modo:"flash", showCategory: true,
-		 			 	categoryText: "Destilados",
-		 	  			styleCat: "background: red; color: white;",
-		 	  			items: ["Esta es Otra Forma Paso del primer mensaje Enviado desde el Servidor", 'Solo una prueba de calidad']
-		 			};
-
-			*/
-			// {"macAdrees":"0800279b3e8c","Tipo":"TV","accion":"CONTROLLIDER","keyCode":5,"BloqueID":"1","cIndexC":0,"cIndexS":1,"pptKey":2}
-
-
 			break;
 			case "TIMEQUERY":
 			//	$Server->wsSend(); 
-			break; 
+			break;
 
 			case 'BROADCAST':
-				$Server->log("BROADCAST=> Listen"); 
+			// Este es la funcion de BroadCast. Con la finalidad de Para una progrmacion y notificar a los 
+			// televisores de la Fuerza de Venta quien es el Vendedor que ha logrado llegar.
+				$Server->log("Enviando... BROADCAST=>Listen"); 
 
 				$arregloRes= array('modo' => "normal",
 				 "showCategory"=>true, 
@@ -111,64 +140,41 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 				$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "", "duracion"=> 25000, "data"=> $arregloRes ); 
 				$Server->wsSend($clientID, json_encode($rsJSB)); 
 
-
 				break;
 			default:
-			//	# code...
-			
 				break;
 		}		
-
 		return false; 
 	}
 
 	
 		foreach ( $Server->wsClients as $id => $client )
 			if ( $id != $clientID ) {
+			$varible = json_decode($message);		
 
-			$varible = json_decode($message);
-		
-
-			if(array_key_exists("accion" , $varible ) ){
-
-
-				$Server->log(print_r($varible, true));
+			if(array_key_exists("accion" , $varible ) ){				
 
 				if($varible->accion == "ACTIVAR"){
 					$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));					
-// 					$Server->log(print_r($arrayName, true)); 					 
 					 $Server->listTV[$clientID] = registrarValidarTV($arrayName); 
 					 
-					 $Server->log("Esta En linea el Cliente #: ". $clientID );					 
+					 $Server->log(" Esta En linea el Cliente #: ". $clientID );					 
 					 $Server->log($Server->listTV[$clientID]); 
 					 $Server->log("====== Se Establecio la session con el servidor. ==========");
 
 					 // Activacion consultar 
 					 	$dataHoy = date("Y-m-d"); 					 	
-
-					   if(array_key_exists("FechaPrograma" , $varible ) ){
-
-					   } else {
-					   	
-					   }
+					   // if(array_key_exists("FechaPrograma" , $varible ) ){} else {}					   	
 				}
 			}
-
-			$confRes["mensaje"] = "Visitor $clientID ($ip) said \"$message\"" ;
-				// $Server->wsSend($id, "Visitor $clientID ($ip) said \"$message\"" .  "=>: ". $varible);
-				$Server->wsSend($id,  json_encode($confRes));				
+			$confRes["mensaje"] = "Visitor $clientID ($ip) said \"$message\"" ;				
+			$Server->wsSend($id,  json_encode($confRes));				
 		}
-}
-
-function cargarProgramacion(){
-
-
 }
 
 // when a client connects
 function wsOnOpen($clientID)
 {
-
 	global $Server;
 	global $integracionConfig;
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
@@ -182,11 +188,11 @@ function wsOnOpen($clientID)
 
 		if ( $id != $clientID ) {
 		$messal =  array(
-						'mensaje' => '"Visitor $clientID ($ip) has joined the room. con el String"',
+						'mensaje' => '"Smart TV $clientID ($ip) se ha unido a la red"',
 						'moto' => 'verde', "fecha"=>  $tempDateNow->format('Y,m,d,H,i,s') );
-						
+
 		$Server->log( "Mensaje para Clientes Diferentes. " ); 
-			//	$Server->wsSend($id,  json_encode($messal) );
+			
 		} else {
 
 		$rs = array("accion"=> 'ACTIVAR',  "Msg"=> "El dispositivo Esta conectado", "fecha"=> $tempDateNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"]) ; 
@@ -199,14 +205,13 @@ function wsOnOpen($clientID)
 function wsOnClose($clientID, $status) {
 	global $Server;
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
-
 	$Server->log( "$ip ($clientID) has disconnected." );
+	// $Server->log(print_r($Server->listTV, true)); 	
 
-	$Server->log(print_r($Server->listTV, true)); 
-	
 	logoutTV( $Server->listTV[$clientID] ); 
 
-	$Server->log( " Cerro Session en Base de datos. "); 
+	$Server->log( "TV desconnetecd. "); 
+	$Server->log( "Total TV online: " count($Server->listTV) ); 
 
 
 	//Send a user left notice to everyone in the room
@@ -219,30 +224,25 @@ function wsOnClose($clientID, $status) {
 		}
 }
 
+/*
+stream_set_blocking(STDIN, 0);
+$csv_ar = fgetcsv(STDIN);
 
-require "conexion/tvAccion.php";
-require 'conexion/Conexion.php';
-require 'conexion/instanciaDB.php';
+if (is_array($csv_ar)){ 
+  print_r($csv_ar); 
+} 
+*/
 
-$bd= ConexionDB::getInstance();
 
-$BisGestion = new AdminBisTV($bd); 
-
-// start the server
-echo "comenzo \n";
-
-$Server = new PHPWebSocket();
-$Server->bind('message', 'wsOnMessage');
-$Server->bind('open', 'wsOnOpen');
-$Server->bind('close', 'wsOnClose');
-
-echo "conectado 10.234.51.99:9300 \n";
-// for other computers to connect, you will probably need to change this to your LAN IP or external IP,
-// alternatively use: gethostbyaddr(gethostbyname($_SERVER['SERVER_NAME']))
-  $Server->wsStartServer('10.234.51.99', 9300); // ws://10.234.130.55:9300'  127.0.0.1 // 10.234.133.76
-
- // $Server->wsStartServer('10.234.133.76', 9300); // ws://10.234.130.55:9300'  127.0.0.1
-
- echo "corriendo 10.234.51.99:9300";
-
+}
+catch(Exception $ex)
+{
+    //Return error message
+	$jTableResult = array();
+	$jTableResult['Result'] = "ERROR";
+	$jTableResult['Message'] = $ex->getMessage();
+	print json_encode($jTableResult);
+}
+	
+?>
 ?>

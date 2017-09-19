@@ -3780,8 +3780,6 @@ $.blockUI({ message: "Favor Espere " });
 
         $scope.initt = function () {
 
-
-
             $scope.Pantalla = {nombre: 'GrupoTv'};  
             $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));  
             $scope.listaGrupoTv = vw_listaGrupoTv;
