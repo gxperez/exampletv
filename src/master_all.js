@@ -11,7 +11,7 @@ var fileSystemObj = {};
 alert("Cargaron COnfiguraciones Loaded master_all.js"); 
 
 ConfigSetting = {
-	ws: ['10.234.51.99:9300'],
+	ws: ["10.234.133.52:9300"], //['10.234.51.99:9300'],
 	// ws: ['10.234.133.76:9300'], //,'10.234.51.99:9300'], // 10.234.133.76 ['10.234.133.76:9300'], //
 	configFiles: ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ], //{ 0 = serverURL, 1 = version, 2 = all source }
 	serverApp: 'localhost:7777/GestionVista/'

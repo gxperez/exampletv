@@ -127,6 +127,7 @@
 		$(document).ready(function() {
 			log('Connecting...');
 			Server = new FancyWebSocket('ws://10.234.133.52:9300'); 
+			alert("Soket"); 
 
 			$('#message').keypress(function(e) {
 				if ( e.keyCode == 13 && this.value ) {

@@ -5,16 +5,16 @@ try
 	
 	function registrarValidarTV( $dispositivoEnt){
 		 $DispositivoID = 0;
-		 global $bd; 
+		 global $bd;
 
-
-		 $result = $bd->ejecutar("select count(*) as Cantidad, MAX(DispositivoID) as DispositivoID, uuid() as uid from dispositivo where Mac = '{$dispositivoEnt["Mac"]}';" );
+		 $result = $bd->ejecutar("select count(*) as Cantidad, MAX(DispositivoID) as DispositivoID, uuid() as uid from dispositivo where Mac = '{$dispositivoEnt["Mac"]}'" );
+		 
 
 		 $row = $bd->obtener_fila($result, 0); 
 
 		 $DispositivoID = $row['DispositivoID']; 
 
-		 $consultaGruposPertenece = $bd->ejecutar("select GrupoID, DispositivoID, EsLider from Grupo_Tv where Estado = 1 and DispositivoID = {$row['DispositivoID']};" );
+		 $consultaGruposPertenece = $bd->ejecutar("select GrupoID, DispositivoID, EsLider from Grupo_Tv where Estado = 1 and DispositivoID = {$row['DispositivoID']}" );
 		 $listaGrupo =  $bd->obtener_fila($consultaGruposPertenece, 0); 
 		 
 
@@ -27,10 +27,8 @@ try
 					$stmt = $bd->ejecutar($query); 
 					$DispositivoID = $bd->lastID();
 			}
-
-			// Insercion del Log en e Procedure 
+			
 			$dateGen = date("Y-m-d H:i:s");
-
 
 			$stmt = $bd->ejecutar("INSERT INTO `bis_gestionvista`.`dispositivo_log` (`DispositivoID`, `Estatus`, `FechaHoraInicio`, `FechaCrea`) VALUES ($DispositivoID, '1', '$dateGen', '$dateGen');");
 
@@ -43,14 +41,11 @@ try
 				$row["Mac"]	= $dispositivoEnt['Mac'];				
 				$row["Ip"]	= $dispositivoEnt['Ip'];
 				$row["listGrupos"] = $listaGrupo;
-				
 				return $row;
 	}
 
 	function logoutTV($dispositivoEnt){
-			global $bd; 
-			
-		// Cerrar 
+			global $bd; 					
 			$date = date("Y-m-d H:i:s"); 
 
 					$stmt = $bd->ejecutar("UPDATE `bis_gestionvista`.`session_dispositivo_log` SET `Estado`='-1' WHERE `Mac`='{$dispositivoEnt['Mac']}';"); 
@@ -180,8 +175,9 @@ function wsOnOpen($clientID)
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
 	
 	$tempDateNow =  new DateTime(); 
-	$Server->log( "$ip  ($clientID) has connected." . json_encode($Server->wsClients[$clientID]));	
+	$Server->log( "$ip  ($clientID) has connected.");	
 
+		// . json_encode($Server->wsClients[$clientID]))
 
 	//Send a join notice to everyone but the person who joined
 	foreach ( $Server->wsClients as $id => $client )		
@@ -197,7 +193,6 @@ function wsOnOpen($clientID)
 
 		$rs = array("accion"=> 'ACTIVAR',  "Msg"=> "El dispositivo Esta conectado", "fecha"=> $tempDateNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"]) ; 
 			$Server->wsSend($id,  json_encode($rs) );
-
 		}
 }
 
@@ -208,18 +203,18 @@ function wsOnClose($clientID, $status) {
 	$Server->log( "$ip ($clientID) has disconnected." );
 	// $Server->log(print_r($Server->listTV, true)); 	
 
-	logoutTV( $Server->listTV[$clientID] ); 
-
-	$Server->log( "TV desconnetecd. "); 
-	$Server->log( "Total TV online: " count($Server->listTV) ); 
-
+	if(array_key_exists($clientID, $Server->listTV) ){
+		logoutTV( $Server->listTV[$clientID] ); 
+		$Server->log( "TV desconnetecd. "); 
+		$Server->log( "Total TV online: ". count($Server->listTV) ); 		
+	}
 
 	//Send a user left notice to everyone in the room
 	foreach ( $Server->wsClients as $id => $client ) {
-	$mess =  array(
-						'mensaje' => "Visitor $clientID ($ip) has left the room.",
+		$mess =  array(
+						'mensaje' => "Visitor $clientID ($ip) has left the TV Red.",
 						'moto' => 'verde');	
-	$Server->wsSend($id,  json_encode($mess)  );
+		$Server->wsSend($id,  json_encode($mess)  );
 	
 		}
 }
@@ -243,6 +238,5 @@ catch(Exception $ex)
 	$jTableResult['Message'] = $ex->getMessage();
 	print json_encode($jTableResult);
 }
-	
-?>
+
 ?>

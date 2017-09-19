@@ -12,10 +12,20 @@ require 'class.AdminBisTV.php';
 
 require 'conexion/Conexion.php';
 require 'conexion/instanciaDB.php';
+require 'helpers.php';
 
 $bd= ConexionDB::getInstance($config["database"]);
+$BisGestion = new AdminBisTV($bd); 
 
-//$BisGestion = new AdminBisTV($bd); 
+echo " ========== Programa de Socket para Red Smart TV. ================== \n "; 
+
+$Server = new PHPWebSocket();
+$Server->bind('message', 'wsOnMessage');
+$Server->bind('open', 'wsOnOpen');
+$Server->bind('close', 'wsOnClose');
+
+// exit(); 
+$Server->wsStartServer($config["websocket"]["ip"], $config["websocket"]["port"]);
 
 
 

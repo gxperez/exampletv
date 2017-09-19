@@ -9,6 +9,8 @@ Class ConexionDB{
    private $link;
    private $stmt;
    private $array;
+
+   static $_configAttr;
    static $_instance;
 
    public $argServer; 
@@ -20,9 +22,10 @@ Class ConexionDB{
    }
 
    /*Método para establecer los parámetros de la conexión*/
-   private function setConexion(){
+   private function setConexion(){      
+      $conf = InstanciaDB::getInstance(self::$_configAttr);
       
-      $conf = InstanciaDB::getInstance();
+
       $this->servidor=$conf->getHostDB();
       $this->base_datos=$conf->getDB();
       $this->usuario=$conf->getUserDB();
@@ -33,7 +36,8 @@ Class ConexionDB{
    private function __clone(){ }
 
    /*Función encargada de crear, si es necesario, el objeto. Esta es la función que debemos llamar desde fuera de la clase para instanciar el objeto, y así, poder utilizar sus métodos*/
-   public static function getInstance(){
+   public static function getInstance($dt){
+      self::$_configAttr = $dt; 
       if (!(self::$_instance instanceof self)){
          self::$_instance= new self();
       }
@@ -41,10 +45,12 @@ Class ConexionDB{
    }
 
    /*Realiza la conexión a la base de datos.*/
-   private function conectar(){
-      $this->link=mysqli_connect($this->servidor, $this->usuario, $this->password);
-      mysqli_select_db($this->link, $this->base_datos);
-    //  @mysql_query("SET NAMES 'utf8'");
+   private function conectar(){       
+      $this->link= new  mysqli($this->servidor, $this->usuario, $this->password, $this->base_datos);
+      //mysqli_connect($this->servidor, $this->usuario, $this->password);
+      // mysqli_select_db($this->link, $this->base_datos);    
+      // $this->link->select_db($this->link, $this->base_datos);    
+      
    }
 
    /*Método para ejecutar una sentencia sql*/
@@ -54,24 +60,28 @@ Class ConexionDB{
          $this->conectar(); 
       }
 
-	   $this->stmt = mysqli_query($this->link, $sql); 
+	   $this->stmt = $this->link->query($sql) or die(mysqli_error());;  // mysqli_query($this->link, $sql); 
       return $this->stmt;
    }
 
    /*Método para obtener una fila de resultados de la sentencia sql*/
    public function obtener_fila($stmt,$fila){   
-      if ($fila==0){
-		  $this->array = mysqli_fetch_array($stmt, MYSQLI_ASSOC);
-      }else{
-       //  mysqli_data_seek($stmt,$fila);
-         $this->array=mysqli_fetch_array($stmt, MYSQLI_ASSOC);
+
+      // var_dump($stmt); 
+      if(!$stmt){
+
+         echo " El resultado ha Sido Falso \n "; 
+
       }
+
+
+		  $this->array = $stmt->fetch_array(MYSQLI_ASSOC); // or die(mysql_error());
       return $this->array;
    }
 
    //Devuelve el último id del insert introducido
    public function lastID(){         
-      return mysqli_insert_id($this->link);
+      return $this->link->insert_id;  //  mysqli_insert_id($this->link);
 
    }
 

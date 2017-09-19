@@ -16,19 +16,22 @@ Class InstanciaDB {
    private function __clone(){ }
 
    public static function getInstance($db){
+
       if (!(self::$_instance instanceof self)){
          self::$_instance=new self();
+         self::$_instance->setDB($db); 
+      }
 
-      $this->_domain= "";
+      return self::$_instance;
+   }
+
+   public function setDB($db){
+ 
+        $this->_domain= "";
       $this->_userdb= $db["user"];
       $this->_passdb= $db["password"];
       $this->_hostdb= $db["host"];
       $this->_db= $db["db"];
-
-
-      }
-      
-      return self::$_instance;
    }
 
    public function getUserDB(){
