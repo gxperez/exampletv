@@ -41,6 +41,8 @@ try
 				$row["Mac"]	= $dispositivoEnt['Mac'];				
 				$row["Ip"]	= $dispositivoEnt['Ip'];
 				$row["listGrupos"] = $listaGrupo;
+
+				$bd->desconectarBD(); 
 				return $row;
 	}
 
@@ -85,7 +87,7 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 				$Server->log("Cliente $clientID Esta conectado."); 						
 				$retornos =	$BisGestion->setHasRefresh(); 
 				// $Server->log( print_r($retornos, true) );
-				
+
 				var_dump($integracionConfig); 
 // La fe no Admite Dudas.
 

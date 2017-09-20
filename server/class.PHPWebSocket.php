@@ -664,6 +664,9 @@ class PHPWebSocket
 	// client write functions
 	function wsSendClientMessage($clientID, $opcode, $message) {
 		// check if client ready state is already closing or closed
+
+		if(!array_key_exists($clientID, $this->wsClients)){ throw new Exception("Error Processing Request. Undefined offset. Port Swanped or saturated.", 1);	}
+
 		if ($this->wsClients[$clientID][2] == self::WS_READY_STATE_CLOSING || $this->wsClients[$clientID][2] == self::WS_READY_STATE_CLOSED) return true;
 
 		// fetch message length

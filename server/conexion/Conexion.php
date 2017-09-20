@@ -51,7 +51,9 @@ Class ConexionDB{
 
    /*Realiza la conexión a la base de datos.*/
    private function conectar(){  
-   try {      
+   try { 
+
+   echo " \n 'Se ha conectado nuevamente.'  \n " ;
       $this->link= new  mysqli($this->servidor, $this->usuario, $this->password, $this->base_datos);
       //mysqli_connect($this->servidor, $this->usuario, $this->password);
       // mysqli_select_db($this->link, $this->base_datos);    

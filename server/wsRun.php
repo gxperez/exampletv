@@ -13,31 +13,49 @@ require 'class.AdminBisTV.php';
 require 'conexion/Conexion.php';
 require 'conexion/instanciaDB.php';
 require 'helpers.php';
+ 
 
-$bd= ConexionDB::getInstance($config["database"]);
-$BisGestion = new AdminBisTV($bd); 
+ $isRuning = true;
+
+while ($isRuning) {
+
+	$bd= ConexionDB::getInstance($config["database"]);
+	$BisGestion = new AdminBisTV($bd);	
 
 echo " ========== Programa de Socket para Red Smart TV. ================== \n "; 
+try {
+
 
 $Server = new PHPWebSocket();
 $Server->bind('message', 'wsOnMessage');
 $Server->bind('open', 'wsOnOpen');
 $Server->bind('close', 'wsOnClose');
-
- // exit(); 
+ 
 $Server->wsStartServer($config["websocket"]["ip"], $config["websocket"]["port"]);
 
+	} catch (Exception $e) {
 
+	    echo 'Exception: - ',  $e->getMessage(), " \n ";
+	    $isRuning = true;
+	}
+}
 
-
-
-
-
-
+echo " \n *******La Ejecucion ha finalizado*******  \n "; 
 
 
 
 /*
+
+stream_set_blocking(STDIN, 0);
+echo "\n Favor Escriba el Comando: "; 
+$csv_ar = fgetcsv(STDIN);
+if (is_array($csv_ar)){
+  print "CVS on STDIN\n";
+
+} else {
+  print "Look to ARGV for CSV file name.\n";
+}
+
 
 require "conexion/tvAccion.php";
 require 'conexion/Conexion.php';
