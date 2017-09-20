@@ -1,4 +1,6 @@
 <?php 
+define("MYSQL_CONN_ERROR", "Unable to connect to database."); 
+mysqli_report(MYSQLI_REPORT_STRICT); 
 
 Class ConexionDB{
 
@@ -6,7 +8,7 @@ Class ConexionDB{
    private $usuario;
    private $password;
    private $base_datos;
-   private $link;
+   private $link = false;
    private $stmt;
    private $array;
 
@@ -16,9 +18,12 @@ Class ConexionDB{
    public $argServer; 
 
    private function __construct(){
-
-      $this->setConexion();
-      $this->conectar();
+      try{
+         $this->setConexion();
+         $this->conectar();
+      } catch (Exception $e) { 
+         echo $e->errorMessage(); 
+      } 
    }
 
    /*Método para establecer los parámetros de la conexión*/
@@ -45,11 +50,15 @@ Class ConexionDB{
    }
 
    /*Realiza la conexión a la base de datos.*/
-   private function conectar(){       
+   private function conectar(){  
+   try {      
       $this->link= new  mysqli($this->servidor, $this->usuario, $this->password, $this->base_datos);
       //mysqli_connect($this->servidor, $this->usuario, $this->password);
       // mysqli_select_db($this->link, $this->base_datos);    
-      // $this->link->select_db($this->link, $this->base_datos);    
+      // $this->link->select_db($this->link, $this->base_datos);  
+      } catch (mysqli_sql_exception $e) { 
+         throw $e; 
+      }     
       
    }
 
@@ -60,22 +69,16 @@ Class ConexionDB{
          $this->conectar(); 
       }
 
-	   $this->stmt = $this->link->query($sql) or die(mysqli_error());;  // mysqli_query($this->link, $sql); 
+	   $this->stmt = $this->link->query($sql);  // mysqli_query($this->link, $sql);       
       return $this->stmt;
    }
 
    /*Método para obtener una fila de resultados de la sentencia sql*/
-   public function obtener_fila($stmt,$fila){   
-
-      // var_dump($stmt); 
+   public function obtener_fila($stmt,$fila){         
       if(!$stmt){
-
-         echo " El resultado ha Sido Falso \n "; 
-
+         return array();
       }
-
-
-		  $this->array = $stmt->fetch_array(MYSQLI_ASSOC); // or die(mysql_error());
+		$this->array = $stmt->fetch_array(MYSQLI_ASSOC); // or die(mysql_error());
       return $this->array;
    }
 

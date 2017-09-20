@@ -63,17 +63,18 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 	global $integracionConfig; 
 	$ip = long2ip( $Server->wsClients[$clientID][6] );
 	$timeNow =  new DateTime();	
-	$Server->log("Mensaje recibido: ");
+	$Server->log("Recepcion de Mensajes.");
 	$Server->log( $timeNow->format('Y,m,d,H,i,s')  );
 	$Server->log("=================================");
-	$Server->log($message); 
-	
+	$Server->log($message);
+
 	if ($messageLength == 0) {
 		$Server->wsClose($clientID);
 		return;
 	}
 
-	$varible = json_decode($message);	
+	$varible = json_decode($message);
+
 	if(array_key_exists("accion" , $varible ) ){
 		switch ($varible->accion) {
 			case "ACTIVAR":
@@ -81,47 +82,70 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 				$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));
 				$Server->listTV[$clientID] = registrarValidarTV($arrayName);
 
-				$Server->log(" Cliente $clientID Esta conectado. "); 						
+				$Server->log("Cliente $clientID Esta conectado."); 						
 				$retornos =	$BisGestion->setHasRefresh(); 
-				// $Server->log( print_r($retornos, true) ); 
+				// $Server->log( print_r($retornos, true) );
+				
+				var_dump($integracionConfig); 
+// La fe no Admite Dudas.
+
 				$Server->wsSend($clientID,  json_encode(array('accion' => "NOTIFICAR", "Msg"=> "El dispositivo confirmara si esta actualizado", "fecha"=> $timeNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"], "base_url"=> $integracionConfig["baseURL"],  "fechaActual"=> date("Y-m-d") ) ) );	
 				break;	
 
 			case "CONTROLLIDER":
 			// Recibe el Mensaje del Key Control del Lider.
-			$Server->log(" TV Lider. Recibe el mensaje y tecla pulsada. "); 
-
-			// Recorrido para los TV del Grupo que el Corresponde.			
+			$Server->log("Recibe el mensaje del Lider y la tecla pulsada"); 
+			// Aqui va el recorrido para los TV del Grupo que el Corresponde.
+			// Aqui Entonaremos la cancion.
 			$listaPc = $BisGestion->ObtenerListaTVDelGrupoPorMacLider(trim($varible->macAdrees)); 
 
-			// $Server->log(print_r($listaPc, true)); 
+			$Server->log(print_r($listaPc, true)); 
+
 			foreach ($Server->listTV as $key => $value) {
+
+				// Para FInes de Prueba
 				 // 29443 // Reiniciar el Slider Al Primero.
 				if($varible->keyCode == 29443){
+
 					$rsJS = array("accion"=> "CONTROLLIDER", "Msg"=> "", 'keyCode' => $varible->keyCode, "BloqueID"=> $varible->BloqueID, "cIndexC"=> $varible->cIndexC, "cIndexS"=> $varible->cIndexS,"pptKey"=>1, "server"=> $integracionConfig["server"]);
-						$Server->log(" Ejecutando Cambio: TVs Grupo. "); 										
-						$Server->wsSend($key, json_encode($rsJS)); 
+
+					$Server->log("Esto Existe Y esta OK"); 										
+					$Server->log("El Cambio Por Prueba Sip");
+					$Server->log(print_r($value, true));
+					$Server->wsSend($key, json_encode($rsJS)); 
 				}
 
 
 				if(array_key_exists($value["Mac"], $listaPc)) {
-									// 
+					// 
 					$rsJS = array("accion"=> "CONTROLLIDER", "Msg"=> "", 'keyCode' => $varible->keyCode, "BloqueID"=> $varible->BloqueID, "cIndexC"=> $varible->cIndexC, "cIndexS"=> $varible->cIndexS,"pptKey"=>$varible->pptKey, "server"=> $integracionConfig["server"]);
 
-					$Server->log("...Enviando mensaje a PC encendida.");					
+					$Server->log("Esto Existe Y esta OK"); 										
+					$Server->log("Este es el PC Encendida");
+					$Server->log(print_r($value, true));
 					$Server->wsSend($key, json_encode($rsJS));
 				}
 			}
 
+// 
+/*
+{modo:"flash", showCategory: true,
+		 			 	categoryText: "Destilados",
+		 	  			styleCat: "background: red; color: white;",
+		 	  			items: ["Esta es Otra Forma Paso del primer mensaje Enviado desde el Servidor", 'Solo una prueba de calidad']
+		 			};
+
+			*/
+			// {"macAdrees":"0800279b3e8c","Tipo":"TV","accion":"CONTROLLIDER","keyCode":5,"BloqueID":"1","cIndexC":0,"cIndexS":1,"pptKey":2}
+
+
 			break;
 			case "TIMEQUERY":
 			//	$Server->wsSend(); 
-			break;
+			break; 
 
 			case 'BROADCAST':
-			// Este es la funcion de BroadCast. Con la finalidad de Para una progrmacion y notificar a los 
-			// televisores de la Fuerza de Venta quien es el Vendedor que ha logrado llegar.
-				$Server->log("Enviando... BROADCAST=>Listen"); 
+				$Server->log("BROADCAST=> Listen"); 
 
 				$arregloRes= array('modo' => "normal",
 				 "showCategory"=>true, 
@@ -135,37 +159,55 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 				$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "", "duracion"=> 25000, "data"=> $arregloRes ); 
 				$Server->wsSend($clientID, json_encode($rsJSB)); 
 
+
 				break;
 			default:
+			//	# code...
+			
 				break;
 		}		
+
 		return false; 
 	}
 
 	
 		foreach ( $Server->wsClients as $id => $client )
 			if ( $id != $clientID ) {
-			$varible = json_decode($message);		
 
-			if(array_key_exists("accion" , $varible ) ){				
+			$varible = json_decode($message);
+		
+
+			if(array_key_exists("accion" , $varible ) ){
+
+
+				$Server->log(print_r($varible, true));
 
 				if($varible->accion == "ACTIVAR"){
 					$arrayName = array('Mac' => trim($varible->macAdrees),  'Ip'=> trim($ip));					
+// 					$Server->log(print_r($arrayName, true)); 					 
 					 $Server->listTV[$clientID] = registrarValidarTV($arrayName); 
 					 
-					 $Server->log(" Esta En linea el Cliente #: ". $clientID );					 
+					 $Server->log("Esta En linea el Cliente #: ". $clientID );					 
 					 $Server->log($Server->listTV[$clientID]); 
 					 $Server->log("====== Se Establecio la session con el servidor. ==========");
 
 					 // Activacion consultar 
 					 	$dataHoy = date("Y-m-d"); 					 	
-					   // if(array_key_exists("FechaPrograma" , $varible ) ){} else {}					   	
+
+					   if(array_key_exists("FechaPrograma" , $varible ) ){
+
+					   } else {
+					   	
+					   }
 				}
 			}
-			$confRes["mensaje"] = "Visitor $clientID ($ip) said \"$message\"" ;				
-			$Server->wsSend($id,  json_encode($confRes));				
+
+			$confRes["mensaje"] = "Visitor $clientID ($ip) said \"$message\"" ;
+				// $Server->wsSend($id, "Visitor $clientID ($ip) said \"$message\"" .  "=>: ". $varible);
+				$Server->wsSend($id,  json_encode($confRes));				
 		}
 }
+
 
 // when a client connects
 function wsOnOpen($clientID)

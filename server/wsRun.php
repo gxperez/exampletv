@@ -24,7 +24,7 @@ $Server->bind('message', 'wsOnMessage');
 $Server->bind('open', 'wsOnOpen');
 $Server->bind('close', 'wsOnClose');
 
-// exit(); 
+ // exit(); 
 $Server->wsStartServer($config["websocket"]["ip"], $config["websocket"]["port"]);
 
 
