@@ -29,7 +29,7 @@ Class ConexionDB{
    /*Método para establecer los parámetros de la conexión*/
    private function setConexion(){      
       $conf = InstanciaDB::getInstance(self::$_configAttr);
-      
+
 
       $this->servidor=$conf->getHostDB();
       $this->base_datos=$conf->getDB();
