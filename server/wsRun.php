@@ -25,6 +25,7 @@ while ($isRuning) {
 echo " ========== Programa de Socket para Red Smart TV. ================== \n "; 
 try {
 
+// Condicion Sigleton para el puerto. 
 
 $Server = new PHPWebSocket();
 $Server->bind('message', 'wsOnMessage');
