@@ -4,7 +4,7 @@
 set_time_limit(0);
 date_default_timezone_set("America/Santo_Domingo"); 
 // include the web sockets server script (the server is started at the far bottom of this file)
-require 'config.php';
+require 'configvar.php';
 require 'libs/class.PHPWebSocket.php';
 require 'libs/class.AdminBisTV.php'; 
 require 'libs/class.Application.php';
