@@ -1,4 +1,8 @@
 <?php
+/**
+Autor: Grequis Xavier Perez Fortuna.
+
+*/
 
 	
 	function registrarValidarTV( $dispositivoEnt){
