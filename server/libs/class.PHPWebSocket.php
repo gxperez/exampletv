@@ -20,7 +20,7 @@ class PHPWebSocket
 	const WS_MAX_CLIENTS = 100;
 
 	// maximum amount of clients that can be connected at one time on the same IP v4 address
-	const WS_MAX_CLIENTS_PER_IP = 15;
+	const WS_MAX_CLIENTS_PER_IP = 80;
 
 	// amount of seconds a client has to send data to the server, before a ping request is sent to the client,
 	// if the client has not completed the opening handshake, the ping request is skipped and the client connection is closed

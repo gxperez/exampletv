@@ -50,7 +50,7 @@ $config["websocket"]["baseURL"] =  "http://10.234.51.99:8079/GestionVista/";
 $config["database"]= array(
  'host' => "localhost:3306", 
  'user' => "root", 
- "password" => "", 
+ "password" => "123", 
  'port'=> "3306", 
  "db"=> "bis_gestionvista"
 );
@@ -64,6 +64,10 @@ $integracionConfig = array(
 'server' => $config["websocket"]["server_backend"], 
 "baseURL"=> $config["websocket"]["baseURL"]
 );
+
+$Server = false; 
+$bd = false; 
+$BisGestion = false; 
 /**
 ***********************************************************************
 */

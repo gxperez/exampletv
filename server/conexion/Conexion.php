@@ -101,6 +101,12 @@ Class ConexionDB{
        $this->link = false; 
    }
 
+   public function reset(){
+      if($this->link){
+         $this->desconectarBD(); 
+      }
+   }
+
 
 }
 ?>

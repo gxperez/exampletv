@@ -67,14 +67,11 @@ function wsOnMessage($clientID, $message, $messageLength, $binary) {
 	$Server->log( $timeNow->format('Y,m,d,H,i,s')  );
 	$Server->log("=================================");
 	// $Server->log($message);
-
 	$varible = json_decode($message);
-	$Server->log("Que es lo que pasa Wey."); 
 
-	var_dump($varible);
-	if(array_key_exists("Tipo", $varible) && $varible["Tipo"] == "SERVER_REMOTE" ){		
-		echo " \n Prueba Remota \n "; 
-		setServerAccion($varible);
+	if(array_key_exists("Tipo", $varible) && $varible->Tipo == "SERVER_REMOTE" ){		
+		echo " \n Acceso Administrador de manera remota. \n "; 
+		setServerAccion($varible, $clientID, $timeNow);
 return;
 	}
 
@@ -84,7 +81,7 @@ return;
 		return;
 	}
 
-	setServerAccion($varible);
+	setServerAccion($varible, $clientID, $timeNow);
 
 return;
 	
@@ -180,10 +177,13 @@ function wsOnClose($clientID, $status) {
 }
 
 
-function setServerAccion($varible){
+function setServerAccion($varible, $clientID, $timeNow){
 	global $Server;
+	global $BisGestion;
+	global $integracionConfig;
 
-	echo "  --  Entro Aqui  --"; 
+	$ip = long2ip( $Server->wsClients[$clientID][6] );
+
 	if(array_key_exists("accion" , $varible) ){
 		switch ($varible->accion) {
 			case "ACTIVAR":
@@ -245,14 +245,23 @@ function setServerAccion($varible){
 				break;
 
 			case "CLOSESERVER":
-			$Server->log("El servicio esta siendo detenido por el administrador");
+			$Server->log("El servicio esta siendo detenido por el administrador.");			
 			 exit(); 
 			//	$Server->wsSend(); 
 			break; 
 
 			case "REPORTE":
 			echo " El servidor a enviado un reporte. \n "; 
-			break; 
+			break;
+
+			case "RESETSERVER":
+			$Server->log("El servicio esta siendo detenido por el administrador.");			
+			$Server->log("Restart All.");
+
+			throw new Exception("RESETSERVER: Error intencional para captura e iniciar.", 1);									
+			//  exit(); 
+			//	$Server->wsSend(); 
+			break;  
 			default:
 			
 				break;
@@ -296,6 +305,6 @@ catch(Exception $ex)
 			// {"macAdrees":"0800279b3e8c","Tipo":"TV","accion":"CONTROLLIDER","keyCode":5,"BloqueID":"1","cIndexC":0,"cIndexS":1,"pptKey":2}
 
 
-*/
+// */
 
 ?>
