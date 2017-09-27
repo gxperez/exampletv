@@ -11,7 +11,7 @@
  
 	public function obtenerFuerzaVenta(){
 		$this->load->database();
-		$query = $this->db->get(fuerza_venta);			
+		$query = $this->db->get("fuerza_venta");			
 			
 		$listaFuerzaVenta = $query->result(); 
 		return $listaFuerzaVenta;
@@ -80,7 +80,33 @@
  		foreach ($array as $key => $value) {
  			if($value->Estado === true){
 
-	 			$tbArray[] = array('GUID_FV' => $value->GuidFv , 'GUIDDependencia'=> $value->GuidDependencia, 'Nombre'=> $value->Nombre, 'Descripcion'=> $value->Descripcion, "Nivel"=> $value->Nivel, "UsuarioCreaID"=>  $usuarioID,  "FechaCrea" => $fecha, "Estado"=> 1);
+ 				$hasPersona = false; 
+
+ 				$dtaPersona = array('Nombre' => '', "CodigoEmpleado"=> "", "FotoPerfil"=> null );
+
+ 			if(array_key_exists("Persona", $value)) {  					
+
+ 			 if( count($value->Persona) > 0){ 			 	
+
+ 			 	if($value->Persona[0] != null){
+
+	 				$dtaPersona = array('Nombre' => $value->Persona[0]->Nombre, "CodigoEmpleado"=> $value->Persona[0]->CodigoEmpleado, "FotoPerfil"=> $value->Persona[0]->Foto);
+	 				$hasPersona = true; 
+
+ 			 	}
+
+
+
+ 				}
+ 				}
+
+ 				
+
+	 			$tbArray[] = array('GUID_FV' => $value->GuidFv , 'GUIDDependencia'=> $value->GuidDependencia, 'Nombre'=> $value->Nombre, 'Descripcion'=> $value->Descripcion, "Nivel"=> $value->Nivel, "UsuarioCreaID"=>  $usuarioID,  "FechaCrea" => $fecha, "Estado"=> 1, "Persona"=>  $dtaPersona["Nombre"], "CodigoEmpleado"=> $dtaPersona["CodigoEmpleado"], "Foto"=> $dtaPersona["FotoPerfil"] );
+
+	 			// Foto de Empleados.
+
+	 			//*********************************
 
 	 			$childrenArr =  array();
 
@@ -90,7 +116,8 @@
 	 	 		}  	 		
 	 	 		$tbArray = array_merge($tbArray, $childrenArr); 
  			}
- 	 	} 		
+ 	 	} 	
+
  	 	return $tbArray; 
 
  	}
@@ -202,6 +229,21 @@
 			return null; 
 		}
 		return current($result->result()); 
+	}
+
+	// FuerzaVenta: Obtener FuerzaVenta Por Mac e Imagen
+	public function ObtenerFotoPorMac($mac){
+		$this->load->database();
+		
+		$qry = "select d.Mac, fv.Nombre, fv.Foto  from fuerza_venta_dispositivo as fvd
+inner join dispositivo as d on fvd.DispositivoID = d.DispositivoID and d.Estado = 1 and fvd.Estado = 1
+inner join fuerza_venta as fv on fv.GUID_FV = fvd.GUID_FV and fv.Estado = 1
+where Mac = '$mac' "; 
+
+		
+		$query = $this->db->query($qry);
+ 		// $res = $query->result();  		 		
+		return current($query->result()); 
 	}
 	
  }

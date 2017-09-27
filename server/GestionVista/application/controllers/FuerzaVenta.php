@@ -15,9 +15,14 @@ class FuerzaVenta extends MY_Controller {
 		}
 		$this->load->model("FuerzaVenta_Model", "mFuerzaVenta");
 		// Consume la Fuerza De Venta Por Bloque.		
-		$json_file = file_get_contents('http://cnddosdobis:8090/WebServices/api.asmx/ObtenerFuerzaVenta');
+		// $json_file = file_get_contents('http://cnddosdobis:8090/WebServices/api.asmx/ObtenerFuerzaVenta');
+		$json_file = file_get_contents('http://localhost:52999/api.asmx/ObtenerFuerzaVentaImagen');
+
 		$jFV = json_decode($json_file);
-		// $rest = $this->mFuerzaVenta->tabularNodos($jFV, 1, date("y-m-d h:i:s")); 
+		 $rest = $this->mFuerzaVenta->tabularNodos($jFV, 1, date("y-m-d h:i:s")); 
+
+		 print_r($rest); 
+		 exit(); 
 		$this->mFuerzaVenta->activarNuevaFuerzaVenta($jFV, 1); 
 		exit();
 	}
@@ -43,7 +48,8 @@ class FuerzaVenta extends MY_Controller {
 		// Sincronizar.
 		if($this->input->post("sincronizar")){			
 			// Obtencion del JSON.			
-			$json_file = file_get_contents('http://cnddosdobis:8090/WebServices/api.asmx/ObtenerFuerzaVenta');
+//			$json_file = file_get_contents('http://cnddosdobis:8090/WebServices/api.asmx/ObtenerFuerzaVentaImagen');
+			$json_file = file_get_contents('http://localhost:52999/api.asmx/ObtenerFuerzaVentaImagen');
 			$jFV = json_decode($json_file);
 			$this->load->model("FuerzaVenta_Model", "mFuerzaVenta");
 			// Actualizar La Base de datos.. Eliminar todas las Fuerzas de Ventas.
