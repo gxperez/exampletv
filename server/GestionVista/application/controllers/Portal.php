@@ -269,6 +269,8 @@ class Portal extends MY_Controller {
 		$listaMenu[] = array("Padre"=>"Configuración", "icon"=> "fa fa-tasks",  "Nombre"=>"Dispositivo", "attr"=>"ng-click=\"SetMain('dispositivo/sm')\"",  "Rol"=> array( 1, 8 ) );		
 
 		$listaMenu[] = array("Padre"=>"Configuración", "icon"=> "fa fa-tasks",  "Nombre"=>"En Linea", "attr"=>"ng-click=\"SetMain('dispositivolog/online')\"",  "Rol"=> array( 1, 8 ) );				
+
+		$listaMenu[] = array("Padre"=>"BroadCast", "icon"=> "fa fa-rss",  "Nombre"=>"TV Conected.", "attr"=>"ng-click=\"SetMain('dispositivolog/online')\"",  "Rol"=> array( 1, 8 ) );				
 				
 		
 		$renderHtml =  array();

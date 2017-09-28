@@ -238,11 +238,22 @@
 		$qry = "select d.Mac, fv.Nombre, fv.Foto  from fuerza_venta_dispositivo as fvd
 inner join dispositivo as d on fvd.DispositivoID = d.DispositivoID and d.Estado = 1 and fvd.Estado = 1
 inner join fuerza_venta as fv on fv.GUID_FV = fvd.GUID_FV and fv.Estado = 1
-where Mac = '$mac' "; 
-
+where Mac = '$mac' ";
 		
 		$query = $this->db->query($qry);
  		// $res = $query->result();  		 		
+		return current($query->result()); 
+	}
+
+	public function ObtenerFotoPorGUID($guid){
+		$this->load->database();
+		
+		$qry = "select d.Mac, fv.Nombre, fv.Foto  from fuerza_venta_dispositivo as fvd
+inner join dispositivo as d on fvd.DispositivoID = d.DispositivoID and d.Estado = 1 and fvd.Estado = 1
+inner join fuerza_venta as fv on fv.GUID_FV = fvd.GUID_FV and fv.Estado = 1
+where fv.GUID_FV = '$guid'";
+		
+		$query = $this->db->query($qry); 		
 		return current($query->result()); 
 	}
 	

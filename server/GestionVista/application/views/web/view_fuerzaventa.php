@@ -61,14 +61,15 @@
 
                           <div class="content-panel">
                             <h4> <i class="fa fa-tasks"></i> {{Pantalla.nombre}}</h4><hr>
-
-                            <table class="table table-hover">
+                            <table class="table table-hover">                            
                             
                                 <thead>
                                 <tr>                                    
                                     <th>Nivel</th>
                                     <th>Nombre</th>
                                     <th>Descripcion</th>
+                                    <th>Codigo/ <br> Nombre</th>
+                                    <th>Perfil</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -77,6 +78,8 @@
                                     <td>{{item.Nivel}}</td>
                                     <td>{{item.Nombre}}</td>
                                     <td>{{item.Descripcion}}</td>
+                                    <td>{{item.CodigoEmpleado}} <br>{{item.Persona}}</td>
+                                    <td><img src="{{getImagenPersona(item)}}" width="45" >  </td>
                                 </tr>                                
                                 </tbody>
                             </table>

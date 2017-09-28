@@ -24,8 +24,7 @@ class GrupoTv extends MY_Controller {
 
         $this->load->model('EmunsViews_model', 'mEnum');        	       	
         $this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
-
-        $this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
+        
 
         $this->load->model("GrupoTv_Model", "mGrupoTv");
 

@@ -204,16 +204,19 @@ $this->validation->set_rules("objeto[FechaCrea]", "FechaCrea", "");
 			redirect("/portal/login", "refresh");			
 			return false; 
 		}
-
-
-		// El index para la notificcion.
+		
 
 		$data = array("csrf" =>array(
         "name" => $this->security->get_csrf_token_name(),
         "hash" => $this->security->get_csrf_hash()
         ) );
 
-        
+        $this->load->model("GrupoTv_Model", "mGrupoTv");
+        $this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
+
+
+        $data['listaGrupoTv'] = $this->mGrupoTv->obtenerListaGrupoTvPorGrupoID(); 
+		$data['fuerzaVentaData'] = json_encode($this->mFuerzaVentaDispositivo->formatNivelObject($this->mFuerzaVentaDispositivo->obtenerFuerzaVentaRelacion() ) ); 
 
 		// Carga de planilla web en general.
 		$this->load->view("web/vw_websocket_dispositivo", $data); 

@@ -258,36 +258,53 @@ public function Actualizar(){
 	public function httpObtenerImagenFVNow(){
 		if( $this->input->get("Mac")){
 			$this->load->model("FuerzaVenta_Model", "mFv");
-			$Mac = $this->input->get("Mac"); 		
-
+			$Mac = $this->input->get("Mac");
 			// Ajustes por la Ips que esta configurando.					
 				$stdRes = $this->mFv->ObtenerFotoPorMac($Mac);
 				if($stdRes){
-			 //		imagejpeg($stdRes->Foto, 'textosimple.jpg');      
-    //   list($name, $type, $size, $content) = mysql_fetch_array($result);
-      
-    //  header("Content-type: image/jpeg");
-      /* read data (binary) */     	
-		//  echo  $outputfile; 
-// echo 'data:image/jpeg;base64,' . base64_encode($stdRes->Foto);
-	//				echo '<img src="data:image/jpeg;base64,' . $stdRes->Foto . '" width="290" height="290">'; 
-
-			$image = $this->base64_to_jpeg( $stdRes->Foto, 'tmp.jpg' );
-
-			echo $image; 
-
-
-
-				} else {
-
-					echo "nop"; 
-
+      				if($stdRes->Foto != null){
+						header("Content-type: image/jpeg");
+	      				header("Content-Length: " . strlen(base64_decode($stdRes->Foto)) );
+	      				echo base64_decode($stdRes->Foto);
+	      				return 1; 						
+					}  
 				}
-exit(); 
 
-			echo json_encode(array("IsOk"=> true, "data"=> $currentBloque, "Msg"=>"Trasfiriendo Bloque" ));
+				// Imagen Defecto Perfil Fuerza de Venta.
+					$defultimg = $this->getImagesDefaultUser();
+					header("Content-type: image/jpeg");
+      				header("Content-Length: " . strlen(base64_decode($defultimg)) );
+					echo base64_decode($defultimg);
+						
 		}	
 	}
+
+		// Metodo que Devualve la Imagen En Gestion a la Vista.
+	public function httpObtenerImagenFVporGuid(){
+		if( $this->input->get("guid")){
+			$this->load->model("FuerzaVenta_Model", "mFv");
+			$guid = $this->input->get("guid");
+			// Ajustes por la Ips que esta configurando.					
+				$stdRes = $this->mFv->ObtenerFotoPorGUID($guid);
+
+				if($stdRes){
+					if($stdRes->Foto != null){
+						header("Content-type: image/jpeg");
+	      				header("Content-Length: " . strlen(base64_decode($stdRes->Foto)) );
+	      				echo base64_decode($stdRes->Foto);
+	      				return 1; 						
+					}      				
+				} 
+
+				// Imagen Defecto Perfil Fuerza de Venta.
+					$defultimg = $this->getImagesDefaultUser();
+					header("Content-type: image/jpeg");
+      				header("Content-Length: " . strlen(base64_decode($defultimg)) );
+					echo base64_decode($defultimg);
+
+		}	
+	}
+
 
 	public function httpQuitsObtenerPrograma(){
 
@@ -347,11 +364,18 @@ exit();
 	}
 
 	public function base64_to_jpeg( $base64_string, $output_file ) {
-    $ifp = fopen( $output_file, "wb" ); 
-    fwrite( $ifp, base64_decode( $base64_string) ); 
-    fclose( $ifp ); 
-    return( $output_file ); 
-}
+	    $ifp = fopen( $output_file, "wb" ); 
+	    fwrite( $ifp, base64_decode( $base64_string) ); 
+	    fclose( $ifp ); 
+	    return( $output_file ); 
+	}
+
+	private function getImagesDefaultUser() {
+		//  imagen de Usuario
+		$filename = "webApp/img/user.jpg"; 
+		 $imgbinary = fread(fopen($filename, "r"), filesize($filename));
+        return  base64_encode($imgbinary);
+	}
 
 
 }

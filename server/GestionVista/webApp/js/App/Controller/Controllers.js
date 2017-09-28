@@ -1460,6 +1460,17 @@ $ang.controller("FuentesController", ["$scope", "$http",  "AppCrud", "AppHttp","
         $scope.vCrud.setForm(form); 
 
 
+        $scope.getImagenPersona = function(item){
+
+            if(item.Foto == null || item.Foto == ''){
+                return base_url + "webApp/img/user.jpg"; 
+            }
+
+            return 'data:image/jpeg;base64,' + item.Foto; 
+
+        }; 
+
+
         $scope.inittCrud = function(){
 
             $scope.vCrud.initt({url: base_url + 'FuerzaVenta/Obtener', 
@@ -3575,27 +3586,66 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
             appHttp.Get(url, data, callback); 
         }
 
-
         $scope.pantallaNombre = 'Control de dispositivos TVs';        
         $scope.vCrud = appCrud;
         $scope.Servidor = {};
-        // $scope.vCrud.setForm(form);   
-
-
-        $scope.wsReceptor = function(data){             
+        $scope.listaDispositivo =[]; 
+        $scope.liveDisp = []; 
+        // $scope.vCrud.setForm(form);         
+        $scope.wsReceptor = function(data){
                 switch (data.accion) {
                     case "":
-
                     break; 
                 }
-        };        
+        };
 
-        $scope.initt = function () {
-            // Inicializacion del Web socket.            
+        $scope.fvSend = false; 
+
+        $scope.TipoMsg = 0; 
+        $scope.Msgs = ""; 
+
+        $scope.enviarMensaje = function(evt){
+
+            if(evt.keyCode== 13){
+
+                $scope.Msgs = ""; 
+                
+            }
+
             
-            console.log('Connecting...');
-            $scope.Servidor = new FancyWebSocket('ws://10.234.133.76:9300');            
 
+        }
+
+
+        $scope.setFvMsg = function(fv){
+            // Bellas palabras de Hermosura...             
+            $scope.fvSend = fv; 
+        }; 
+
+
+        $scope.getFV = function(mac){
+
+            for(var t in $scope.listaFuerzaVentaCopy ){
+                if($scope.listaFuerzaVentaCopy.hasOwnProperty(t)){
+
+                    var resAll = $scope.listaFuerzaVentaCopy[t].filter(function(a){
+                        return a.Mac === mac; 
+                    });
+                    if(resAll.length > 0 ){
+                        // Retornar el Objeto.
+                        return resAll[0]; 
+                    }
+                }
+            }
+            return {Mac: mac, GUID_FV: "aa", FuerzaVenta: "N/A" }; 
+        }; 
+
+        $scope.getImagenPersonaUrl = function(){            
+                return base_url + "Contenido/httpObtenerImagenFVporGuid?guid="; 
+        }; 
+
+        $scope.initFancy = function(urlServer){
+             $scope.Servidor = new FancyWebSocket('ws://10.234.133.52:9300');            
             //Let the user know we're connected
             $scope.Servidor.bind('open', function() {
                 console.log( "Connected." );
@@ -3609,10 +3659,9 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                     hash: "",
                     fecha: fechaJson,
                     accion: "CONTROL",                                        
-                }; 
+                };
 
                 $scope.Servidor.send("message",JSON.stringify(current_Cliente) ); 
-
             });
 
             //OH NOES! Disconnection occurred.
@@ -3622,36 +3671,37 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
 
             //Log any messages sent from server
             $scope.Servidor.bind('message', function( payload ) {  
-            var result = JSON.parse(payload); 
-
+            var result = JSON.parse(payload);
             $scope.wsReceptor(result); 
-            console.log(payload);                       
-
+            console.log(payload);            
             });
 
             $scope.Servidor.connect();
-            
-        
+        };    
 
-            $scope.Pantalla = {nombre: 'GrupoTv'};  
-            $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));  
+
+        $scope.initt = function () {
+            // Inicializacion del Web socket.     
+            $scope.listaFuerzaVentaCopy = JSON.parse(JSON.stringify(JFData));  // Gracias
             $scope.listaGrupoTv = vw_listaGrupoTv;
-                   
-$.blockUI({ message: "Favor Espere " });
-             http(base_url + 'GrupoTv/ObtenerDatos', {}, function (dt) {                
-                $.unblockUI();
-                    $appSession.IsSession(dt);                                         
+            // Firme senor, no permitas que el impio debilite mi alma o senior en ti esperare senior
+                $scope.ListAll();  
 
-                    $scope.listaGrupos = dt.listaGrupos; 
-                    // $scope.ObtenerPaginacionRes(dt); 
-
-             });
         };            
 
         $scope.ListAll = function(){
-        }
+             $.blockUI({ message: "Favor Espere " });
+            http(base_url + 'FuerzaVentaDispositivo/obtenerDispositivoOnline', {}, function (res) {
+                $.unblockUI();
+                  if(res.IsOk){
+                  $scope.liveDisp = res.data; 
+               //   $scope.ordenarDispositivoPorEstatusLine(); 
+               $scope.initFancy(""); 
+                  } else {                    
+                  }                  
+             });
 
-       
+        }       
 }]);
 
 
