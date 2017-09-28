@@ -3608,6 +3608,20 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
 
             if(evt.keyCode== 13){
 
+                // Enviar el mesaje al servidor. Expecificamente a al numero de mac: 
+                current_Cliente = {
+                    clienteSessionID: 0,
+                    macAdrees: $scope.fvSend.Mac,         
+                    Tipo: "cliente_Browser",
+                    hash: "",
+                    fecha: fechaJson,
+                    accion: "BROADCAST",                                        
+                };
+
+
+                $scope.Servidor.send("message",JSON.stringify(current_Cliente) ); 
+
+
                 $scope.Msgs = ""; 
                 
             }
@@ -3686,6 +3700,7 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
             $scope.listaGrupoTv = vw_listaGrupoTv;
             // Firme senor, no permitas que el impio debilite mi alma o senior en ti esperare senior
                 $scope.ListAll();  
+                $scope.initFancy("");
 
         };            
 
@@ -3696,7 +3711,7 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                   if(res.IsOk){
                   $scope.liveDisp = res.data; 
                //   $scope.ordenarDispositivoPorEstatusLine(); 
-               $scope.initFancy(""); 
+                
                   } else {                    
                   }                  
              });

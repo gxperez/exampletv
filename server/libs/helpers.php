@@ -3,11 +3,21 @@
 Autor: Grequis Xavier Perez Fortuna.
 
 */
-
+$date2 = new DateTime();
 	
 	function registrarValidarTV( $dispositivoEnt){
 		 $DispositivoID = 0;
 		 global $bd;
+
+		 $date1 = new DateTime();
+		 $diff = $bd->timeStepCon->diff($date1); 
+
+		 if($diff->i >1 ){
+		 	echo $diff->i . " \n Conetividad... "; 
+
+		 	$bd->desconectarBD(); 
+		 }
+
 
 		 $result = $bd->ejecutar("select count(*) as Cantidad, MAX(DispositivoID) as DispositivoID, uuid() as uid from dispositivo where Mac = '{$dispositivoEnt["Mac"]}'" );
 		 
@@ -166,7 +176,11 @@ function wsOnClose($clientID, $status) {
 	$Server->log( "$ip ($clientID) has disconnected." );
 
 	if(array_key_exists($clientID, $Server->listTV) ){
-		logoutTV( $Server->listTV[$clientID] ); 
+
+		logoutTV( $Server->listTV[$clientID] ); 		
+		// Eliminacion de la Varible de Conexion. Reinicio
+		unset($Server->listTV[$clientID]); 
+
 		$Server->log( "TV desconnetecd. "); 
 		$Server->log( "Total TV online: ". count($Server->listTV) ); 		
 	}
@@ -174,7 +188,7 @@ function wsOnClose($clientID, $status) {
 	foreach ( $Server->wsClients as $id => $client ) {
 		$mess =  array(
 						'mensaje' => "Visitor $clientID ($ip) has left the TV Red.",
-						'moto' => 'verde');	
+						'modo' => 'closed');	
 		$Server->wsSend($id,  json_encode($mess)  );
 	
 		}
@@ -233,6 +247,11 @@ function setServerAccion($varible, $clientID, $timeNow){
 			//	$Server->wsSend(); 
 			break; 
 			case 'BROADCAST':
+			$date1 = new DateTime();
+			global $date2;
+		 $diff = $date2->diff($date1); 		 
+		 	echo $diff->i . " \n Conetividad... "; 
+
 				$Server->log("BROADCAST=> Listen"); 
 				$arregloRes= array('modo' => "normal",
 				 "showCategory"=>true, 
@@ -243,8 +262,11 @@ function setServerAccion($varible, $clientID, $timeNow){
 		 	  	 "items"=> array("Buscando las Orientaciones del día en Cerveza", "Segundo Equipo", "Tecero de todos los Equipos", "Cuarto Mensjae del Bis") 
 				 );
 
-				$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "", "duracion"=> 25000, "data"=> $arregloRes ); 
-				$Server->wsSend($clientID, json_encode($rsJSB)); 
+				// $Server->listTV[$clientID]
+				foreach ( $Server->wsClients as $id => $client ){					
+					$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "", "duracion"=> 25000, "data"=> $arregloRes ); 
+					$Server->wsSend($id, json_encode($rsJSB)); 
+				}				
 
 				break;
 

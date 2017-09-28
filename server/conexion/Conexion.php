@@ -16,6 +16,7 @@ Class ConexionDB{
    static $_instance;
 
    public $argServer; 
+   public $timeStepCon = 0;
 
    private function __construct(){
       try{
@@ -58,6 +59,8 @@ Class ConexionDB{
       //mysqli_connect($this->servidor, $this->usuario, $this->password);
       // mysqli_select_db($this->link, $this->base_datos);    
       // $this->link->select_db($this->link, $this->base_datos);  
+      $this->timeStepCon = new DateTime();      
+
       } catch (mysqli_sql_exception $e) { 
          throw $e; 
       }     
