@@ -3,7 +3,7 @@
 Autor: Grequis Xavier Perez Fortuna.
 
 */
-$date2 = new DateTime();
+
 	
 	function registrarValidarTV( $dispositivoEnt){
 		 $DispositivoID = 0;
@@ -12,7 +12,7 @@ $date2 = new DateTime();
 		 $date1 = new DateTime();
 		 $diff = $bd->timeStepCon->diff($date1); 
 
-		 if($diff->i >1 ){
+		 if($diff->i > 40 ){
 		 	echo $diff->i . " \n Conetividad... "; 
 
 		 	$bd->desconectarBD(); 
@@ -248,9 +248,7 @@ function setServerAccion($varible, $clientID, $timeNow){
 			break; 
 			case 'BROADCAST':
 			$date1 = new DateTime();
-			global $date2;
-		 $diff = $date2->diff($date1); 		 
-		 	echo $diff->i . " \n Conetividad... "; 
+						
 
 				$Server->log("BROADCAST=> Listen"); 
 				$arregloRes= array('modo' => "normal",
