@@ -3615,7 +3615,8 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                     Tipo: "cliente_Browser",
                     hash: "",
                     fecha: fechaJson,
-                    accion: "BROADCAST",                                        
+                    accion: "BROADCAST", 
+                    mensaje:  $scope.Msgs                                    
                 };
 
 
@@ -3659,7 +3660,9 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
         }; 
 
         $scope.initFancy = function(urlServer){
-             $scope.Servidor = new FancyWebSocket('ws://10.234.133.52:9300');            
+            // 192.168.65.1  ws://10.234.133.52:9300
+          
+             $scope.Servidor = new FancyWebSocket('ws://192.168.65.1:9300');            
             //Let the user know we're connected
             $scope.Servidor.bind('open', function() {
                 console.log( "Connected." );
