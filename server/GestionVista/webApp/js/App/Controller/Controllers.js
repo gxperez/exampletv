@@ -3605,7 +3605,8 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
         $scope.Msgs = ""; 
 
         $scope.enviarMensaje = function(evt){
-
+             fechaJson = new Date();    
+                fechaJson = fechaJson.toJSON();
             if(evt.keyCode== 13){
 
                 // Enviar el mesaje al servidor. Expecificamente a al numero de mac: 
@@ -3621,14 +3622,17 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
 
 
                 $scope.Servidor.send("message",JSON.stringify(current_Cliente) ); 
-
-
-                $scope.Msgs = ""; 
-                
+                $scope.setTexareaLog( fechaJson + " " + $scope.Msgs);
+                $scope.Msgs = "";                 
             }
+        }
 
-            
-
+        $scope.setTexareaLog = function(text){
+            // Souce 
+            $log = $('#log');
+            $log.append(($log.val()?"\n":'')+text);          
+            $log[0].scrollTop = $log[0].scrollHeight - $log[0].clientHeight;
+            //
         }
 
 
@@ -3662,7 +3666,7 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
         $scope.initFancy = function(urlServer){
             // 192.168.65.1  ws://10.234.133.52:9300
           
-             $scope.Servidor = new FancyWebSocket('ws://192.168.65.1:9300');            
+             $scope.Servidor = new FancyWebSocket('ws://10.234.133.52:9300');            
             //Let the user know we're connected
             $scope.Servidor.bind('open', function() {
                 console.log( "Connected." );

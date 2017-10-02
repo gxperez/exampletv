@@ -109,11 +109,27 @@
   <hr>
 
   <strong>Tipo Msg:</strong>  <select ng-model="TipoMsg">
-   <option value="0"> Texto Cinta </option> 
+   <option value="0"> Texto Cinta Marquee </option> 
+   <option value="1"> Texto News Flash </option>
+   <option value="2"> Twits FV </option>
    </select>
    <hr>
    <textarea id="log" name="log" readonly="readonly" style=" border: 1px solid #CCC; margin: 0px; padding: 0px; height: 80px; width: 100%">
   </textarea>
+
+  <div ng-if="TipoMsg== 0 || TipoMsg== 1">
+  
+  <table>
+  <tr>
+      <td>Titulo-1: <input type="text" ng-model="tt-1"> </td> <td>Css: <input type="text" ng-model="tcss-1"></td>
+  </tr>
+  <tr>
+      <td>Titulo-2: <input type="text" ng-model="tt-2"> </td> <td>Css: <input type="text" ng-model="tcss-2"></td>
+  </tr>    
+  </table>
+  
+
+</div>
 
    <input ng-model="Msgs" type="text" id="message" name="message" class="form-control" ng-keypress="enviarMensaje($event)" >
 
