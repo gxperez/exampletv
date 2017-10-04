@@ -564,7 +564,9 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 			localStorage.setItem("server", servicio); 
 			var alt = {};
 			var url = servicio + "&Mac=" + macTV;	
+			var base_urlT = localStorage.getItem("base_url");			
 		//	url = url.replace("10.234.133.76", "localhost");
+		alert(base_urlT); 
 
 			http.get(url, function(res){
 
@@ -572,8 +574,14 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 					// Estuvo OK el asunto
 					alt[fecha] = {programa: res.programa, contenido: [] }; 
 					localStorage.setItem("programaTV", JSON.stringify(alt) );
-					localStorage.setItem("FuerzaVenta", res.FuerzaVenta); 
-					$("#fv-TV").html("<span class='fa fa-university'></span>" + res.FuerzaVenta ); 
+					localStorage.setItem("FuerzaVenta", res.FuerzaVenta);
+
+					// var images = '<img src="' + base_urlT + 'Contenido/httpObtenerImagenFVNow?Mac=' + macTV + '" width="35">'; 
+					var images = '<img src="http://10.234.133.52:7777/GestionVista/Contenido/httpObtenerImagenFVNow?Mac=' + macTV + '" width="35" height="38" float: right; margin-right: 4px;margin-left: 4px;>'; 
+					
+
+
+					$("#fv-TV").html( images + "<div><span class='fa fa-university'></span> </div>" + res.FuerzaVenta ); 
 						Msg.log("Configurando programa."); 
 
 						mTimer.hasRuntime = true; 
