@@ -1,0 +1,331 @@
+/* #2c3e50  */
+html {
+  font-family: sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+
+body {
+  margin: 0;
+}
+
+
+.titleBar{
+	width: 100%;
+	height: 44px;	
+	background: #1D2B39;
+
+	font-size: 16px;	
+	color: #D0CEF6;;
+	float: left;	
+}
+
+
+.secc-title-bar-img{
+	width: 50%;
+	min-width: 50%;
+	float: left;
+}
+
+.secc-title-bar-Name 
+{
+	width: 50%;
+	height: 38px;
+	min-width: 50%;
+	font-size: 16px;	
+	color: #D0CEF6;
+	float: left;
+	/* background-color: rgba(0, 0, 0, 0.54); */
+	line-height: 33px;
+}
+
+/* boostrap styles selected   */
+.nav {
+padding-left: 0;
+margin-bottom: 0;
+list-style: none;
+}
+
+.pull-right {
+float: right !important;
+}
+
+ul, menu, dir {
+display: block;
+list-style-type: disc;
+-webkit-margin-before: 1em;
+-webkit-margin-after: 1em;
+-webkit-margin-start: 0px;
+-webkit-margin-end: 0px;
+-webkit-padding-start: 40px;
+}
+
+#top_menu .nav > li, ul.top-menu > li {
+float: left;
+}
+
+ul, ol {
+margin-top: 0;
+margin-bottom: 10px;
+}
+
+ul li {
+list-style: none;
+}
+
+ul.top-menu > li > .logout {
+color: #f2f2f2;
+font-size: 16px;
+border-radius: 4px;
+-webkit-border-radius: 4px;
+border: 1px solid rgba(82, 95, 184, 0)!important;
+padding: 4px 5px;
+margin-right: 12px;
+background: rgba(82, 95, 184, 0);
+margin-top: -1px;
+margin-left: 11px;
+}
+
+.nav > li > a {
+position: relative;
+display: block;
+padding: 10px 15px;
+}
+
+a, a:hover, a:focus {
+text-decoration: none;
+outline: none;
+}
+
+/* fin de Element of boostrap */
+
+
+
+.content-marque {
+position: fixed;
+height: 35px;
+width: 100%;
+background-image: url(../../image/BgNavigator.png);
+background-repeat: repeat-x;
+background-repeat-x: repeat;
+background-repeat-y: no-repeat;
+top: 686px;
+z-index: 6;
+opacity: 0.81;
+}
+
+.newsticker{
+	position: absolute;	
+	padding: 0px;
+	margin-left: 18px;
+}
+
+.newsticker li {
+color: #f2f2f2;
+white-space: nowrap;
+height: 39px;
+padding-top: 8px; 
+line-height: 10px;
+list-style: none;
+font-size: 22px;
+text-align: left;
+}
+
+.title-cat-marq {
+	font-size: 18px;
+	
+
+}
+
+.content-marque marquee {
+	font-size: 23px;
+	color: #ffffff;
+}
+
+
+/** Herencia del v 1.0**/
+
+.clockT {
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+
+
+#timerToChange{	
+	color: #D0CEF6;;
+	text-align: right;
+	line-height: 33px;
+	font-size: 19px;
+
+}
+
+.dBody{
+	max-height: 674px;	
+	height:  674px;		
+	overflow: hidden;
+	width: 100%;
+}
+
+.row {
+margin-right: -15px;
+margin-left: -15px;
+}
+
+.row:before,
+.row:after {
+  display: table;
+  content: " ";
+}
+
+.row:after {
+  clear: both;
+}
+
+.corporate {
+min-height: 672px;
+padding-right: 5px;
+padding-bottom: 5px;
+width: 100%;
+}
+
+.white-panel {
+background: #ffffff;		
+}
+
+.pn {	
+height: 672px;
+box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+.container img {
+height: 100%;
+align-items: center;
+}
+
+/****  Tranbando los temas *****/
+
+.enbase {
+	height: 100%;
+	width: 100%;
+	padding-left: 15px;			
+}
+
+.excel-wrapp{
+	padding-left: 20px;
+}
+
+.img {
+	text-align: center;
+	width: 100%;	
+}
+
+
+.cs-div_2x2 {	
+	width: 50%;
+	height: 336px;
+	float: left;
+	position: relative;
+	min-height: 1px;	
+	z-index: 2;
+	overflow: hidden;
+ }
+
+ .cs-div_2x2>.enbase>.img>img,  .cs-div_3x3>.enbase>.img>img, .cs-div_H1>.enbase>.img>img, .cs-div_H1x3>.enbase>.img>img{
+ 	width: 100%
+ }
+
+ .cs-div_3x3 {	
+	width: 33.3331%;
+	height: 336px;
+	float: left;
+	position: relative;
+	min-height: 1px;	
+	z-index: 2;
+	overflow: hidden;
+ }
+
+ .cs-div_V1 {
+ 	width: 100%;
+	height: 336px;
+	float: left;
+	position: relative;
+	min-height: 340px;
+	overflow: hidden;
+ }
+
+.cs-div_H1 { 	
+ 	height: 672px;
+ 	width: 50%;
+ 	float: left;
+	position: relative;
+ }
+
+ .cs-div_H1x3 {
+	width: 100%;
+	height: 33.3333331%;
+	float: left;
+	position: relative;
+	min-height: 1px;		
+	overflow: hidden;
+ }
+
+ /****** Para el Panel Box de menu ********/
+
+
+	.modalDialog {
+		position: fixed;
+		font-family: Arial, Helvetica, sans-serif;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background: rgba(0,0,0,0.8);
+		z-index: 99999;
+		opacity:1;
+		-webkit-transition: opacity 400ms ease-in;
+		-moz-transition: opacity 400ms ease-in;
+		transition: opacity 400ms ease-in;
+		pointer-events: none;
+	}
+	
+
+	.modalDialog > div {
+		width: 500px;
+		position: relative;
+		margin: 10% auto;
+		padding: 5px 20px 13px 20px;
+		border-radius: 10px;
+		background: #fff;
+		background: -moz-linear-gradient(#fff, #999);
+		background: -webkit-linear-gradient(#fff, #999);
+		background: -o-linear-gradient(#fff, #999);
+	}
+
+	.close {
+		background: #606061;
+		color: #FFFFFF;
+		line-height: 25px;
+		position: absolute;
+		right: -12px;
+		text-align: center;
+		top: -10px;
+		width: 24px;
+		text-decoration: none;
+		font-weight: bold;
+		-webkit-border-radius: 12px;
+		-moz-border-radius: 12px;
+		border-radius: 12px;
+		-moz-box-shadow: 1px 1px 3px #000;
+		-webkit-box-shadow: 1px 1px 3px #000;
+		box-shadow: 1px 1px 3px #000;
+	}
+
+	.close:hover { background: #00d9ff; }
+	
+
+.modalDialog p {
+font-size: 25px;
+padding: 15px;
+}
+ /****** FInal del Css del  *******/

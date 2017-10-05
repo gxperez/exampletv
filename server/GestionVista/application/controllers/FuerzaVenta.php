@@ -49,7 +49,7 @@ class FuerzaVenta extends MY_Controller {
 		if($this->input->post("sincronizar")){			
 			// Obtencion del JSON.			
 //			$json_file = file_get_contents('http://cnddosdobis:8090/WebServices/api.asmx/ObtenerFuerzaVentaImagen');
-			$json_file = file_get_contents('http://localhost:52999/api.asmx/ObtenerFuerzaVentaImagen');
+			$json_file = file_get_contents('http://10.234.51.69:8090/WebServices/api.asmx/ObtenerFuerzaVentaImagen');
 			$jFV = json_decode($json_file);
 			$this->load->model("FuerzaVenta_Model", "mFuerzaVenta");
 			// Actualizar La Base de datos.. Eliminar todas las Fuerzas de Ventas.

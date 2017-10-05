@@ -2,8 +2,9 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>Gestion a la Vista Version 1.2</title>
+		<title>Gestion a la Vista Master</title>
 
+		<link href="template/styles/smart.css" rel="stylesheet">
 		<link href="src/caph-2.1.1.1080.min.css" rel="stylesheet">
 		<link href="src/caph.theme.stripe-2.1.1-150302.min.css" rel="stylesheet">
 		<link href="src/jquery.growl.css" rel="stylesheet">
@@ -34,8 +35,7 @@
 	<script type="text/javascript" src="src/libs/echarts-all.js"></script>
 	<script type="text/javascript" src="src/libs/datatransformer.js"></script>
 	<script type="text/javascript" src="src/libs/datatransformer_echart.js"></script>
-
-
+	<script type="text/javascript" language="javascript" src="src/master_all.js"></script>
 	</head>
 
 <body onkeydown="Master.KeyDown();">	
@@ -44,11 +44,12 @@
 	<div class="titleBar"> 
 
 	<div class="logoBar secc-title-bar-img">	
+	<img src="icon/GestionVista_LocoCompletoMini.png">
 	<img src="icon/SPO-35.png">
 	 </div>	
 
 	<div class="secc-title-bar-Name">
-	<div id="fv-TV">ZBB Sanfrancisco</div>		
+	<div id="fv-TV"></div>		
 	</div>
 
 	<div class="secc-title-bar">	
@@ -81,10 +82,11 @@
 <script type='text/javascript' src='src/libs/jquery.newsTicker.min.js'></script>	
 <script type="text/javascript">
 
+function queseso(){ alert("Que ha Basado Noooo"); }; 
 
  $(document).ready(function(){
 	alert("Termino de Cargar"); 
-	// Master.initt(); 
+	 Master.initt(); 
  }); 
 
 
