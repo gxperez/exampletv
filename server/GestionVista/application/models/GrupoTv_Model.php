@@ -134,7 +134,8 @@
 	public function actualizarPorGrupoIDyDispositivoID($obj){
 
 		$this->load->database();
-		$this->db->where("DispositivoID", $obj["DispositivoID"]); 
+		$this->db->where("DispositivoID", $obj["DispositivoID"]); 		
+		$this->db->where("Estado", 1); 
 		$this->db->where("GrupoID", $obj["GrupoID"]); 
 		$result = $this->db->get("grupo_tv");		
 
@@ -145,8 +146,6 @@
 
 		$GrupoTvEnt = current($result->result()); 
 
-
-		 
         	if($GrupoTvEnt == null){ 
 		        return false; 
         	}

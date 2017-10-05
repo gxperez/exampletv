@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Gestion a la Vista Version 1.2</title>
+
+		<link href="src/caph-2.1.1.1080.min.css" rel="stylesheet">
+		<link href="src/caph.theme.stripe-2.1.1-150302.min.css" rel="stylesheet">
+		<link href="src/jquery.growl.css" rel="stylesheet">
+		<link href="template/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+		
+
+<style type="text/css">
+
+</style>		
+
+	<!-- TODO : Common API -->
+	<script type="text/javascript" language="javascript" src="$MANAGER_WIDGET/Common/af/2.0.0/loader.js"></script>
+	<script type="text/javascript" language="javascript" src="$MANAGER_WIDGET/Common/af/2.0.0/extlib/jquery.js"></script>
+
+	
+	<script type="text/javascript" language="javascript" src="src/caph-2.1.1.min.js"></script>
+	<script type="text/javascript" language="javascript" src="src/caph.theme.stripe-2.1.1-15.min.js"></script>
+
+	
+	<script type="text/javascript" src="$MANAGER_WIDGET/Common/API/Widget.js"></script>	
+	<script type="text/javascript" src="$MANAGER_WIDGET/Common/API/TVKeyValue.js"></script>
+    <script type='text/javascript' src='$MANAGER_WIDGET/Common/API/Plugin.js'></script>
+    	<!-- TODO : ExtApis API -->    			
+		<!-- TODO : SRC LIBS EXT -->
+	<script type="text/javascript" src="src/libs/jquery-ui.js"></script>	
+	<script type="text/javascript" src="src/libs/fancywebsocket.js"></script>		
+	<script type="text/javascript" src="src/libs/math.min.js"></script>
+	<script type="text/javascript" src="src/libs/echarts-all.js"></script>
+	<script type="text/javascript" src="src/libs/datatransformer.js"></script>
+	<script type="text/javascript" src="src/libs/datatransformer_echart.js"></script>
+
+
+	</head>
+
+<body onkeydown="Master.KeyDown();">	
+
+	
+	<div class="titleBar"> 
+
+	<div class="logoBar secc-title-bar-img">	
+	<img src="icon/SPO-35.png">
+	 </div>	
+
+	<div class="secc-title-bar-Name">
+	<div id="fv-TV">ZBB Sanfrancisco</div>		
+	</div>
+
+	<div class="secc-title-bar">	
+	<div id="timerToChange"></div>	
+	</div>
+		
+	
+	
+	</div>		
+	
+
+<div id="mybody" class="dBody">
+
+</div>
+
+<div id="growls" class="default">
+
+</div>
+
+<div>
+	<a href="javascript:void(0);" id="anchor_main" onkeydown="Master.KeyDown();"></a>	
+	<object id='pluginNetwork' classid='clsid:SAMSUNG-INFOLINK-NETWORK'></object>
+	<object id="pluginObjectTV" classid="clsid:SAMSUNG-INFOLINK-TV"></object>
+	<object id="pluginObjectWindow" border=0 classid="clsid:SAMSUNG-INFOLINK-WINDOW"></object>
+	<object id="pluginObjectAppCommon" border=0 classid="clsid:SAMSUNG-INFOLINK-APPCOMMON"></object>
+	<object id="plugin" classid="clsid:SAMSUNG-INFOLINK-SEF" style="width:0px; height:0px;"></object>	
+	</div>
+</body>
+
+<script type='text/javascript' src='src/libs/jquery.newsTicker.min.js'></script>	
+<script type="text/javascript">
+
+
+ $(document).ready(function(){
+	alert("Termino de Cargar"); 
+	// Master.initt(); 
+ }); 
+
+
+	
+</script>
+</html>

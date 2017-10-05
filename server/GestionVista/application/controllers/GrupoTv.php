@@ -116,6 +116,7 @@ class GrupoTv extends MY_Controller {
 				, 'FechaModifica'=> date('Y-m-d H:i:s') 
 			);
 
+
 			
 
 				$this->mGrupoTv->actualizarPorGrupoIDyDispositivoID( $grupo_tvEnt );
