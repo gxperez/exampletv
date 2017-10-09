@@ -246,12 +246,23 @@ function setServerAccion($varible, $clientID, $timeNow){
 			case "TIMEQUERY":
 			//	$Server->wsSend(); 
 			break; 
+			//
+			case "TWEETS":
+
+			$date1 = new DateTime();
+			$Server->log("Twist=> Listen");
+
+			foreach ( $Server->wsClients as $id => $client ){					
+					$rsJSB = array('accion' => "TWEETS",  "Msg"=> "", "duracion"=> 125000, "data"=> $varible ); 
+					$Server->wsSend($id, json_encode($rsJSB)); 
+			}	
+			
+			break; 
 			case 'BROADCAST':
 			$date1 = new DateTime();
-						
+			$Server->log("BROADCAST=> Listen");
 
-				$Server->log("BROADCAST=> Listen"); 
-				$arregloRes= array('modo' => "normal",
+				$arregloRes= array('modo' => "flash",
 				 "showCategory"=>true, 
 				 "categoryText"=> "EL BISFORSALES",
 		 	  	 "styleCat"=> "background: blue; color: white;",
@@ -262,7 +273,7 @@ function setServerAccion($varible, $clientID, $timeNow){
 
 				// $Server->listTV[$clientID]
 				foreach ( $Server->wsClients as $id => $client ){					
-					$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "", "duracion"=> 25000, "data"=> $arregloRes ); 
+					$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "", "duracion"=> 125000, "data"=> $varible ); 
 					$Server->wsSend($id, json_encode($rsJSB)); 
 				}				
 
