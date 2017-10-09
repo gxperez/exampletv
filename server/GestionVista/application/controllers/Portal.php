@@ -71,6 +71,9 @@ class Portal extends MY_Controller {
         			'name' => $this->security->get_csrf_token_name(),
         			'hash' => $this->security->get_csrf_hash()));
 
+		// Redireccion al Sistema del Bis.
+		$data["isIntegracionLog"] = true;
+
 		if (!$this->session->userdata('sUsuario')){
 			// if($pos)  // Sui existen la variables post
 			if ( isset($_POST["login"]) ) {

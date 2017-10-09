@@ -483,8 +483,9 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 						break;
 					case "TWEETS":
 						// REcepcion de Mesajes Instantaneos desde Un serviddor.					
-						if(typeof data.mensaje !== 'undefined'){							
-							Msg.log(data.mensaje); 
+						if(typeof data.data.mensaje !== 'undefined'){							
+							// Msg.log(data.mensaje); 
+							Msg.TwitsBox("<div>Este es Un mensaje de Verdad. Fe Y esperanza para Un mundo</div>");
 						}						
 						break;
 						
@@ -578,9 +579,9 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 					localStorage.setItem("FuerzaVenta", res.FuerzaVenta);
 
 					// var images = '<img src="' + base_urlT + 'Contenido/httpObtenerImagenFVNow?Mac=' + macTV + '" width="35">'; 
-					var images = '<img src="http://10.234.133.52:7777/GestionVista/Contenido/httpObtenerImagenFVNow?Mac=' + macTV + '" width="36" height="40" style="border-radius: 50%; overflow: hidden;">'; 
+					// var images = '<img src="http://10.234.133.52:7777/GestionVista/Contenido/httpObtenerImagenFVNow?Mac=' + macTV + '" width="36" height="40" style="border-radius: 50%; overflow: hidden;">'; 
+					var images = '<img src="' + base_urlT + 'Contenido/httpObtenerImagenFVNow?Mac=' + macTV + '" width="36" height="40" style="border-radius: 50%; overflow: hidden;">'; 
 					
-
 
 					$("#fv-TV").html( "<span class='fa fa-university' style='font-size: 17px;'></span>"  + res.FuerzaVenta ); 
 					$("#avatar-tv").html(images);
@@ -1605,6 +1606,18 @@ var Msg = {
 			$("#menuDialogBox").html(menuCtx); 
 		}
 
+	},
+
+	TwitsBox: function(html, chngs){
+		var menuCtx = '<div id="openModalTools" class="modalDialog"> '+ html +' </div>'; 
+
+		if(chngs){
+			$("#menuDialogBox").html("");
+
+		} else {
+			$("#menuDialogBox").html(menuCtx); 
+		}
+
 	}, 
 
 	textBlock: function(htmlcontent){
@@ -1619,7 +1632,9 @@ var Msg = {
 		$("#marqueBar").html(""); 
 	}, 
 
-	onfinishMarque: function(e){				
+	onfinishMarque: function(e){
+
+	alert("...... Fonalizao el marque en el recorrido del uno al 10... "); 				
 	}, 
 
 	showMaqueeFlashInfo: function(opton){

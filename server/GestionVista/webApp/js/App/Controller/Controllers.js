@@ -3591,6 +3591,8 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
         $scope.Servidor = {};
         $scope.listaDispositivo =[]; 
         $scope.liveDisp = []; 
+        $scope.current_Cliente = {}; 
+        $scope.listMensaje = [];
         // $scope.vCrud.setForm(form);         
         $scope.wsReceptor = function(data){
                 switch (data.accion) {
@@ -3604,27 +3606,89 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
         $scope.TipoMsg = 0; 
         $scope.Msgs = ""; 
 
+        $scope.viewMarque = function(evt){
+            fechaJson = new Date();    
+            fechaJson = fechaJson.toJSON();            
+             $scope.setMarque();
+
+        }; 
+
         $scope.enviarMensaje = function(evt){
              fechaJson = new Date();    
                 fechaJson = fechaJson.toJSON();
-            if(evt.keyCode== 13){
+
+                in_accion = "BROADCAST"; 
+                var modomsg = "normal";  
+                if($scope.TipoMsg== 1){
+                    modomsg = "flash"; 
+                }
+
+                if($scope.TipoMsg== 2){
+                    modomsg = "TWEETS"; 
+                    in_accion = "TWEETS"; 
+
+
+                    style="border-radius: 50%; overflow: hidden;";
+                }
 
                 // Enviar el mesaje al servidor. Expecificamente a al numero de mac: 
-                current_Cliente = {
+                $scope.current_Cliente = {
+                    modo: modomsg,
+                    showCategory: true,
                     clienteSessionID: 0,
+                    categoryText: $scope.temaMarque.tt_1,
+                    // subCategoryText: $scope.temaMarque.tt_2,                    
+                    styleCat: $scope.temaMarque.tcss_1,
+                   // styleSubCat: $scope.temaMarque.tcss_2, 
                     macAdrees: $scope.fvSend.Mac,         
                     Tipo: "cliente_Browser",
                     hash: "",
                     fecha: fechaJson,
-                    accion: "BROADCAST", 
-                    mensaje:  $scope.Msgs                                    
+                    accion: in_accion, 
+                    mensaje:  $("#message2").val(),
+                    items: $scope.listMensaje                              
                 };
 
+                if($scope.temaMarque.tt_2 != ""){
+                    $scope.current_Cliente.subCategoryText =  $scope.temaMarque.tt_2;
+                    $scope.current_Cliente.styleSubCat =  $scope.temaMarque.tcss_2;
+                }
 
-                $scope.Servidor.send("message",JSON.stringify(current_Cliente) ); 
-                $scope.setTexareaLog( fechaJson + " " + $scope.Msgs);
-                $scope.Msgs = "";                 
-            }
+                if($scope.temaMarque.tt_1 == ""){
+                    $scope.current_Cliente.showCategory = false; 
+                }
+
+                console.log($scope.current_Cliente); 
+
+                $scope.Servidor.send("message",JSON.stringify($scope.current_Cliente) ); 
+                $scope.setTexareaLog( "<strong>" + fechaJson + "</strong>: " + JSON.stringify($scope.listMensaje));
+
+                $scope.resetCurrent();                                
+        };
+
+        $scope.resetCurrent= function(){
+            //
+            $scope.listMensaje = []; 
+            $scope.temaMarque.tt_1 = ""; 
+            $scope.temaMarque.tt_2 = "";
+            $scope.temaMarque.tcss_1 = "";
+            $scope.temaMarque.tcss_2 = ""; 
+
+
+        }; 
+
+        $scope.pushMensaje = function(){  
+           
+            $scope.listMensaje.push($("#message").val());
+
+            $scope.Msgs =""; 
+            $("#message").val(""); 
+            console.log($scope.listMensaje);
+
+        }
+
+        $scope.setMarque = function(){            
+            $("#txtMarque").html("<marquee id='mqLooperCall' loop='2' > " + $("#message").val() + "  </marquee>");                  
         }
 
         $scope.setTexareaLog = function(text){
@@ -3663,10 +3727,29 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                 return base_url + "Contenido/httpObtenerImagenFVporGuid?guid="; 
         }; 
 
+        $scope.TemplateDefault = 0; 
+
+        $scope.temaMarque = {tcss_1: "", tcss_2:""};
+
+        $scope.setAttTemplateDefault = function(){
+            switch($scope.TemplateDefault){
+                case 0:
+
+                break;
+                case 1:
+
+                break;
+                default:
+
+                break;
+            }
+
+        }; 
+
         $scope.initFancy = function(urlServer){
             // 192.168.65.1  ws://10.234.133.52:9300
           
-             $scope.Servidor = new FancyWebSocket('ws://10.234.133.52:9300');            
+             $scope.Servidor = new FancyWebSocket('ws://' + urlServer);            
             //Let the user know we're connected
             $scope.Servidor.bind('open', function() {
                 console.log( "Connected." );
@@ -3707,7 +3790,7 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
             $scope.listaGrupoTv = vw_listaGrupoTv;
             // Firme senor, no permitas que el impio debilite mi alma o senior en ti esperare senior
                 $scope.ListAll();  
-                $scope.initFancy("");
+                $scope.initFancy(url_ws_conected);
 
         };            
 

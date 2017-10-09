@@ -24,7 +24,7 @@
 
 
 
-<div class="col-sm-6">
+<div class="col-sm-5">
 
 <div class="panel panel-default">
              <div class="panel-heading"><h4><img src="<?php echo base_url(); ?>webApp/img/aventur.png" style=" height: 15px; margin-top: -5px;">  TV en Linea  </h4> 
@@ -82,7 +82,7 @@
 </div>
 
 
-<div class="col-sm-6">
+<div class="col-sm-7">
 
 <div class="panel panel-default">
              <div class="panel-heading"><h4> <li class="fa fa-rss"></li> broadcast messanges</h4> 
@@ -108,35 +108,75 @@
   
   <hr>
 
-  <strong>Tipo Msg:</strong>  <select ng-model="TipoMsg">
+  <strong>Tipo Msg:</strong>  
+  <select ng-model="TipoMsg" class="form-control">
    <option value="0"> Texto Cinta Marquee </option> 
    <option value="1"> Texto News Flash </option>
    <option value="2"> Twits FV </option>
    </select>
    <hr>
-   <textarea id="log" name="log" readonly="readonly" style=" border: 1px solid #CCC; margin: 0px; padding: 0px; height: 80px; width: 100%">
-  </textarea>
 
   <div ng-if="TipoMsg== 0 || TipoMsg== 1">
   
   <table>
   <tr>
-      <td>Titulo-1: <input type="text" ng-model="tt-1"> </td> <td>Css: <input type="text" ng-model="tcss-1"></td>
+      <td>Titulo-1: <input type="text" class="form-control" ng-model="temaMarque.tt_1"> </td> <td>Css: <input type="text" class="form-control" ng-model="temaMarque.tcss_1"></td>
   </tr>
   <tr>
-      <td>Titulo-2: <input type="text" ng-model="tt-2"> </td> <td>Css: <input type="text" ng-model="tcss-2"></td>
-  </tr>    
+      <td>Titulo-2: <input type="text" class="form-control" ng-model="temaMarque.tt_2"> </td> <td>Css: <input type="text" class="form-control" ng-model="temaMarque.tcss_2"></td>
+  </tr>
+    
   </table>
-  
+
+   <input ng-model="Msgs" type="text" id="message" name="message" class="form-control" ng-keypress="viewMarque($event)" >
+
+  <div class="col-md-6">
+    <button ng-click="pushMensaje()" class="btn">Agregar Mensaje</button>
+  </div>
+  <div class="col-md-6">
+    <button ng-click="enviarMensaje()" class="btn"> Enviar Mensaje</button>    
+  </div> 
+
+  <strong>Barra Marque:</strong>
+<div style=" width: 100%; background: #2d2b2b; color: white; height: 22px;">
+
+  <div >
+    
+     <div class="col-md-3" id="ttl1" style="{{temaMarque.tcss_1}} height: 21px;">
+      {{temaMarque.tt_1}}
+     </div>     
+     <div class="col-md-3" id="ttl2" style="{{temaMarque.tcss_2}} height: 21px;">
+      {{temaMarque.tt_2}}
+     </div>
+
+     <div ng-if="TipoMsg== 0" class="col-md-6" id="txtMarque">
+      
+     </div>       
+    
+  </div>
 
 </div>
 
-   <input ng-model="Msgs" type="text" id="message" name="message" class="form-control" ng-keypress="enviarMensaje($event)" >
 
-  </div>      
+<div>
+  <pre> 
+{{listMensaje}} </pre>
+   <textarea id="log" name="log" readonly="readonly" style=" border: 1px solid #CCC; margin: 0px; padding: 0px; height: 80px; width: 100%">
+  </textarea>
+
+  </div>  
+
 </div>
 
-<h5> Fuerza Venta</h5>  
+<div ng-if="TipoMsg== 2">
+Twints: 
+   <input ng-model="Msgs" type="text" id="message2" name="message2" class="form-control" ng-keypress="viewMarque($event)" >
+
+<button class="btn" ng-click="enviarMensaje($event)"> Enviar Twits</button>
+</div>
+    
+</div>
+
 
 </div>
 </div>
@@ -160,6 +200,8 @@
     var JFData = <?php echo $fuerzaVentaData;  ?>;
 
     var vw_listaGrupoTv = <?php echo json_encode($listaGrupoTv); ?>;
+
+    var url_ws_conected = "<?php echo $url_ws_conected; ?>"; 
 
     $('#fvOculto').hide(); 
       

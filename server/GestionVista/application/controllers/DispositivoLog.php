@@ -205,11 +205,16 @@ $this->validation->set_rules("objeto[FechaCrea]", "FechaCrea", "");
 			return false; 
 		}
 		
+		$myServices = $this->config->item("web_services_key");
+
+
 
 		$data = array("csrf" =>array(
         "name" => $this->security->get_csrf_token_name(),
         "hash" => $this->security->get_csrf_hash()
         ) );
+
+        $data["url_ws_conected"]= $myServices["ws_ip"].":". $myServices["ws_port"]; 
 
         $this->load->model("GrupoTv_Model", "mGrupoTv");
         $this->load->model("FuerzaVentaDispositivo_Model", "mFuerzaVentaDispositivo");
