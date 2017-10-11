@@ -526,7 +526,7 @@ $config['web_services_key'] = array(
 		array('url'=>'http://cnddosdobis:8090/Account/api.asmx/ValidateUser', 
 			  'key_token'=>'AED6FACF-1048-4DFF-A9FB-E893949A5587'
 			  ), 
-	'ws_ip'=> "192.168.65.1", 
+	'ws_ip'=> "10.234.133.52", //"192.168.65.1", 
 	'ws_port'=> "9300" 
 	);
 

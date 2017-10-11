@@ -61,7 +61,8 @@
  f.Nivel,
  D.DispositivoID, 
  D.Mac,
- D.Nombre        	
+ D.Nombre,  
+ ifnull(f.Persona, 'N/A') as Persona
 from fuerza_venta  as f left join 
  fuerza_venta_dispositivo as FD 
  on f.GUID_FV = FD.GUID_FV 
@@ -70,7 +71,7 @@ from fuerza_venta  as f left join
  d.DispositivoID = FD.DispositivoID
  and d.Estado = 1
  where f.Estado = 1
- order by f.Nivel, f.Nombre"; 
+ order by f.Nivel, f.Nombre, ifnull(f.Persona, 'N/A')"; 
 			 		$rest = $this->db->query($query);
 					$listaFuerzaVentaDispositivo = $rest->result();
 		return $listaFuerzaVentaDispositivo; 

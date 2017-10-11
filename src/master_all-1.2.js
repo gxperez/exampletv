@@ -1,6 +1,5 @@
 alert("Loaded master_all.js"); 
 /** Mensajes y cintas de informacion **/
-
 // EL aplicativo Completo. MAster controlador
 var widgetAPI = {};
 var tvKey = {};
@@ -191,6 +190,8 @@ var pptMaster = {
 
 
 Master = {
+	isRuningOnlineMsg: false,
+	typeRun: {},
 	html: {},	
 	curContent: [],
 	excelcollection: {}, 	
@@ -482,10 +483,17 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 
 						break;
 					case "TWEETS":
+					alert("Primer Twwwtss."); 
 						// REcepcion de Mesajes Instantaneos desde Un serviddor.					
 						if(typeof data.data.mensaje !== 'undefined'){							
 							// Msg.log(data.mensaje); 
-							Msg.TwitsBox("<div>Este es Un mensaje de Verdad. Fe Y esperanza para Un mundo</div>");
+							alert("Segundo mensaje de Am"); 
+
+						//	data.data.macAdrees
+						//	data.data.Persona
+
+						//Msg.runOnline(); 
+							 Msg.TwitsBox(data.data);
 						}						
 						break;
 						
@@ -1608,15 +1616,80 @@ var Msg = {
 
 	},
 
-	TwitsBox: function(html, chngs){
-		var menuCtx = '<div id="openModalTools" class="modalDialog"> '+ html +' </div>'; 
+	runing: "",
 
-		if(chngs){
-			$("#menuDialogBox").html("");
+	nextTwits: function(){
+		alert("Twisssssss 0000000000000000000000000000000000");
 
+		if(Master.typeRun["TwitsBox"].length > 0){
+//			
+			// Los primeros 4 siempre; 
+
+			if(Master.typeRun["TwitsBox"].length >=3){
+				$("#twistsLive").html("<li class='w3-bar'></li>"); 				
+			}
+
+			for(var i = 0; i<5; i++){
+				if(typeof Master.typeRun["TwitsBox"][0] !== "undefined" ){
+					var advt = '<li class="w3-bar"> <img src="'+  Master.typeRun["TwitsBox"][0].Persona + '" class="w3-bar-item w3-circle w3-hide-small" style="width:85px">';
+					advt += '<div class="w3-bar-item"><span class="w3-large">' + Master.typeRun["TwitsBox"][0].FuerzaVenta + '</span><br><span>Web Designer</span></div></li>';
+					$( advt ).insertBefore( ".w3-bar" );
+					Master.typeRun["TwitsBox"].splice(0, 1); 
+				}
+			}
+
+			// Recorrido recurive
+			setTimeout(function () {Msg.nextTwits(); }, (1000 * 80)); 			
 		} else {
-			$("#menuDialogBox").html(menuCtx); 
+			Msg.runing = ""; 
+			Master.isRuningOnlineMsg = true;
+			for(var w in Master.typeRun){
+				if(Master.typeRun.hasOwnProperty(w)){
+					if(w != "TwitsBox" && Master.typeRun[w].length > 0){
+						Msg[w](Master.typeRun[w]);
+
+						break;
+					}
+				}
+			}
 		}
+
+	
+	},
+
+	TwitsBox: function(dta){
+		// Hacemos un GET para recuperar la planilla.
+// 
+			if(Master.isRuningOnlineMsg){
+				// Esta Corriendo otra Apps.					
+					if(!("TwitsBox" in Master.typeRun)){
+						Master.typeRun["TwitsBox"] = [];
+					}
+
+						alert("Push durante... 0000000000000000000000000000000000");
+
+
+					Master.typeRun["TwitsBox"].push(dta);
+				
+			} else {
+					alert("inicio sip 0000000000000000000000000000000000");
+
+				Msg.runing = "TwitsBox";
+				Master.isRuningOnlineMsg = true;
+				// Los twist duraran 
+				Master.typeRun["TwitsBox"] = [];
+				Master.typeRun["TwitsBox"].push(dta);
+				http.get("template/boxTwits.html", function( data ) {					
+					$("#menuDialogBox").html('<div id="openModalTools" class="modalDialog"><div>' + data + "</div> </div>");
+					Msg.nextTwits();		
+				});
+			}
+
+
+
+		// var menuCtx = '<div id="openModalTools" class="modalDialog"> '+ html +' </div>'; 
+
+	
 
 	}, 
 

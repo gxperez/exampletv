@@ -251,6 +251,7 @@ function setServerAccion($varible, $clientID, $timeNow){
 
 			$date1 = new DateTime();
 			$Server->log("Twist=> Listen");
+			
 
 			foreach ( $Server->wsClients as $id => $client ){					
 					$rsJSB = array('accion' => "TWEETS",  "Msg"=> "", "duracion"=> 125000, "data"=> $varible ); 
