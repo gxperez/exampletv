@@ -2962,9 +2962,9 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
         function http(url, data, callback) {
             appHttp.Get(url, data, callback); 
         }
+
         var form = {            
         };
-
 
          $scope.dropzone = {};         
          $scope.dropzoneFields = {}; 
@@ -2987,7 +2987,7 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
 
          $scope.SendDobleTocken = function(obj){
              if($scope.isOnline(obj.Mac)){
-                // 
+              
                 console.log("Enviar Mensaje al Web-Socket");                 
 
              }
@@ -3195,13 +3195,12 @@ $ang.controller("FuerzaVentaDispositivoController", ["$scope", "$http",  "AppCru
 
 
         $scope.clickAutoSearch = function(dispositivoID){
-            $aaa = JSONData.filter(function(x){ return x.DispositivoID == dispositivoID})[0];
 
+            $aaa = JSONData.filter(function(x){ return x.DispositivoID == dispositivoID})[0];
             if("Nombre" in $aaa){
                 $scope.buscarLista = $aaa.Nombre.toString();              
             }
-
-        }; 
+        };
 
 
         $scope.selectedClassNivel = function(obj){

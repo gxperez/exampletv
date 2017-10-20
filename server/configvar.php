@@ -33,7 +33,7 @@ $config["websocket"]["server_backend"] = "http://10.234.51.99:8079/GestionVista/
 
 $config["websocket"]["baseURL"] =  "http://10.234.51.99:8079/GestionVista/"; 
 
-/**
+/** http://10.234.133.52:7777/GestionVista/
 	Datos de Conexion a Base de Datos. La misma Base de datos del Backend Gestion a la vista.
 	Ejemplo: Datos por defecto para el servidor
 	***********************************************************************

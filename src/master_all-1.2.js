@@ -10,8 +10,8 @@ var fileSystemObj = {};
 alert("Cargaron COnfiguraciones Loaded master_all.js"); 
 
 ConfigSetting = {
-	// ws: ['10.234.51.99:9300'], // ["169.254.150.75:9300"] ["10.234.133.52:9300"], //
-	ws: ['10.234.133.52:9300'],	
+	 ws: ['10.234.51.99:9300'], // ["169.254.150.75:9300"] ["10.234.133.52:9300"], //
+	// ws: ['10.234.133.52:9300'],	
 	// ws: ['10.234.133.76:9300'], //,'10.234.51.99:9300'], // 10.234.133.76 ['10.234.133.76:9300'], //
 	configFiles: ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ], //{ 0 = serverURL, 1 = version, 2 = all source }
 	serverApp: 'localhost:7777/GestionVista/'
@@ -588,7 +588,7 @@ ObtenerPrograma: function(fecha, servicio, fechaServidor){
 
 					// var images = '<img src="' + base_urlT + 'Contenido/httpObtenerImagenFVNow?Mac=' + macTV + '" width="35">'; 
 					// var images = '<img src="http://10.234.133.52:7777/GestionVista/Contenido/httpObtenerImagenFVNow?Mac=' + macTV + '" width="36" height="40" style="border-radius: 50%; overflow: hidden;">'; 
-					var images = '<img src="' + base_urlT + 'Contenido/httpObtenerImagenFVNow?Mac=' + macTV + '" width="36" height="40" style="border-radius: 50%; overflow: hidden;">'; 
+					var images = '<img src="' + base_urlT + 'Contenido/httpObtenerImagenFVNow?Mac=' + macTV + '" width="68" height="72" style="border-radius: 50%; overflow: hidden; border: 3px solid #1D2B39;">'; 
 					
 
 					$("#fv-TV").html( "<span class='fa fa-university' style='font-size: 17px;'></span>"  + res.FuerzaVenta ); 
@@ -1672,7 +1672,8 @@ var Msg = {
 					Master.typeRun["TwitsBox"].push(dta);
 				
 			} else {
-					alert("inicio sip 0000000000000000000000000000000000");
+
+						alert("inicio siporma. 0000000000000000000000000000000000");
 
 				Msg.runing = "TwitsBox";
 				Master.isRuningOnlineMsg = true;
