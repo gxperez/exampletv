@@ -957,7 +957,6 @@ generateContentByFuenteTipoSimple: function(config){
 		$("#sc-" + item.Posicion).html("<p>" +  item.Url  +"</p>");
 		break; 
 		case 3: // Bischart.
-
 		// Fondo.setTremeBg("paper"); 
 		Master.setLocalCss("white"); 	
 
@@ -1068,15 +1067,22 @@ alert("IMGES ---------------------------------------- IMAGES");
 		break; 
 
 		case 6: // video.
-	 	 Fondo.setFullMp4Video(item.Url, function(){ Master.renderBloque(); }); 		
-		
-
+	 	 Fondo.setFullMp4Video(item.Url, function(){ Master.renderBloque(); }); 	
 		hasVideo = true;  
 		 
 		break; 
 		case 7: // Simple HTML Renderizado.
-		requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){					
-			
+
+		alert("La fuente es HTML HTML  HTML HTM "); 		
+		requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){	
+
+	//	var html = aa; 
+
+		alert("Un dia mas................... "); 
+		alert(data); 
+
+			Fondo.setTremeBg("gray"); 
+		//	alert($(html).html()); 
 
 				$("#sc-" + item.Posicion ).html("<div class='excel-wrapp'>" + data + "</div>"); 
 			
@@ -1119,13 +1125,18 @@ nextRequest: function(arreglo, index, len){
 	}
 	alert("Siguiente Paso renderizar"); 
 	if(arreglo[i].Type == "get"){
+		alert("Mirando URL"); 
+		alert(arreglo[i].Url); 
+
 		http.get( arreglo[i].Url, function(dta) {
-		 arreglo[i].methodCallRequest(dta); 
+			alert("============== Siguient"); 
+			var aa = dta.toString(); 
+
+		 arreglo[i].methodCallRequest(aa); 
 		 i++; 
 		 // log("Ha regresado el Get" + dta ); 
-
 		 Master.nextRequest(arreglo, i, len); 
-		}, "html" ); 
+		}); 
 
 	} 
 
