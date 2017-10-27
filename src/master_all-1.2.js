@@ -964,17 +964,25 @@ generateContentByFuenteTipoSimple: function(config){
 
 			// Cantidad de Registro que tiene el Elemento.			
 			
-
+			
 
 			hasRequest= true; 
 			requestList.push({Url: item.Url, Type:"JSON", methodCallRequest: function(res){
 
-				alert("SOLO YEGARA AQUI SIIIIIIIIII.."); 
+
+
+				alert("SOLO YEGARA AQUI SIIIIIIIIII......."); 
+				// alert(Master.html); 
 
 					var cantidad = 0;	
 					if("data" in res){
 						cantidad = res.data.length; 
 					}
+
+
+alert("Primer Item Posicion:::"); 
+
+alert(item.Posicion); 
 
 
 					var responseJSON = res; 					
@@ -994,6 +1002,8 @@ generateContentByFuenteTipoSimple: function(config){
 				Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, url: item.Url});				
 			} else {
 				requestList.push({Url: item.Url, Type:"JSON",  methodCallRequest: function(res){
+
+					alert("!@!@AAAAAA"); 
                     var responseJSON = res; 
                     Master.dTransManual[item.Url] = {dt: datatransformer.new( responseJSON.data, responseJSON.config), visuals: responseJSON.config.visuals};                    
                 	Master.fn_onShow.push({name: "Bischart", type: "manual", Posicion: item.Posicion, Url: item.Url});                	
@@ -1040,7 +1050,7 @@ generateContentByFuenteTipoSimple: function(config){
 
 		// Este es el total de Slider de la aplicacion Ahora.
 alert("IMGES ---------------------------------------- IMAGES"); 
-		alert( pptMaster.cuerpo[0] ); 
+	//	alert( pptMaster.cuerpo[0] ); 
 alert("IMGES ---------------------------------------- IMAGES"); 
 
 			$("#sc-" + item.Posicion).html( "<div class='img'>" + pptMaster.cuerpo[0].outerHTML + "</div>");		
@@ -1054,7 +1064,9 @@ alert("IMGES ---------------------------------------- IMAGES");
 					pptMaster.totalSlide = pptMaster.cuerpo.length;
 
 					$("#sc-" + item.Posicion).html( "<div class='img'>" + pptMaster.cuerpo[0].outerHTML + "</div>");
+
 					Msg.warning("presentacion", "PPT sliderShow. Tome el control remoto para Navegar los " + pptMaster.cuerpo.length + " Sliders."); 
+
 					pptMaster.slide = 1; 
 				} }); 
 			}
@@ -1075,18 +1087,13 @@ alert("IMGES ---------------------------------------- IMAGES");
 
 		alert("La fuente es HTML HTML  HTML HTM "); 		
 		requestList.push({Url: item.Url, Type:"get", methodCallRequest: function(data){	
-
 	//	var html = aa; 
-
 		alert("Un dia mas................... "); 
-		alert(data); 
-
-			Fondo.setTremeBg("gray"); 
+	//	alert(data); 
+			// Fondo.setTremeBg("gray"); 
 		//	alert($(html).html()); 
-
 				$("#sc-" + item.Posicion ).html("<div class='excel-wrapp'>" + data + "</div>"); 
-			
-
+				pptMaster.slide = 1; 
 				} 
 			}); 
 			
@@ -1348,7 +1355,7 @@ getBloqueIDAndTimer: function(callback){
 	pptMaster.tiempo= 0;
 	pptMaster.hasKeyControlActive= false;
 
-	alert(mTimer.contenido);
+	
 
 	var base_urlT = localStorage.getItem("base_url"); 
 	var getFullBloque = localStorage.getItem("getFullBloque"); 
@@ -1427,7 +1434,6 @@ getSelectedBloque: function($idBloque, dt){
 
 	alert("Estoamos Aqui Para ver Que pasa"); 
 	alert($idBloque); 
-	alert(dt); 
 
 	alert("------yyyyy------------------****"); 
 
@@ -2134,7 +2140,7 @@ alert("Buscando el Conector")
 		Msg.error( "Disconnected.");
 		var myVarReconect = setTimeout(function(){
 
-			alert(miInstancia); 	     			     
+			//alert(miInstancia); 	     			     
 		    Msg.warning("Reintentar", "Espere un momento... <br> Intentando reconectar con el servidor."); 	
 		    alert("Buscando Reconectar"); 
 			miInstancia.conectar(true);						
@@ -2331,7 +2337,7 @@ this.app_info.server = firstData;
 				case 2:  // Codigo de Programamacion
 					eval("page_config.source = " + allStr );
 					alert("La version del Codigo es: ");
-					alert(allStr);					
+				//	alert(allStr);					
 					break;
 					
 				case 3:					
