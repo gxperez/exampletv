@@ -1119,6 +1119,8 @@ if(hasVideo){
 	} else {
 		Master.nextRequest(requestList, 0, requestList.length); 
 	}
+
+	alert("Final del Simple................"); 
 }, 
 
 nextRequest: function(arreglo, index, len){	
@@ -1127,7 +1129,7 @@ nextRequest: function(arreglo, index, len){
 	if(index >= len){
 
 		Master.applyTransicion(mTimer.TransicionTipoIni, "in"); 
-		alert("Entrada Apply"); 
+		alert("Entrada Apply: indice (" + index + ") Leng" + ":" + len ); 
 		return true; 
 	}
 	alert("Siguiente Paso renderizar"); 
