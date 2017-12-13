@@ -10,8 +10,8 @@ var fileSystemObj = {};
 alert("Cargaron COnfiguraciones Loaded master_all.js"); 
 
 ConfigSetting = {
-	 ws: ['10.234.51.99:9300'], // ["169.254.150.75:9300"] ["10.234.133.52:9300"], //
-	// ws: ['10.234.133.52:9300'],	
+	// ws: ['10.234.51.99:9300'], // ["169.254.150.75:9300"] ["10.234.133.52:9300"], //
+	 ws: ['10.234.133.52:9300'],	
 	// ws: ['10.234.133.76:9300'], //,'10.234.51.99:9300'], // 10.234.133.76 ['10.234.133.76:9300'], //
 	configFiles: ["serverWSUrl.data", "version.data", "allsource.data", "serverRequest.data" ], //{ 0 = serverURL, 1 = version, 2 = all source }
 	serverApp: 'localhost:7777/GestionVista/'
@@ -412,8 +412,7 @@ Master = {
 						Master.cambiarBloque();
 					break; 
 					case "NOTIFICAR":	
-						localStorage.setItem("programaTV", null); 					
-
+						localStorage.setItem("programaTV", null);
 						var prog = JSON.parse(localStorage.getItem("programaTV"));						
 						alert("**************** Progrmacion ***********************");  // Hay que Hacerle Parser.
 						if(prog == null || typeof prog == "undefined" || typeof prog == "string" ){
@@ -424,18 +423,14 @@ Master = {
 						localStorage.setItem("getFullBloque", data.server); 
 						localStorage.setItem("fechaActual_APP", data.fechaActual); 
 						localStorage.setItem("fecha_APP", data.fecha); 	
-
 						if("EsLider" in data ){
 								mTimer.hasLider = data.EsLider; 
 								Msg.log("Lider del Grupo"); 
 						}
-
-
 					if(!(data.fechaActual in prog) ){
 						localStorage.setItem("programaTV", null); 	
 						alert("Obtener Programa.... "); 
-						Msg.log(data.Msg); 
-
+						Msg.log(data.Msg);
 						Master.ObtenerPrograma(data.fechaActual, data.server, data.fecha); 
 						return true; 
 					} else {
@@ -444,8 +439,6 @@ Master = {
 
 						hasProBloq = false; 
 
-Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**************"); 
-
 						for (var i in prog[data.fechaActual].programa) {
 							if(prog[data.fechaActual].programa.hasOwnProperty(i)){
 								prog[data.fechaActual].programa
@@ -453,13 +446,6 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 							hasProBloq = true; 
 							}							
 						}
-
-					//	alert("Despues del blucle"); 
-				//		alert(hasProBloq); 
-
-						alert("Lo detendre Jusnto Aqui */***********************"); 
-			//			return true;
-
 
 						if( prog[data.fechaActual].programa )
 
@@ -483,41 +469,65 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 
 						break;
 					case "TWEETS":
+
 					alert("Primer Twwwtss."); 
+
+					isObligado = false;
+
+					if(typeof(data.isRequired) !== "undefined"){
+						isObligado = data.isRequired; 
+
+					}
+
+					if(Master.isRuningOnlineMsg && (isObligado == false) ){
+						// Condicion si esta corriendo el Cursor.
+						Msg.listMsg.push(data); 
+						return true;
+					}
+
+					alert("Tiempo es: " + data.duracion); 
+
 						// REcepcion de Mesajes Instantaneos desde Un serviddor.					
-						if(typeof data.data.mensaje !== 'undefined'){							
-							// Msg.log(data.mensaje); 
-							alert("Segundo mensaje de Am"); 
-
-						//	data.data.macAdrees
-						//	data.data.Persona
-
-						//Msg.runOnline(); 
-							 Msg.TwitsBox(data.data);
+						if(typeof data.data.mensaje !== 'undefined'){	
+						alert("TWEETS"); 						
+						alert(data.duracion);  
+						Master.isRuningOnlineMsg = true; 
+							 Msg.TwitsBox(data.data, data.duracion);
+							//  Master.isRuningOnlineMsg = true;
 						}						
 						break;
 						
 					case "BROADCAST":  // Boletin. Difusion de Informacion.
 
-					// 
+
+alert(" Broad Aqui Ha lleado De inicio: " + typeof(Master.isRuningOnlineMsg) );
+
+alert(Master.isRuningOnlineMsg); 
+
+
+
+					if(Master.isRuningOnlineMsg){
+
+						alert("Que le ha pasado....  No ha Entrado");
+						// Condicion si esta corriendo el Cursor.
+						Msg.listMsg.push(data); 
+						return true;
+					}
+					alert("el Tiempo del Marque es: " + data.duracion); 
+
 					var tt = data.data; 
-					/* {modo:"normal", showCategory: true,
-		 			 	categoryText: "Ejemplo de Categoria",
-		 	  			styleCat: "background: green; color: white;",
-		 	  			items: ["Paso del primer mensaje Enviado desde el Servidor", 'Solo una prueba de calidad', "Tercer Mensaje de Coordinacion"]
-		 			};
-		 			*/
+					Master.isRuningOnlineMsg = true;				
 		 			Msg.showMaqueeFlashInfo(tt); 
 
 		 			Msg.broadCastTimeOut = setTimeout(function(){
 		 					Msg.hideMarqueFlashInfo(); 
+		 					Msg.sendCloseMsg("Marquee");
 		 			}, data.duracion); 
-						
+
 						break;
 					case "PROGRAMA":  // LA INFORMACION COMPLETA PARA EL PROGRAMA DEL DIA Y SU HORARIO.						
 						log(data.mensaje);
-						Master.actualizarProgramacion(data.data);
-											
+						Master.actualizarProgramacion(data.data);											
 						alert("Va Ha actualizar"); 
 						Master.slideNow(); 
 						
@@ -526,9 +536,7 @@ Msg.log("Analizando la Apps en la Programacion del Contenido en el localStoreg**
 						// Permite enviar y recibir funcionalidades del control remoto en el servici												
 						Msg.log("Sincronizado..."); 
 					//	data.						
-					pptMaster.getLiderAccion(data); 
-
-
+					pptMaster.getLiderAccion(data);
 						break;						
 					default:
 					alert("La Accion no APlicca"); 		
@@ -1095,8 +1103,7 @@ alert("IMGES ---------------------------------------- IMAGES");
 				$("#sc-" + item.Posicion ).html("<div class='excel-wrapp'>" + data + "</div>"); 
 				pptMaster.slide = 1; 
 				} 
-			}); 
-			
+			});
 					
 
 		// 	return "htmlVIdeo"; 
@@ -1551,6 +1558,7 @@ var BroadCastManger = {
 };
 
 var Msg = {	
+	listMsg: [], 
 	isToolsBox: false,
 	broadCastTimeOut: 0, 
 	log: function( text, titulo) {
@@ -1561,10 +1569,8 @@ var Msg = {
 		 	}
 		 	var dtnim = new Date();
 		 	var id = (dtnim.getTime()- 9539934202);
-
 		 	var htmlgw = '<div id="divvGrowls'+ id + '"> <div class="growl growl-default growl-medium"><div class="growl-close"></div><div class="growl-title">' + til + ' </div><div class="growl-message">' + text + '</div></div> </div>'; 
-		 	$("#growls").append(htmlgw); 		 			 		 
-
+		 	$("#growls").append(htmlgw);
 		 	setTimeout(function(){		 		
 		 		$("#divvGrowls" + id ).remove(); 		 		
 		 	}, 4500); 
@@ -1638,11 +1644,9 @@ var Msg = {
 	runing: "",
 
 	nextTwits: function(){
-		alert("Twisssssss 0000000000000000000000000000000000");
 
-		if(Master.typeRun["TwitsBox"].length > 0){
-//			
-			// Los primeros 4 siempre; 
+		if(Master.typeRun["TwitsBox"].length > 0){			
+			// Los primeros 4 siempre;
 
 			if(Master.typeRun["TwitsBox"].length >=3){
 				$("#twistsLive").html("<li class='w3-bar'></li>"); 				
@@ -1662,11 +1666,11 @@ var Msg = {
 		} else {
 			Msg.runing = ""; 
 			Master.isRuningOnlineMsg = true;
+
 			for(var w in Master.typeRun){
 				if(Master.typeRun.hasOwnProperty(w)){
 					if(w != "TwitsBox" && Master.typeRun[w].length > 0){
 						Msg[w](Master.typeRun[w]);
-
 						break;
 					}
 				}
@@ -1676,41 +1680,37 @@ var Msg = {
 	
 	},
 
-	TwitsBox: function(dta){
-		// Hacemos un GET para recuperar la planilla.
-// 
-			if(Master.isRuningOnlineMsg){
-				// Esta Corriendo otra Apps.					
-					if(!("TwitsBox" in Master.typeRun)){
-						Master.typeRun["TwitsBox"] = [];
-					}
+	TwitsBox: function(dta, tm){
 
-						alert("Push durante... 0000000000000000000000000000000000");
+		tm = 8; 
 
+		if(typeof(tm) === "undefined"){
+			tm = 15; 
+		}
 
-					Master.typeRun["TwitsBox"].push(dta);
-				
-			} else {
+		alert("EL tiempo es: " + tm );
 
-						alert("inicio siporma. 0000000000000000000000000000000000");
+		// Hacemos un GET para recuperar la planilla.// 
+		// Is Runing Es el Singleton Para la Gestion de Informacion.
 
 				Msg.runing = "TwitsBox";
 				Master.isRuningOnlineMsg = true;
 				// Los twist duraran 
 				Master.typeRun["TwitsBox"] = [];
 				Master.typeRun["TwitsBox"].push(dta);
+
 				http.get("template/boxTwits.html", function( data ) {					
 					$("#menuDialogBox").html('<div id="openModalTools" class="modalDialog"><div>' + data + "</div> </div>");
-					Msg.nextTwits();		
+					// Next Cambiado
+					alert("Cambio de vida.................................."); 
+				setTimeout(function () {
+					// Msg.nextTwits();
+					$("#menuDialogBox").html("");
+					Msg.sendCloseMsg("boxTwits");
+					 }, (1000 * tm));  
+// 					Msg.nextTwits();		
 				});
-			}
-
-
-
 		// var menuCtx = '<div id="openModalTools" class="modalDialog"> '+ html +' </div>'; 
-
-	
-
 	}, 
 
 	textBlock: function(htmlcontent){
@@ -1718,11 +1718,14 @@ var Msg = {
             message: $(htmlcontent), 
             css: { top: '20%' } 
         });
-        setTimeout($.unblockUI, 2000);         
+        setTimeout(function(){ $.unblockUI();
+        		Msg.sendCloseMsg("textBlock");
+         }, 2000);         
 	}, 
 
 	hideMarqueeBar: function(){
-		$("#marqueBar").html(""); 
+		$("#marqueBar").html("");
+		Msg.sendCloseMsg("MarqueBar");
 	}, 
 
 	onfinishMarque: function(e){
@@ -1739,7 +1742,6 @@ var Msg = {
 		 	  items: ["Paso del primer mensaje Enviado desde el Servidor", 'Solo una prueba de calidad', "Tercer Mensaje de Coordinacion"]
  });  
 		*/
-
 		if(Msg.broadCastTimeOut != 0) {			
 			clearTimeout(Msg.broadCastTimeOut);	
 			Msg.broadCastTimeOut = 0; 
@@ -1788,12 +1790,8 @@ var Msg = {
 
 			leftNext = '<div class="title-cat-marq" style="float: left; width: 17%; height: 27px; text-align: center; padding-top: 5px; border-top: black solid 1px; border-right: black solid 2px; '+ stylCSub +'">' + subCategoryText +' </div>'; 
 			right = '<div style="float: left; width: 65%; height: 27px; padding-top: 5px; border-top: black solid 1px; '+ styleMsg +'">' + htmlText +' </div>'; 
-
 			left = left + leftNext; 
-
 			}
-
-
 		} else {
 			if("styleMsg" in opton){
 				styleMsg = opton.styleMsg; 
@@ -1813,12 +1811,9 @@ var Msg = {
 
 
 		if(opton.modo == "flash"){
-
 			var items = $(fullHtmlBar);
-			$("#marqueBar").html(items); 
-
+			$("#marqueBar").html(items);
 			setTimeout(function(){
-
 				items.find(".newsticker").newsTicker({
 					row_height: 35,
 					max_rows: 1,
@@ -1826,21 +1821,6 @@ var Msg = {
 			});
 
 			}, 1500); 
-
-			
-/*
-			.ready(function(){
-				$(".newsticker").newsTicker({
-					row_height: 35,
-					max_rows: 1,
-					duration: duraciones
-				});
-			});*/
-
-/*
-			$(function () {
-				
-			});			*/
 		}
 		else
 		{
@@ -1850,6 +1830,43 @@ var Msg = {
 
 	hideMarqueFlashInfo: function(){
 		$("#marqueBar").html(""); 
+	}, 
+
+	getArrayElement: function(){
+
+		if(typeof(Msg.listMsg[0]) !== "undefined"){
+
+			var resepCopy = JSON.parse(JSON.stringify(Msg.listMsg[0])); 
+			Msg.listMsg.splice(0, 1); 
+
+			alert("Se elimino el Elemento del Array....... "); 
+			Master.receptorWs(resepCopy);
+		}
+
+		
+
+	},
+
+	sendCloseMsg: function(tipo){
+
+
+		 Master.isRuningOnlineMsg = false;
+
+		var obj = {
+					macAdrees: macTV,			
+					Tipo: "TV",						
+					accion: "FINISHMSG",
+					//"keyCode": keyCode, 
+					"BloqueID": mTimer.BloqueID, 
+					"cIndexC": mTimer.cIndexC, 
+					"cIndexS": mTimer.cIndexS, 
+					"Msg_Tipo": tipo,
+					"isPPT": false					
+				};
+
+		 instancia.conn.Server.send("message", JSON.stringify(obj) );	
+		 Msg.getArrayElement();	
+		// ServerTEMP.send("message", JSON.stringify(obj) );
 	}
 }; 
 

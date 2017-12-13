@@ -213,6 +213,14 @@ function setServerAccion($varible, $clientID, $timeNow){
 				$retornos =	$BisGestion->setHasRefresh(); 
 				// $Server->log( print_r($retornos, true) );
 				$Server->wsSend($clientID,  json_encode(array('accion' => "NOTIFICAR", "Msg"=> "El dispositivo confirmara si esta actualizado", "fecha"=> $timeNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"], "base_url"=> $integracionConfig["baseURL"],  "fechaActual"=> date("Y-m-d") ) ) );	
+				break;
+
+				case "FINISHMSG":
+
+					$Server->log("EL TV Ha Finalizado de mostrar Su Mensaje desde el Servidor.");
+					$Server->log(print_r($varible, true));
+
+
 				break;	
 
 			case "CONTROLLIDER":
