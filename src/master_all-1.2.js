@@ -1682,10 +1682,10 @@ var Msg = {
 
 	TwitsBox: function(dta, tm){
 
-		tm = 8; 
+		// tm = 8; 
 
 		if(typeof(tm) === "undefined"){
-			tm = 15; 
+			tm = 1000; 
 		}
 
 		alert("EL tiempo es: " + tm );
@@ -1699,17 +1699,45 @@ var Msg = {
 				Master.typeRun["TwitsBox"] = [];
 				Master.typeRun["TwitsBox"].push(dta);
 
-				http.get("template/boxTwits.html", function( data ) {					
-					$("#menuDialogBox").html('<div id="openModalTools" class="modalDialog"><div>' + data + "</div> </div>");
-					// Next Cambiado
-					alert("Cambio de vida.................................."); 
-				setTimeout(function () {
-					// Msg.nextTwits();
-					$("#menuDialogBox").html("");
-					Msg.sendCloseMsg("boxTwits");
-					 }, (1000 * tm));  
+				// Request Result Of Web services Data.
+				alert("Pantalla controladora Ajustes de Volumen......"); 
+
+				alert(dta); 
+
+				var cons = ""; 
+				// URL Content.
+				var urlCont = null; 
+				if("UrlTweet" in dta){
+					urlCont = dta.UrlTweet + "?Mac=" + macTV; 
+				}
+
+				// Ajustamos el Metodo de las Reportes...
+				if(urlCont != null){
+
+					http.get(urlCont, function( serverText ) {
+						// Devuelve el Resultado Hlm.
+						http.get("template/boxTwits.html", function( data ) {					
+							$("#menuDialogBox").html('<div id="openModalTools" class="modalDialog"><div>' + data + "</div> </div>");
+							// Next Cambiado
+							// La estaba esperando.
+							if("Titulo" in dta){
+								$("#twitsTitulo").html(dta.Titulo); 
+							}
+							// Inyectar el COntenido.
+							$("#twits_Content-main").html(serverText);
+							
+							setTimeout(function () {
+							$("#menuDialogBox").html("");
+							Msg.sendCloseMsg("boxTwits");
+							 }, tm );  
 // 					Msg.nextTwits();		
-				});
+						});
+					}); 
+
+				}
+
+				alert(urlCont); 
+			//	for(var i in dta){ cons += i+ ": " + dta[i] + ";  "; }				
 		// var menuCtx = '<div id="openModalTools" class="modalDialog"> '+ html +' </div>'; 
 	}, 
 
@@ -1762,7 +1790,7 @@ var Msg = {
 		if(opton.modo == "flash"){
 			htmlText = "<ul class='newsticker'> " + htmlText  +  "</ul>"; 
 		} else {
-			alert("Paso 2"); 
+			
 			htmlText = "<marquee id='mqLooperCall' onfinish='Msg.onfinishMarque();' loop='2' >" + htmlText  +  "</marquee>";
 		}
 		if(opton.showCategory !== false){
@@ -1842,9 +1870,6 @@ var Msg = {
 			alert("Se elimino el Elemento del Array....... "); 
 			Master.receptorWs(resepCopy);
 		}
-
-		
-
 	},
 
 	sendCloseMsg: function(tipo){
@@ -1855,7 +1880,7 @@ var Msg = {
 		var obj = {
 					macAdrees: macTV,			
 					Tipo: "TV",						
-					accion: "FINISHMSG",
+					accion: "FINISH",
 					//"keyCode": keyCode, 
 					"BloqueID": mTimer.BloqueID, 
 					"cIndexC": mTimer.cIndexC, 
@@ -2098,6 +2123,7 @@ var ConexionTV = function(listIp){
 			hash: "",
 			fecha: "",
 			accion: "ACTIVAR",
+			duracion: 12000,
 			data: {}
 		};
 

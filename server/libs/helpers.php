@@ -215,7 +215,7 @@ function setServerAccion($varible, $clientID, $timeNow){
 				$Server->wsSend($clientID,  json_encode(array('accion' => "NOTIFICAR", "Msg"=> "El dispositivo confirmara si esta actualizado", "fecha"=> $timeNow->format('Y,m,d,H,i,s'), "server"=> $integracionConfig["server"], "base_url"=> $integracionConfig["baseURL"],  "fechaActual"=> date("Y-m-d") ) ) );	
 				break;
 
-				case "FINISHMSG":
+				case "FINISH":
 
 					$Server->log("EL TV Ha Finalizado de mostrar Su Mensaje desde el Servidor.");
 					$Server->log(print_r($varible, true));
@@ -256,17 +256,21 @@ function setServerAccion($varible, $clientID, $timeNow){
 			break; 
 			//
 			case "TWEETS":
-
 			$date1 = new DateTime();
 			$Server->log("Twist=> Listen");
-			
+
+			// El tiempo Enviado desde el Request.
+			$duracion = 125000;
+			if (property_exists($varible, "duracion")){
+				$duracion = $varible->duracion; 
+			}
 
 			foreach ( $Server->wsClients as $id => $client ){					
-					$rsJSB = array('accion' => "TWEETS",  "Msg"=> "", "duracion"=> 125000, "data"=> $varible ); 
+					$rsJSB = array('accion' => "TWEETS",  "Msg"=> "", "duracion"=> $duracion, "data"=> $varible ); 
 					$Server->wsSend($id, json_encode($rsJSB)); 
-			}	
-			
-			break; 
+			}			
+			break;
+			 
 			case 'BROADCAST':
 			$date1 = new DateTime();
 			$Server->log("BROADCAST=> Listen");
@@ -280,9 +284,15 @@ function setServerAccion($varible, $clientID, $timeNow){
 		 	  	 "items"=> array("Buscando las Orientaciones del día en Cerveza", "Segundo Equipo", "Tecero de todos los Equipos", "Cuarto Mensjae del Bis") 
 				 );
 
+			$duracion = 125000;
+			if (property_exists($varible, "duracion")){
+				$duracion = $varible->duracion; 
+			}			
+
+
 				// $Server->listTV[$clientID]
 				foreach ( $Server->wsClients as $id => $client ){					
-					$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "", "duracion"=> 125000, "data"=> $varible ); 
+					$rsJSB = array('accion' => "BROADCAST",  "Msg"=> "", "duracion"=> $duracion, "data"=> $varible ); 
 					$Server->wsSend($id, json_encode($rsJSB)); 
 				}				
 

@@ -14,7 +14,8 @@ require 'libs/helpers.php';
 
 
 
- $apps = Application::getInstance();
+ $apps = Application::getInstance(); 
+ $apps->_extract = true; 
  $apps->Run(); 
 
 

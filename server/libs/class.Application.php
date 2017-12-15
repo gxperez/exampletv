@@ -8,6 +8,7 @@ class Application
     private static $instances = array();
     private $_clients = array();
     private $isRuning = false;
+    public  $_extract = false;
     private $head;
     private $wss;
     private function __construct()

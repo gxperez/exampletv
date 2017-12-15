@@ -32,6 +32,16 @@ class AdminBisTV
 
 	}
 
+
+	public function ObtenerListaCOnfiguracionMensajes(){
+		$result = $this->db->ejecutar("select * from configurcion_fuente_mensajes where Estado = 1");
+		$retorno = array();
+		while($rows =$this->db->obtener_fila($result, 0) ) {
+			$retorno[] = $rows; 
+		}		
+		return $retorno; 
+	}
+
 	public function obtenerProgramaGlobal(){
 		$result = $this->db->ejecutar("select * from vw_rep_programacion_contenido_hoy");
 

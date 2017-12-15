@@ -3625,9 +3625,8 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                 if($scope.TipoMsg== 2){
                     modomsg = "TWEETS"; 
                     in_accion = "TWEETS"; 
-
-
                     style="border-radius: 50%; overflow: hidden;";
+
                 }
 
                 // Enviar el mesaje al servidor. Expecificamente a al numero de mac: 
@@ -3646,7 +3645,10 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                     fecha: fechaJson,
                     accion: in_accion, 
                     mensaje:  $("#message2").val(),
-                    items: $scope.listMensaje                              
+                    Titulo: $("#message2").val(),
+                    UrlTweet: "http://10.234.133.52:7777/GestionVista/WebServices/GetTwees",
+                    items: $scope.listMensaje, 
+                    duracion: 15000                             
                 };
 
                 if($scope.temaMarque.tt_2 != ""){
@@ -3657,24 +3659,20 @@ $ang.controller("PlanConfigController", ["$scope", "$http",  "AppCrud", "AppHttp
                 if($scope.temaMarque.tt_1 == ""){
                     $scope.current_Cliente.showCategory = false; 
                 }
-
-                console.log($scope.current_Cliente); 
+                // console.log($scope.current_Cliente); 
 
                 $scope.Servidor.send("message",JSON.stringify($scope.current_Cliente) ); 
                 $scope.setTexareaLog( "<strong>" + fechaJson + "</strong>: " + JSON.stringify($scope.listMensaje));
-
                 $scope.resetCurrent();                                
         };
 
         $scope.resetCurrent= function(){
-            //
+
             $scope.listMensaje = []; 
             $scope.temaMarque.tt_1 = ""; 
             $scope.temaMarque.tt_2 = "";
             $scope.temaMarque.tcss_1 = "";
             $scope.temaMarque.tcss_2 = ""; 
-
-
         }; 
 
         $scope.pushMensaje = function(){  
