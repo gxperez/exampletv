@@ -76,9 +76,25 @@ $newKey = date('Y-m-d H:i:s', $newKey);
 //$nuevafecha = strtotime ( '+30 second' , strtotime ( $fecha ) ) ;
 // $nuevafecha = date ( 'Y-m-j' , $nuevafecha );
 
-echo $fecha. " | <br>";
+$arrayName = array('TipoMensaje'=>  1, "AlcanceMensaja"=> 0, // Entero {0: Todo los TV, sin Filtro, 1: La regional, 2: Su centro, 3: Solo su televisor}
+    "GuidFvOrigen"=> "79EFB5BF-AD59-4FD3-88D9-0014A278C32C",
+    "FuerzaVentaDescripcion" =>"DO0382",
+   "GuidFvCentroOrigen"=>"8B580525-E611-49A3-B2BD-45BD5FBC2693",
+  "FechaUltimaActualizacion"=> date("Y-m-d h:i:s"),
+  "CategoriaKPI"=>"Volumen, Cobertura, etc",
+  "NombreKpi" => "Trimarca, Cerveza, etc",
+   "Mensaje" => null, //Es varchar(max) Si viene Null, tomaremos los valores de Meta y valor como mensaje. (Si bien con datos omite Meta y valor coloca el texto)
+"Meta"=> 540, 
+"Valor" => 570, 
+"Comentario"=> "Texto opcional Ejemplo." );
 
-echo $newKey;
+$avv = array();
+$avv[] = $arrayName; 
+
+echo json_encode($avv); 
+
+
+
 		exit();
 		if( $this->input->get("k_hash")){				
 				$hash = $this->input->get("k_hash");
