@@ -16,10 +16,8 @@ class AdminBisTV
 		if(!$this->dtRefresh){
 			// Refrescando la Pantalla. 
 			$listaPorograma = $this->obtenerProgramaGlobal(); 
-
 			return $listaPorograma; 			
 		}
-
 		$date = date("Y-m-d"); 
 		if(!array_key_exists($date, $this->dtRefresh)) {
 			// Ajustes e General.			
@@ -32,6 +30,47 @@ class AdminBisTV
 
 	}
 
+
+	public function setListRecpecionMensaje($objeto, $link){
+
+		$date = date('y-m-d H:i:s');
+
+		$values = "INSERT INTO `receptor_fuentes_mensajes`
+(`TipoMensaje`, `AlcanceMensaje`, `GuidFvOrigen`, `FuerzaVentaDescripcion`,
+`GuidFvCentroOrigen`, `FechaUltimaActualizacion`, `CategoriaKPI`, `NombreKpi`, `Mensaje`,
+`Meta`, `Valor`, `Comentario`, `Link`)
+VALUES
+({$objeto->TipoMensaje},
+'{$objeto->AlcanceMensaje}',
+'{$objeto->GuidFvOrigen}', 
+'{$objeto->FuerzaVentaDescripcion}',
+'{$objeto->GuidFvCentroOrigen}',
+'{$date}',
+'{$objeto->CategoriaKPI}',
+'{$objeto->NombreKpi}',
+'{$objeto->Mensaje}',
+{$objeto->Meta},
+{$objeto->Valor},
+'{$objeto->Comentario}',
+'{$link}');
+";
+return $values;
+
+}
+
+public function removeFromURL($url){		
+	return	$this->db->ejecutar("delete from receptor_fuentes_mensajes where Link like '%{$url}%'"); 
+}
+
+public function saved($query){
+	$result = $this->db->ejecutar($query);	
+	return $result;
+}
+
+// Para todos los Tipos que estan Conectados
+public function GetMSgPorTipo($tipo){
+
+}
 
 	public function ObtenerListaCOnfiguracionMensajes(){
 		$result = $this->db->ejecutar("select * from configurcion_fuente_mensajes where Estado = 1");

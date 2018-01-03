@@ -76,7 +76,7 @@ $newKey = date('Y-m-d H:i:s', $newKey);
 //$nuevafecha = strtotime ( '+30 second' , strtotime ( $fecha ) ) ;
 // $nuevafecha = date ( 'Y-m-j' , $nuevafecha );
 
-$arrayName = array('TipoMensaje'=>  1, "AlcanceMensaja"=> 0, // Entero {0: Todo los TV, sin Filtro, 1: La regional, 2: Su centro, 3: Solo su televisor}
+$arrayName = array('TipoMensaje'=>  1, "AlcanceMensaje"=> 0, // Entero {0: Todo los TV, sin Filtro, 1: La regional, 2: Su centro, 3: Solo su televisor}
     "GuidFvOrigen"=> "79EFB5BF-AD59-4FD3-88D9-0014A278C32C",
     "FuerzaVentaDescripcion" =>"DO0382",
    "GuidFvCentroOrigen"=>"8B580525-E611-49A3-B2BD-45BD5FBC2693",
@@ -90,6 +90,11 @@ $arrayName = array('TipoMensaje'=>  1, "AlcanceMensaja"=> 0, // Entero {0: Todo 
 
 $avv = array();
 $avv[] = $arrayName; 
+
+$arrayName["NombreKpi"] = "Triologia Menor"; 
+$avv[] = $arrayName;
+$arrayName["NombreKpi"] = "Positivacion"; 
+$avv[] = $arrayName;
 
 echo json_encode($avv); 
 
