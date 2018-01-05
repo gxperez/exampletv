@@ -32,9 +32,8 @@ class AdminBisTV
 
 
 	public function setListRecpecionMensaje($objeto, $link){
-
+		
 		$date = date('y-m-d H:i:s');
-
 		$values = "INSERT INTO `receptor_fuentes_mensajes`
 (`TipoMensaje`, `AlcanceMensaje`, `GuidFvOrigen`, `FuerzaVentaDescripcion`,
 `GuidFvCentroOrigen`, `FechaUltimaActualizacion`, `CategoriaKPI`, `NombreKpi`, `Mensaje`,
